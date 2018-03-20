@@ -359,6 +359,13 @@ void render(telemetry_data_t *td, int osdfps) {
     #endif
  #endif
 
+ #ifdef GND_VOLT
+    if(td->status_sys_gnd->voltage > 0)
+    {
+        draw_GND_VOLT(td->status_sys_gnd->voltage, GND_VOLT_CRIT, GND_VOLT_POS_X, GND_VOLT_POS_Y, GND_VOLT_SCALE * GLOBAL_SCALE);
+    }
+    #endif
+
 #ifdef FLIGHTMODE
     #ifdef MAVLINK
     draw_mode(td->mav_flightmode, td->armed, FLIGHTMODE_POS_X, FLIGHTMODE_POS_Y, FLIGHTMODE_SCALE * GLOBAL_SCALE);
@@ -624,13 +631,6 @@ void render(telemetry_data_t *td, int osdfps) {
  #endif
     #ifdef RANGEFINDER
         draw_rangefinder(td, RANGEFINDER_POS_X, RANGEFINDER_POS_Y, RANGEFINDER_POS_H);
-    #endif
-
-    #ifdef GND_VOLT
-    if(td->status_sys_gnd->voltage > 0)
-    {
-        draw_GND_VOLT(td->status_sys_gnd->voltage, GND_VOLT_CRIT, GND_VOLT_POS_X, GND_VOLT_POS_Y, GND_VOLT_SCALE * GLOBAL_SCALE);
-    }
     #endif
 
     #if defined(RAPORT)
