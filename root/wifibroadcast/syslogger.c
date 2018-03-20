@@ -86,9 +86,9 @@ int main(int argc, char *argv[]) {
 		fclose(fp);
 		cpuload_gnd = (((b[0]+b[1]+b[2]) - (a[0]+a[1]+a[2])) / ((b[0]+b[1]+b[2]+b[3]) - (a[0]+a[1]+a[2]+a[3]))) * 100;
 //		fprintf(stderr,"cpuload gnd:%d\n",cpuload_gnd);
-		if (temp_gnd > 55000) {
+		if (temp_gnd > 60000) {
 			digitalWrite (fan, HIGH);
-		} else if (temp < 50000) {
+		} else if (temp_gnd < 50000) {
 			digitalWrite (fan, LOW);
 		}
 
