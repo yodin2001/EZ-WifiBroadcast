@@ -38,6 +38,28 @@ wifibroadcast_rx_status_t_sysair *status_memory_open_sysair(char* shm_file) {
 	return (wifibroadcast_rx_status_t_sysair*)retval;
 }
 
+status_t_sys_gnd *status_memory_open_sysgnd(char* shm_file) {
+	int fd;
+	for(;;) {
+		fd = shm_open(shm_file, O_RDWR, S_IRUSR | S_IWUSR);
+		if(fd > 0) {
+			break;
+		}
+//		fprintf(stderr,"gnd_status: Waiting for shm to be created ...\n");
+		usleep(3000000);
+	}
+	if (ftruncate(fd, sizeof(status_t_sys_gnd)) == -1) {
+		perror("ftruncate");
+		exit(1);
+	}
+	void *retval = mmap(NULL, sizeof(status_t_sys_gnd), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (retval == MAP_FAILED) {
+		perror("mmap");
+		exit(1);
+	}
+	return (status_t_sys_gnd*)retval;
+}
+
 long long current_timestamp() {
     struct timeval te;
     gettimeofday(&te, NULL); // get current time
@@ -47,6 +69,7 @@ long long current_timestamp() {
 
 int main(int argc, char *argv[]) {
 	wifibroadcast_rx_status_t_sysair *t = status_memory_open_sysair(argv[1]);
+	status_t_sys_gnd *t_sys_gnd = status_memory_open_sysgnd("/wifibroadcast_rx_status_sys_gnd");
 //	wPI：wiringPiSetup (void) ;
 //  BCM：wiringPiSetupGpio (void) ;
 //  physical：wiringPiSetupPhys (void) ;
@@ -68,11 +91,9 @@ int main(int argc, char *argv[]) {
 
 	float counter = 0;
 
-	FILE *fp;
-	FILE *fp2;
-
 	int cpuload_gnd = 0;
 	int temp_gnd = 0;
+	float gnd_voltage = 0;
 	long double a[4], b[4];
 
 	for(;;) {
@@ -80,15 +101,14 @@ int main(int argc, char *argv[]) {
 		// counter, cpuload air, temp air, cpuload gnd, temp gnd, injection_time_block, skipped_fec_cnt/s, injected_block_cnt/s, injection_fail_cnt/s
 		printf("%.1f,%d,%d,", counter,t->cpuload, t->temp);
 
-		fp2 = fopen("/sys/class/thermal/thermal_zone0/temp","r");
-		fscanf(fp2,"%d",&temp_gnd);
-		fclose(fp2);
-//		fprintf(stderr,"temp gnd:%d\n",temp_gnd/1000);
-		fp = fopen("/proc/stat","r");
-		fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&a[0],&a[1],&a[2],&a[3]);
-		fclose(fp);
-		cpuload_gnd = (((b[0]+b[1]+b[2]) - (a[0]+a[1]+a[2])) / ((b[0]+b[1]+b[2]+b[3]) - (a[0]+a[1]+a[2]+a[3]))) * 100;
-//		fprintf(stderr,"cpuload gnd:%d\n",cpuload_gnd);
+		temp_gnd = t_sys_gnd->temp;
+		fprintf(stderr,"temp gnd:%d\n",temp_gnd/1000);
+		cpuload_gnd = t_sys_gnd->cpuload;
+		fprintf(stderr,"cpuload gnd:%d\n",cpuload_gnd);
+		gnd_voltage = t_sys_gnd->voltage;
+		fprintf(stderr,"supply voltage:%.2f\n",gnd_voltage);
+
+
 		if (temp_gnd > 60000) {
 			pwmWrite (fan, 60) ;
 		} else if (temp_gnd < 50000) {

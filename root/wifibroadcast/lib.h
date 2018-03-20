@@ -68,6 +68,13 @@ typedef struct {
 	uint8_t undervolt;
 } wifibroadcast_rx_status_t_sysair;
 
+typedef struct{
+	uint8_t cpuload;
+    uint8_t temp;
+	uint8_t undervolt;
+	float   voltage;
+} status_t_sys_gnd;
+
 
 typedef struct {
 	int valid;
@@ -102,5 +109,6 @@ typedef struct {
 wifibroadcast_rx_status_t *telemetry_wbc_status_memory_open(void);
 wifibroadcast_rx_status_t_rc *telemetry_wbc_status_memory_open_rc(void);
 wifibroadcast_tx_status_t *telemetry_wbc_status_memory_open_tx(void);
+status_t_sys_gnd *status_memory_open_sys_gnd(void);
 
 //wifibroadcast_rx_status_t_sysair *telemetry_wbc_status_memory_open_sysair(void);

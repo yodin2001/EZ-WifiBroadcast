@@ -1317,6 +1317,8 @@ function rx_function {
 		echo "0" > /tmp/undervolt
 	fi
 
+	nice /root/wifibroadcast/gnd_status &
+
 	echo "N" > /tmp/FX1
 	echo "N" > /tmp/FX2
 	echo "N" > /tmp/FX3

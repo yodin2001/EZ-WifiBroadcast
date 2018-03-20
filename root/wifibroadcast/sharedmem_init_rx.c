@@ -25,6 +25,7 @@ wifibroadcast_rx_status_t *rx_status = NULL;
 
 wifibroadcast_rx_status_t_rc *rx_status_rc = NULL;
 wifibroadcast_rx_status_t_sysair *rx_status_sysair = NULL;
+status_t_sys_gnd *status_sys_gnd = NULL;
 
 void status_memory_init(wifibroadcast_rx_status_t *s) {
 	s->received_block_cnt = 0;
@@ -158,6 +159,20 @@ wifibroadcast_rx_status_t_sysair *status_memory_open_sysair(void) {
 	return tretval;
 }
 
+status_t_sys_gnd *status_memory_open_sys_gnd(void) {
+	char buf[128];
+	int fd;
+	sprintf(buf, "/wifibroadcast_rx_status_sys_gnd");
+	fd = shm_open(buf, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+	if(fd < 0) { perror("shm_open"); exit(1); }
+	if (ftruncate(fd, sizeof(status_t_sys_gnd)) == -1) { perror("ftruncate"); exit(1); }
+	void *retval = mmap(NULL, sizeof(status_t_sys_gnd), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (retval == MAP_FAILED) { perror("mmap"); exit(1); }
+	status_t_sys_gnd *tretval = (status_t_sys_gnd*)retval;
+	status_memory_init_sysair(tretval);
+	return tretval;
+}
+
 
 int main(int argc, char *argv[]) {
 	setpriority(PRIO_PROCESS, 0, 10);
@@ -169,6 +184,7 @@ int main(int argc, char *argv[]) {
 	rx_status_rc = status_memory_open_rc();
 	rx_status = status_memory_open_uplink();
 	rx_status_sysair = status_memory_open_sysair();
+	status_sys_gnd = status_memory_open_sys_gnd();
 
 	return (0);
 }

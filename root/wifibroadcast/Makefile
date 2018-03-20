@@ -1,7 +1,7 @@
 LDFLAGS=-lrt -lpcap -lwiringPi
 CPPFLAGS=-Wall -O2 -march=armv6zk -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -D _GNU_SOURCE
 
-all: rx_rc_telemetry_buf rx rx_rc_telemetry rssirx rssitx tx_rawsock tx_telemetry rx_status tracker rssilogger syslogger channelscan check_alive rssi_forward wifiscan wifibackgroundscan sharedmem_init_rx sharedmem_init_tx
+all: rx_rc_telemetry_buf rx rx_rc_telemetry rssirx rssitx tx_rawsock tx_telemetry rx_status tracker rssilogger syslogger channelscan check_alive rssi_forward wifiscan wifibackgroundscan sharedmem_init_rx sharedmem_init_tx gnd_status
 
 %.o: %.c
 	gcc -c -o $@ $< $(CPPFLAGS)
@@ -61,5 +61,8 @@ sharedmem_init_rx: sharedmem_init_rx.o lib.o
 sharedmem_init_tx: sharedmem_init_tx.o lib.o
 	gcc -o $@ $^ $(LDFLAGS)
 
+gnd_status: gnd_status.o
+	gcc -o $@ $^ $(LDFLAGS)
+
 clean:
-	rm -f rx_rc_telemetry_buf rx rx_rc_telemetry rssirx rssitx tx_rawsock tx_telemetry rx_status tracker rssilogger syslogger channelscan check_alive rssi_forward wifiscan wifibackgroundscan sharedmem_init_rx sharedmem_init_tx *~ *.o
+	rm -f rx_rc_telemetry_buf rx rx_rc_telemetry rssirx rssitx tx_rawsock tx_telemetry rx_status tracker rssilogger syslogger channelscan check_alive rssi_forward wifiscan wifibackgroundscan sharedmem_init_rx sharedmem_init_tx gnd_status *~ *.o
