@@ -56,8 +56,11 @@ int main(int argc, char *argv[]) {
 		printf("setup WiringPi failed");
 		return 1;
 	}
-	int fan = 25;// FAN BCM gpio25 pin22
-	pinMode(fan, OUTPUT); // FAN
+	int fan = 12;// FAN BCM gpio12 pin32
+	pinMode (fan, PWM_OUTPUT) ;
+	pwmSetMode(PWM_MODE_MS);
+	pwmSetClock(1920);
+	pwmSetRange(100); //PWM frequency=19200000/1920/100=100Hz
 
 	int skipped_fec, skipped_fec_last, skipped_fec_per_second = 0;
 	int injected_block, injected_block_last, injected_block_per_second = 0;
@@ -87,9 +90,9 @@ int main(int argc, char *argv[]) {
 		cpuload_gnd = (((b[0]+b[1]+b[2]) - (a[0]+a[1]+a[2])) / ((b[0]+b[1]+b[2]+b[3]) - (a[0]+a[1]+a[2]+a[3]))) * 100;
 //		fprintf(stderr,"cpuload gnd:%d\n",cpuload_gnd);
 		if (temp_gnd > 60000) {
-			digitalWrite (fan, HIGH);
+			pwmWrite (fan, 60) ;
 		} else if (temp_gnd < 50000) {
-			digitalWrite (fan, LOW);
+			pwmWrite (fan, 0) ;
 		}
 
 		printf("%d,%d",cpuload_gnd,temp_gnd);
