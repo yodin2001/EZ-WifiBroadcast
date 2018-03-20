@@ -102,11 +102,11 @@ int main(int argc, char *argv[]) {
 		printf("%.1f,%d,%d,", counter,t->cpuload, t->temp);
 
 		temp_gnd = t_sys_gnd->temp;
-		fprintf(stderr,"temp gnd:%d\n",temp_gnd/1000);
+		//fprintf(stderr,"temp gnd:%d\n",temp_gnd/1000);
 		cpuload_gnd = t_sys_gnd->cpuload;
-		fprintf(stderr,"cpuload gnd:%d\n",cpuload_gnd);
+		//fprintf(stderr,"cpuload gnd:%d\n",cpuload_gnd);
 		gnd_voltage = t_sys_gnd->voltage;
-		fprintf(stderr,"supply voltage:%.2f\n",gnd_voltage);
+		//fprintf(stderr,"supply voltage:%.2f\n",gnd_voltage);
 
 
 		if (temp_gnd > 60000) {
