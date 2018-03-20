@@ -109,9 +109,9 @@ int main(int argc, char *argv[]) {
 		//fprintf(stderr,"supply voltage:%.2f\n",gnd_voltage);
 
 
-		if (temp_gnd > 60000) {
+		if (temp_gnd > 60) {
 			pwmWrite (fan, 60) ;
-		} else if (temp_gnd < 50000) {
+		} else if (temp_gnd < 50) {
 			pwmWrite (fan, 0) ;
 		}
 
