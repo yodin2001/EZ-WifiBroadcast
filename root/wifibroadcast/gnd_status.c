@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 		fclose(fp_load);
 		cpuload_gnd = (((b[0]+b[1]+b[2]) - (a[0]+a[1]+a[2])) / ((b[0]+b[1]+b[2]+b[3]) - (a[0]+a[1]+a[2]+a[3]))) * 100;
         t->cpuload = cpuload_gnd;
-        printf("cpuload gnd:%d\n",t->cpuload);
+        //printf("cpuload gnd:%d\n",t->cpuload);
 
         //CPU temperature
         fp_gnd_temp = fopen("/sys/class/thermal/thermal_zone0/temp","r");
