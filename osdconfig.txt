@@ -142,6 +142,12 @@
 #define CPU_TEMP_CAUTION 60
 #define SYS_DECLUTTER 0 //1 for yes, 0 for no
 
+#define GND_VOLT
+#define GND_VOLT_CRIT 12.0
+#define GND_VOLT_POS_X 92
+#define GND_VOLT_POS_Y 61
+#define GND_VOLT_SCALE 0.7
+
 #define HOME_ARROW
 #define HOME_ARROW_POS_X 50
 #define HOME_ARROW_POS_Y 10

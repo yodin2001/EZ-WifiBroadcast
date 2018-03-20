@@ -29,7 +29,7 @@
 #define TO_DEG 180.0f / M_PI
 void render_init();
 void setfillstroke();
-void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t undervolt, int fps);
+void render(telemetry_data_t *td, int fps);
 
 void rotatePoints(float *x, float *y, float angle, int points, int center_x, int center_y); //rotate a polyline/polygon
 float distance_between(float lat1, float long1, float lat2, float long2);
@@ -62,7 +62,8 @@ void draw_rssi(int rssi, int armed, float pos_x, float pos_y, float scale, float
 void draw_EFFIC(int armed, int gpsspeed, float current, float pos_x, float pos_y, float scale);
 void draw_RAPORT(int armed, int gpsspeed, float current, float voltage, float mslalt, float pos_x, float pos_y, float scale);
 void draw_BT_AMPER(float current, float pos_x, float pos_y, float scale);
-void draw_BT_VOLT(float voltage, float pos_x, float pos_y, float scale);
+void draw_BT_VOLT(float voltage, float crit_volt, float pos_x, float pos_y, float scale);
+void draw_GND_VOLT(float voltage, float crit_volt, float pos_x, float pos_y, float scale);
 void draw_ARMSTAT(int armed, float pos_x, float pos_y, float scale);
 void draw_VARIO(float climb, float pos_x, float pos_y, float scale);
 void draw_SIDE_THR(uint16_t throttle, float pos_x, float pos_y, float scale);

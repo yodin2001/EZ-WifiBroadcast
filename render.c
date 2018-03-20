@@ -150,7 +150,7 @@ void render_init() {
      // get time passed since last rendering
  }
 
-void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t undervolt, int osdfps) {
+void render(telemetry_data_t *td, int osdfps) {
     // call loopUpdate to update stuff that should be updated even when particular elements are off (like total curent);
     loopUpdate(td);
 
@@ -159,7 +159,7 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 #ifndef RELAY
     if (td->rx_status_sysair->undervolt == 1) draw_message(0,"Undervoltage on TX","  ","Bitrate limited to 1 Mbit",WARNING_POS_X, WARNING_POS_Y, GLOBAL_SCALE);
 #endif
-    if (undervolt == 1) draw_message(0,"Undervoltage on RX","  "," ",WARNING_POS_X, WARNING_POS_Y, GLOBAL_SCALE);
+    if (td->status_sys_gnd->undervolt == 1) draw_message(0,"Undervoltage on RX","  "," ",WARNING_POS_X, WARNING_POS_Y, GLOBAL_SCALE);
 
     //Battery cells
     #ifdef MAVLINK
@@ -353,9 +353,9 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 
 #ifdef SYS
     #ifndef RELAY
-        draw_sys(td->rx_status_sysair->cpuload, td->rx_status_sysair->temp, cpuload_gnd, temp_gnd, td->armed, SYS_POS_X, SYS_POS_Y, SYS_SCALE * GLOBAL_SCALE, CPU_LOAD_WARN, CPU_LOAD_CAUTION, CPU_TEMP_WARN, CPU_TEMP_CAUTION, SYS_DECLUTTER);
+        draw_sys(td->rx_status_sysair->cpuload, td->rx_status_sysair->temp, td->status_sys_gnd->cpuload, td->status_sys_gnd->temp, td->armed, SYS_POS_X, SYS_POS_Y, SYS_SCALE * GLOBAL_SCALE, CPU_LOAD_WARN, CPU_LOAD_CAUTION, CPU_TEMP_WARN, CPU_TEMP_CAUTION, SYS_DECLUTTER);
     #else
-        draw_sys(td->rx_status->cpuload_air, td->rx_status->temp_air, td->rx_status->cpuload_gnd, td->rx_status->temp_gnd, td->armed, SYS_POS_X, SYS_POS_Y, SYS_SCALE * GLOBAL_SCALE, CPU_LOAD_WARN, CPU_LOAD_CAUTION, CPU_TEMP_WARN, CPU_TEMP_CAUTION, SYS_DECLUTTER);
+        draw_sys(td->rx_status->cpuload_air, td->rx_status->temp_air, td->status_sys_gnd->cpuload, td->status_sys_gnd->temp, td->armed, SYS_POS_X, SYS_POS_Y, SYS_SCALE * GLOBAL_SCALE, CPU_LOAD_WARN, CPU_LOAD_CAUTION, CPU_TEMP_WARN, CPU_TEMP_CAUTION, SYS_DECLUTTER);
     #endif
  #endif
 
@@ -383,7 +383,7 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
  draw_BT_AMPER(td->ampere, BT_AMPER_POS_X, BT_AMPER_POS_Y, BT_AMPER_SCALE * GLOBAL_SCALE);
  #endif
 #if defined(BT_VOLT)
- draw_BT_VOLT(td->voltage, BT_VOLT_POS_X, BT_VOLT_POS_Y, BT_VOLT_SCALE * GLOBAL_SCALE);
+ draw_BT_VOLT(td->voltage, 0, BT_VOLT_POS_X, BT_VOLT_POS_Y, BT_VOLT_SCALE * GLOBAL_SCALE);
  #endif
 #if defined(ARMSTAT)
  draw_ARMSTAT(td->armed, ARMSTAT_POS_X, ARMSTAT_POS_Y, ARMSTAT_SCALE * GLOBAL_SCALE);
@@ -624,6 +624,13 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
  #endif
     #ifdef RANGEFINDER
         draw_rangefinder(td, RANGEFINDER_POS_X, RANGEFINDER_POS_Y, RANGEFINDER_POS_H);
+    #endif
+
+    #ifdef GND_VOLT
+    if(td->status_sys_gnd->voltage > 0)
+    {
+        draw_GND_VOLT(td->status_sys_gnd->voltage, GND_VOLT_CRIT, GND_VOLT_POS_X, GND_VOLT_POS_Y, GND_VOLT_SCALE * GLOBAL_SCALE);
+    }
     #endif
 
     #if defined(RAPORT)
@@ -1093,16 +1100,41 @@ void draw_BT_AMPER(float current, float pos_x, float pos_y, float scale){
     Fill(250,0,0,1);
     Text(getWidth(pos_x), getHeight(pos_y), "ɮ", osdicons, text_scale);//Amp
  }
-void draw_BT_VOLT(float voltage, float pos_x, float pos_y, float scale){
+void draw_BT_VOLT(float voltage, float crit_volt, float pos_x, float pos_y, float scale){
     float text_scale = getWidth(2) * scale;
     VGfloat width_value = TextWidth("0000", myfont, text_scale);
-    Fill(COLOR); //normal
+    if(voltage > crit_volt || crit_volt == 0)
+    {
+        Fill(COLOR); //normal
+    }
+    else
+    {
+        Fill(COLOR_WARNING); //red
+    }
     Stroke(OUTLINECOLOR);
     Text(getWidth(pos_x), getHeight(pos_y), "ɫ", osdicons, text_scale);//base frame
     sprintf(buffer, "%04.1f", voltage);
     Text(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
     Fill(250,250,0,1);
     Text(getWidth(pos_x), getHeight(pos_y), "ɯ", osdicons, text_scale);//Volt
+ }
+ void draw_GND_VOLT(float voltage, float crit_volt, float pos_x, float pos_y, float scale){
+    float text_scale = getWidth(2) * scale;
+    VGfloat width_value = TextWidth("00", myfont, text_scale) + getWidth(0.5)*scale;
+    VGfloat width_ag = TextWidth("A", osdicons, text_scale*0.4) - getWidth(0.3)*scale;
+    if(voltage > crit_volt || crit_volt == 0)
+    {
+        Fill(COLOR); //normal
+    }
+    else
+    {
+        Fill(COLOR_WARNING); //red
+    }
+    Stroke(OUTLINECOLOR);
+    TextEnd(getWidth(pos_x)-width_value-width_ag, getHeight(pos_y), "", osdicons, text_scale*0.7);
+    sprintf(buffer, "%04.1fV", voltage);
+    Text(getWidth(pos_x)-width_value, getHeight(pos_y), buffer, myfont, text_scale);
+    Fill(250,250,0,1);
  }
 void draw_VARIO(float climb, float pos_x, float pos_y, float scale){
     char* ff;

@@ -130,6 +130,10 @@ void get_wbc_telemetry(telemetry_data_t *td, int timeout)
         while((rsize = recv(fds_wbc.fd, wbc_buf, sizeof(wbc_buf), 0)) >= 0)
         {
             td->rx_status = (wifibroadcast_rx_status_forward_t *)&wbc_buf;
+            td->status_sys_gnd->cpuload = td->rx_status->cpuload_gnd;
+            td->status_sys_gnd->temp = td->rx_status->temp_gnd;
+	        //td->status_sys_gnd->undervolt = td->rx_status->;
+	        //td->status_sys_gnd->voltage = td->rx_status->;
         }
         if (rsize < 0 && errno != EWOULDBLOCK){
             perror("Error receiving packet");
@@ -173,48 +177,6 @@ long long current_timestamp()
 fd_set set;
 
 struct timeval timeout;
-
-void GetGroundPiSysStateLocal(telemetry_data_t *td)
-{
-    FILE *fp;
-    long double a[4];
-    uint8_t undervolt_gnd;
-    static long double b[4];
-
-    fp = fopen("/sys/class/thermal/thermal_zone0/temp","r");
-    uint32_t gnd_temp = 0;
-    fscanf(fp,"%d",&gnd_temp);
-    td->status_sys_gnd.temp = gnd_temp/1000;
-	fclose(fp);
-    //fprintf(stderr,"temp gnd:%d\n",td.status_sys_gnd.temp);
-            
-
-	fp = fopen("/proc/stat","r");
-	fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&a[0],&a[1],&a[2],&a[3]);
-	fclose(fp);
-	td->status_sys_gnd.cpuload = (((b[0]+b[1]+b[2]) - (a[0]+a[1]+a[2])) / ((b[0]+b[1]+b[2]+b[3]) - (a[0]+a[1]+a[2]+a[3]))) * 100;
-    //fprintf(stderr,"cpuload gnd:%d\n",td.status_sys_gnd.cpuload);
-
-	fp = fopen("/proc/stat","r");
-	fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&b[0],&b[1],&b[2],&b[3]);
-	fclose(fp);
-
-    //Undervoltage status
-    fp = fopen("/tmp/undervolt","r");
-    if(fp == NULL)
-    {
-        perror("ERROR: Could not open /tmp/undervolt");
-        exit(EXIT_FAILURE);
-    }
-    fscanf(fp,"%d",&undervolt_gnd);
-    fclose(fp);
-    //fprintf(stderr,"undervolt:%d\n",undervolt_gnd);
-    td->status_sys_gnd.undervolt = undervolt_gnd;
-}
-
-
-
-
 
 
 
@@ -346,7 +308,7 @@ int main(int argc, char *argv[])
 		    //fprintf(stderr," rendering! ");
 		    prev_time = current_timestamp();
 		    fpscount++;
-		    render(&td, td.status_sys_gnd.cpuload, td.status_sys_gnd.temp, td.status_sys_gnd.undervolt, fps);
+		    render(&td, fps);
 		    long long took = current_timestamp() - prev_time;
 		    //fprintf(stderr,"Render took %lldms\n", took);
 		    do_render = 0;
@@ -357,18 +319,6 @@ int main(int argc, char *argv[])
         //telemetry logging
         #ifndef RELAY
             telemetry_loging(&td, current_timestamp(), 5);
-        #endif
-
-        //Read ground systemstatus
-        #ifndef RELAY
-	    delta = current_timestamp() - prev_cpu_time;
-	    if (delta > 1000)
-        {
-		    prev_cpu_time = current_timestamp();
-            //fprintf(stderr,"delta > 1000\n");
-
-		    GetGroundPiSysStateLocal(&td);
-	    }
         #endif
 
         //long long took = current_timestamp() - prev_time;

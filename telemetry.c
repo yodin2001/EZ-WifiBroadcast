@@ -100,6 +100,7 @@ void telemetry_init(telemetry_data_t *td) {
 #endif
 
 #ifndef RELAY
+	td->status_sys_gnd = status_memory_open_sys_gnd();
 	#ifdef DOWNLINK_RSSI
 		td->rx_status = telemetry_wbc_status_memory_open();
 	#endif
@@ -112,6 +113,11 @@ void telemetry_init(telemetry_data_t *td) {
 	td->rx_status_osd = telemetry_wbc_status_memory_open_osd();
 	td->rx_status_sysair = telemetry_wbc_status_memory_open_sysair();
 #else
+	td->status_sys_gnd = malloc(sizeof(status_t_sys_gnd));
+	td->status_sys_gnd->cpuload = 0;
+    td->status_sys_gnd->temp = 0;
+	td->status_sys_gnd->undervolt = 0;
+	td->status_sys_gnd->voltage = 0;
 	td->rx_status->damaged_block_cnt = 0;
 	td->rx_status->lost_packet_cnt = 0;
 	td->rx_status->skipped_packet_cnt = 0;
@@ -147,6 +153,22 @@ void telemetry_init(telemetry_data_t *td) {
 }
 
 #ifndef RELAY
+status_t_sys_gnd *status_memory_open_sys_gnd(void) {
+        int fd = 0;
+	int sharedmem = 0;
+	while(sharedmem == 0) {
+	    fd = shm_open("/wifibroadcast_rx_status_sys_gnd", O_RDONLY, S_IRUSR | S_IWUSR);
+    	    if(fd < 0) {
+                fprintf(stderr, "OSD: ERROR: Could not open /wifibroadcast_rx_status_sys_gnd - will try again ...\n");
+    	    } else {
+		sharedmem = 1;
+	    }
+	    usleep(100000);
+	}
+        void *retval = mmap(NULL, sizeof(status_t_sys_gnd), PROT_READ, MAP_SHARED, fd, 0);
+        if (retval == MAP_FAILED) { perror("mmap"); exit(1); }
+        return (status_t_sys_gnd*)retval;
+}
 #ifdef DOWNLINK_RSSI
 wifibroadcast_rx_status_t *telemetry_wbc_status_memory_open(void) {
         int fd = 0;
