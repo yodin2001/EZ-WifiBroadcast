@@ -82,8 +82,8 @@ int main(int argc, char *argv[]) {
 	int fan = 12;// FAN BCM gpio12 pin32
 	pinMode (fan, PWM_OUTPUT) ;
 	pwmSetMode(PWM_MODE_MS);
-	pwmSetClock(1920);
-	pwmSetRange(100); //PWM frequency=19200000/1920/100=100Hz
+	pwmSetClock(768);
+	pwmSetRange(100); //PWM frequency=19200000/768/100=250Hz
 
 	int skipped_fec, skipped_fec_last, skipped_fec_per_second = 0;
 	int injected_block, injected_block_last, injected_block_per_second = 0;
