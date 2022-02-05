@@ -1,4 +1,9 @@
+mode?=local
+
 CPPFLAGS+= -I/opt/vc/include/ -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux
+ifeq ($(mode), relay)
+CPPFLAGS+= -DRELAY -DMAVLINK
+endif
 LDFLAGS+= -lfreetype -lz
 LDFLAGS+=-L/opt/vc/lib/ -lbrcmGLESv2 -lbrcmEGL -lopenmaxil -lbcm_host -lvcos -lvchiq_arm -lpthread -lrt -lm -lshapes
 
