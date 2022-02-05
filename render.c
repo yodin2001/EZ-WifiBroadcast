@@ -124,7 +124,11 @@ void loopUpdate(telemetry_data_t *td) {
     // Update total amps used. Get time passed since last rendering
     time_diff = current_ts() - amps_ts;
     amps_ts = current_ts();
-    total_amps = total_amps + td->ampere*(float)time_diff/3600;
+    #ifdef MAVLINK
+        total_amps = (float)td->total_amps;
+    #else
+        total_amps = total_amps + td->ampere*(float)time_diff/3600;
+    #endif
     // get time passed since last rendering
     
  }

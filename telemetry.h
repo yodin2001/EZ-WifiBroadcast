@@ -186,6 +186,7 @@ typedef struct {
 	uint32_t SP;
 	uint32_t SE;
 	uint32_t SH;
+	int32_t total_amps;
 #endif
 
 #if defined(LTM)

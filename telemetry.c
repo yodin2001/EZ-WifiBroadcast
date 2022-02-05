@@ -60,7 +60,7 @@ void telemetry_init(telemetry_data_t *td) {
 	td->SP = 0;
 	td->SE = 0;
 	td->SH = 0;
-	
+	td->total_amps = 0;
 #endif
 
 #ifdef LTM

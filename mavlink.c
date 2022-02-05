@@ -244,6 +244,10 @@ else {fprintf(stdout, "UNKNOWN base mode:%d  ", td->armed);}
 					fprintf(stdout, "MISSION_CURRENT ");
 					fprintf(stdout, "MC:%d ", td->mission_current_seq);
                                         break;
+								case MAVLINK_MSG_ID_BATTERY_STATUS:
+					td->total_amps = mavlink_msg_battery_status_get_current_consumed(&msg);
+					fprintf(stdout, "CURRENT_CONSUMED: %d", td->total_amps);
+                                        break;
 
 
  /*                            case MAVLINK_MSG_ID_ALTITUDE:
