@@ -45,7 +45,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "render.h"
 #include "osdconfig.h"
 #include "telemetry.h"
+#ifndef RELAY
 #include "telemetry_loger.h"
+#endif
 #ifdef FRSKY
 #include "frsky.h"
 #elif defined(LTM)
@@ -88,6 +90,35 @@ int open_udp_socket_for_rx(int port, struct pollfd *pollfd_struct) {
 
     return fd;
 }
+
+
+
+uint8_t wbc_buf[255];
+struct pollfd fds_wbc[1];
+int fd_wbc;
+
+void get_wbc_telemetry(telemetry_data_t *td)
+{
+    int rc = poll(fds_wbc, 1, 10);
+
+    if (fds_wbc[0].revents & (POLLERR | POLLNVAL))
+    {
+        fprintf(stderr, "socket error!");
+        exit(1);
+    }
+
+    if (fds_wbc[0].revents & POLLIN){
+        ssize_t rsize;
+        while((rsize = recv(fd_wbc, wbc_buf, sizeof(wbc_buf), 0)) >= 0)
+        {
+            td->rx_status = (wifibroadcast_rx_status_forward_t *)&wbc_buf;
+        }
+        if (rsize < 0 && errno != EWOULDBLOCK){
+            perror("Error receiving packet");
+            exit(1);
+        }
+    }
+}
 #endif
 
 long long current_timestamp() {
@@ -100,6 +131,8 @@ long long current_timestamp() {
 fd_set set;
 
 struct timeval timeout;
+
+
 
 int main(int argc, char *argv[]) {
     fprintf(stderr,"OSD started\n=====================================\n\n");
@@ -126,12 +159,20 @@ int main(int argc, char *argv[]) {
 #endif
 
 #if defined RELAY
-    int fd;
-    struct pollfd fds[1];
+    //open wbc socet
+    fd_wbc = open_udp_socket_for_rx(5003, (struct pollfd *) &fds_wbc);
+    if(fcntl(fd_wbc, F_SETFL, fcntl(fd_wbc, F_GETFL, 0) | O_NONBLOCK) < 0)
+    {
+        perror("Unable to set socket into nonblocked mode");
+        exit(1);
+    }
+    //open mavlink socket
+    int fd_mavlink;
+    struct pollfd fds_mavlink[1];
     char *osd_port = getenv("OSD_PORT");
-    memset(fds, '\0', sizeof(fds));
-    fd = open_udp_socket_for_rx(osd_port == NULL ? 14550 : atoi(osd_port), (struct pollfd *) &fds);
-    if(fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK) < 0)
+    memset(fds_mavlink, '\0', sizeof(fds_mavlink));
+    fd_mavlink = open_udp_socket_for_rx(osd_port == NULL ? 14550 : atoi(osd_port), (struct pollfd *) &fds_mavlink);
+    if(fcntl(fd_mavlink, F_SETFL, fcntl(fd_mavlink, F_GETFL, 0) | O_NONBLOCK) < 0)
     {
         perror("Unable to set socket into nonblocked mode");
         exit(1);
@@ -187,12 +228,16 @@ int main(int argc, char *argv[]) {
     fclose(fp3);
 //    fprintf(stderr,"undervolt:%d\n",undervolt_gnd);
 
+    usleep(500000);
     while(1) {
 //		fprintf(stderr," start while ");
 //		prev_time = current_timestamp();
 
 #if defined RELAY
-        int rc = poll(fds, 1, 50);
+        get_wbc_telemetry(&td);
+
+        //read mavlink
+        int rc = poll(fds_mavlink, 1, 50);
 
         if (rc < 0){
             if (errno == EINTR || errno == EAGAIN) continue;
@@ -200,28 +245,19 @@ int main(int argc, char *argv[]) {
             exit(1);
         }
 
-        if (fds[0].revents & (POLLERR | POLLNVAL))
+        if (fds_mavlink[0].revents & (POLLERR | POLLNVAL))
         {
             fprintf(stderr, "socket error!");
             exit(1);
         }
 
-        if (fds[0].revents & POLLIN){
+        if (fds_mavlink[0].revents & POLLIN){
             ssize_t rsize;
-            while((rsize = recv(fd, buf, sizeof(buf), 0)) >= 0)
+            while((rsize = recv(fd_mavlink, buf, sizeof(buf), 0)) >= 0)
             {
                 //fprintf(stderr, "recieved %d bytes\n", n);
-                #ifdef FRSKY
-	        	frsky_parse_buffer(&fs, &td, buf, rsize);
-                #elif defined(LTM)
-	        	do_render = ltm_read(&td, buf, rsize);
-                #elif defined(MAVLINK)
+                #ifdef MAVLINK
 	        	do_render = mavlink_read(&td, buf, rsize);
-                #elif defined(SMARTPORT)
-	        	smartport_read(&td, buf, rsize);
-                #elif defined(VOT)
-	        	do_render =  vot_read(&td, buf, rsize);
-                fprintf(stderr, "\n");
                 #endif
             }
             if (rsize < 0 && errno != EWOULDBLOCK){
@@ -265,13 +301,19 @@ int main(int argc, char *argv[]) {
 //		fprintf(stderr," rendering! ");
 		prev_time = current_timestamp();
 		fpscount++;
-		render(&td, cpuload_gnd, temp_gnd/1000, undervolt_gnd,fps);
+        #ifndef RELAY
+		    render(&td, cpuload_gnd, temp_gnd/1000, undervolt_gnd,fps);
+        #else
+            render(&td, td.rx_status->cpuload_gnd, td.rx_status->temp_gnd/1000, 0,fps);
+        #endif
 		long long took = current_timestamp() - prev_time;
 //		fprintf(stderr,"Render took %lldms\n", took);
 		do_render = 0;
 		counter = 0;
 	    }
+#ifndef RELAY
         telemetry_loging(&td, current_timestamp(), 5);
+#endif
 	    delta = current_timestamp() - prev_cpu_time;
 	    if (delta > 1000) {
 		prev_cpu_time = current_timestamp();
@@ -293,6 +335,7 @@ int main(int argc, char *argv[]) {
 		fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&b[0],&b[1],&b[2],&b[3]);
 		fclose(fp);
 	    }
+
 //		long long took = current_timestamp() - prev_time;
 //		fprintf(stderr,"while took %lldms\n", took);
 

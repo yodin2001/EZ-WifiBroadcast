@@ -46,7 +46,7 @@ char *path_settings="/tmp/settings.sh";
 // <atributes>
 // current_time: time in [ms]
 // times_per_sec: how offen telemetry is loging (min 1 times per sec, max 5 times per sec)
-
+#ifndef RELAY
 void telemetry_loging(telemetry_data_t *td,long long current_time,int times_per_sec) 
 {
 	int time_step = 1000/times_per_sec;
@@ -261,3 +261,4 @@ void telemetry_loging(telemetry_data_t *td,long long current_time,int times_per_
 		fclose(file);
 	}	
 }
+#endif

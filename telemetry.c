@@ -85,20 +85,22 @@ void telemetry_init(telemetry_data_t *td) {
     	td->ltm_home_latitude = 0;
 #endif
 
+#ifndef RELAY
+	#ifdef DOWNLINK_RSSI
+		td->rx_status = telemetry_wbc_status_memory_open();
+	#endif
 
-#ifdef DOWNLINK_RSSI
-	td->rx_status = telemetry_wbc_status_memory_open();
-#endif
-
-#ifdef UPLINK_RSSI
-	td->rx_status_uplink = telemetry_wbc_status_memory_open_uplink();
-	td->rx_status_rc = telemetry_wbc_status_memory_open_rc();
-#endif
+	#ifdef UPLINK_RSSI
+		td->rx_status_uplink = telemetry_wbc_status_memory_open_uplink();
+		td->rx_status_rc = telemetry_wbc_status_memory_open_rc();
+	#endif
 
 td->rx_status_osd = telemetry_wbc_status_memory_open_osd();
 td->rx_status_sysair = telemetry_wbc_status_memory_open_sysair();
+#endif
 }
 
+#ifndef RELAY
 #ifdef DOWNLINK_RSSI
 wifibroadcast_rx_status_t *telemetry_wbc_status_memory_open(void) {
         int fd = 0;
@@ -188,4 +190,4 @@ wifibroadcast_rx_status_t_sysair *telemetry_wbc_status_memory_open_sysair(void) 
         if (retval == MAP_FAILED) { perror("mmap"); exit(1); }
         return (wifibroadcast_rx_status_t_sysair*)retval;
 }
-
+#endif

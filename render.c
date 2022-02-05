@@ -244,12 +244,20 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 
 
 #ifdef KBITRATE
-    draw_kbitrate(td->rx_status_sysair->cts, td->rx_status->kbitrate, td->rx_status_sysair->bitrate_measured_kbit, td->rx_status_sysair->bitrate_kbit, td->rx_status_sysair->skipped_fec_cnt, td->rx_status_sysair->injection_fail_cnt,td->rx_status_sysair->injection_time_block, td->armed, KBITRATE_POS_X, KBITRATE_POS_Y, KBITRATE_SCALE * GLOBAL_SCALE, KBITRATE_WARN, KBITRATE_CAUTION, KBITRATE_DECLUTTER);
+    #ifndef RELAY
+        draw_kbitrate(td->rx_status_sysair->cts, td->rx_status->kbitrate, td->rx_status_sysair->bitrate_measured_kbit, td->rx_status_sysair->bitrate_kbit, td->rx_status_sysair->skipped_fec_cnt, td->rx_status_sysair->injection_fail_cnt,td->rx_status_sysair->injection_time_block, td->armed, KBITRATE_POS_X, KBITRATE_POS_Y, KBITRATE_SCALE * GLOBAL_SCALE, KBITRATE_WARN, KBITRATE_CAUTION, KBITRATE_DECLUTTER);
+    #else
+        draw_kbitrate(0, td->rx_status->kbitrate, td->rx_status->kbitrate_measured, td->rx_status->kbitrate, 0, td->rx_status->injection_fail_cnt,0, td->armed, KBITRATE_POS_X, KBITRATE_POS_Y, KBITRATE_SCALE * GLOBAL_SCALE, KBITRATE_WARN, KBITRATE_CAUTION, KBITRATE_DECLUTTER);
+    #endif
  #endif
 
 
 #ifdef SYS
-    draw_sys(td->rx_status_sysair->cpuload, td->rx_status_sysair->temp, cpuload_gnd, temp_gnd, td->armed, SYS_POS_X, SYS_POS_Y, SYS_SCALE * GLOBAL_SCALE, CPU_LOAD_WARN, CPU_LOAD_CAUTION, CPU_TEMP_WARN, CPU_TEMP_CAUTION, SYS_DECLUTTER);
+    #ifndef RELAY
+        draw_sys(td->rx_status_sysair->cpuload, td->rx_status_sysair->temp, cpuload_gnd, temp_gnd, td->armed, SYS_POS_X, SYS_POS_Y, SYS_SCALE * GLOBAL_SCALE, CPU_LOAD_WARN, CPU_LOAD_CAUTION, CPU_TEMP_WARN, CPU_TEMP_CAUTION, SYS_DECLUTTER);
+    #else
+        draw_sys(td->rx_status->cpuload_air, td->rx_status->temp_air, td->rx_status->cpuload_gnd, td->rx_status->temp_gnd, td->armed, SYS_POS_X, SYS_POS_Y, SYS_SCALE * GLOBAL_SCALE, CPU_LOAD_WARN, CPU_LOAD_CAUTION, CPU_TEMP_WARN, CPU_TEMP_CAUTION, SYS_DECLUTTER);
+    #endif
  #endif
 
 
@@ -420,10 +428,18 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
             if (best_dbm < td->rx_status->adapter[i].current_signal_dbm) best_dbm = td->rx_status->adapter[i].current_signal_dbm;
         }
     }
-    draw_total_signal(best_dbm, td->rx_status->received_block_cnt, td->rx_status->damaged_block_cnt, td->rx_status->lost_packet_cnt, td->rx_status->received_packet_cnt, td->rx_status->lost_per_block_cnt, DOWNLINK_RSSI_POS_X, DOWNLINK_RSSI_POS_Y, DOWNLINK_RSSI_SCALE * GLOBAL_SCALE);
+    #ifndef RELAY
+        draw_total_signal(best_dbm, td->rx_status->received_block_cnt, td->rx_status->damaged_block_cnt, td->rx_status->lost_packet_cnt, td->rx_status->received_packet_cnt, td->rx_status->lost_per_block_cnt, DOWNLINK_RSSI_POS_X, DOWNLINK_RSSI_POS_Y, DOWNLINK_RSSI_SCALE * GLOBAL_SCALE);
+    #else
+        draw_total_signal(best_dbm, td->rx_status->received_packet_cnt, td->rx_status->damaged_block_cnt, td->rx_status->lost_packet_cnt, td->rx_status->received_packet_cnt, 0, DOWNLINK_RSSI_POS_X, DOWNLINK_RSSI_POS_Y, DOWNLINK_RSSI_SCALE * GLOBAL_SCALE);
+    #endif
     #ifdef DOWNLINK_RSSI_DETAILED
     for(j=0; j<ac; ++j) {
-        draw_card_signal(td->rx_status->adapter[j].current_signal_dbm, td->rx_status->adapter[j].signal_good, j, ac, td->rx_status->tx_restart_cnt, td->rx_status->adapter[j].received_packet_cnt, td->rx_status->adapter[j].wrong_crc_cnt, td->rx_status->adapter[j].type, td->rx_status->received_packet_cnt, td->rx_status->lost_packet_cnt, DOWNLINK_RSSI_DETAILED_POS_X, DOWNLINK_RSSI_DETAILED_POS_Y, DOWNLINK_RSSI_DETAILED_SCALE * GLOBAL_SCALE);
+        #ifndef RELAY
+            draw_card_signal(td->rx_status->adapter[j].current_signal_dbm, td->rx_status->adapter[j].signal_good, j, ac, td->rx_status->tx_restart_cnt, td->rx_status->adapter[j].received_packet_cnt, td->rx_status->adapter[j].wrong_crc_cnt, td->rx_status->adapter[j].type, td->rx_status->received_packet_cnt, td->rx_status->lost_packet_cnt, DOWNLINK_RSSI_DETAILED_POS_X, DOWNLINK_RSSI_DETAILED_POS_Y, DOWNLINK_RSSI_DETAILED_SCALE * GLOBAL_SCALE);
+        #else
+            draw_card_signal(td->rx_status->adapter[j].current_signal_dbm, td->rx_status->adapter[j].signal_good, j, ac, 0, td->rx_status->adapter[j].received_packet_cnt, 0, td->rx_status->adapter[j].type, td->rx_status->received_packet_cnt, td->rx_status->lost_packet_cnt, DOWNLINK_RSSI_DETAILED_POS_X, DOWNLINK_RSSI_DETAILED_POS_Y, DOWNLINK_RSSI_DETAILED_SCALE * GLOBAL_SCALE);
+        #endif
     }
     #endif
  #endif
@@ -1179,7 +1195,7 @@ void draw_gpsspeed(int gpsspeed, float pos_x, float pos_y, float scale){
     #else
     VGfloat width_speedo = TextWidth("ﵵ", osdicons, text_scale*0.65);
     TextEnd(getWidth(pos_x)-width_value, getHeight(pos_y),"ﵵ", osdicons, text_scale*0.65);
-    TextEnd(getWidth(pos_x)-width_value-width_speedo, getHeight(pos_y), "ﵷ", osdicons, text_scale*0.7);
+    //TextEnd(getWidth(pos_x)-width_value-width_speedo, getHeight(pos_y), "ﵷ", osdicons, text_scale*0.7);
     #endif
 
     #if IMPERIAL == true
@@ -1252,13 +1268,14 @@ void draw_kbitrate(int cts, int kbitrate, uint16_t kbitrate_measured_tx, uint16_
     float mbit_measured = (float)kbitrate_measured_tx / 1000;
     float mbit_tx = (float)kbitrate_tx / 1000;
     float ms = (float)injection_time / 1000;
-
-    if (cts == 0) {
-    sprintf(buffer, "%.1f (%.1f)", mbit_tx, mbit_measured);
-    } else {
-    sprintf(buffer, "%.1f (%.1f) CTS", mbit_tx, mbit_measured);
-    }
+    #ifndef RELAY
+        if (cts == 0) {
+        sprintf(buffer, "%.1f (%.1f)", mbit_tx, mbit_measured);
+        } else {
+        sprintf(buffer, "%.1f (%.1f) CTS", mbit_tx, mbit_measured);
+        }
     Text(getWidth(pos_x)-width_value-width_symbol, getHeight(pos_y)-height_text_small, buffer, myfont, text_scale*0.6);
+    #endif
 
  //this is the reason for constant blinking of the cam icon
 
@@ -1307,9 +1324,10 @@ void draw_kbitrate(int cts, int kbitrate, uint16_t kbitrate_measured_tx, uint16_
  //    TextEnd(getWidth(pos_x)-width_value-width_symbol+width_value_ms, getHeight(pos_y)-height_text-height_text_small, buffer, myfont, text_scale*0.6);
  //    sprintf(buffer, "ms");
  //    Text(getWidth(pos_x)-width_value-width_symbol+width_value_ms, getHeight(pos_y)-height_text-height_text_small, buffer, myfont, text_scale*0.4);
-
+    #ifndef RELAY
     sprintf(buffer, "%d/%d",injection_failed,fecs_skipped);
     Text(getWidth(pos_x)-width_value-width_symbol, getHeight(pos_y)-height_text_small-height_text_small, buffer, myfont, text_scale*0.6);
+    #endif
  }
 
 
@@ -2135,7 +2153,7 @@ void draw_total_signal(int8_t signal, int goodblocks, int badblocks, int packets
         Fill(255,0,4,0.5); // red
     }
     
-    #if DOWNLINK_RSSI_FEC_BAR == true
+    #if DOWNLINK_RSSI_FEC_BAR == true && !defined(RELAY)
     StrokeWidth(0);
     Text(getWidth(pos_x)+width_label+getWidth(0.7), getHeight(pos_y)+getHeight(0.5), buffer, osdicons, text_scale*0.7);
 
