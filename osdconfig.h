@@ -1,1 +1,1 @@
-/tmp/osdconfig.txt
+/boot/osdconfig.txt
