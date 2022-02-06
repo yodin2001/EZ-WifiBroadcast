@@ -33,10 +33,6 @@ FREQ_TX[1]=5220
 #MAC_RX[1]=a854b22e620d
 #MAC_RX[3]=24050f953373
 #
-# Set to "Y" on the RX for auto-scanning. Frequency still has to be set on TX!
-# Even FREQSCAN=N, Frequency Scanning also can be forcibly enable by keeping GPIO18(PIN 12) connected to GND during startup!
-FREQSCAN=N
-#
 # TXPOWER-AIR/GROUND-- for all types of CARDS.
 txpower=54
 #
@@ -59,12 +55,11 @@ VIDEO_BLOCKLENGTH=1536
 #
 # Telemetry transmission method:
 # wbc = use wifibroadcast as telemetry up/downlink
-# external = use external means as telemetry up/downlink (LRS or 3DR dongles)
-# if set to external, set serialport to which LRS or 3DR dongle is connected
-# both on ground and air pi
+# external = use external means as telemetry up/downlink (lora、LRS or 3DR dongles)
+# if set to external, set serialport to which lora、LRS or 3DR dongle is connected on ground pi
 TELEMETRY_TRANSMISSION=wbc
 #
-# Set OSD protocol:
+# Set telemetry downlink(OSD) protocol:
 # mavlink -> Mavlink protocol (APM/Pixhawk)
 # ltm -> Light Telemetry (iNav/Cleanflight/Betaflight)
 # frsky -> Older Frsky protocol (Frsky D-series receivers)
@@ -72,11 +67,10 @@ TELEMETRY_TRANSMISSION=wbc
 # vot -> Eagletree Vector Open Telemetry
 TELEMETRY_OSD=ltm
 #
-# Set to "disabled" or "mavlink" for Mavlink (Tower App, Missionplanner, etc.)
-TELEMETRY_UPLINK=disabled
+# Set this to "Y" to enable uplink(Protocol depends on TELEMETRY_OSD).Upload navigation points or adjust FC parameters through the ground station (Tower App, Missionplanner, etc.)
+TELEMETRY_UPLINK=N
 #
-# Set the RC and uplink ID, the numeric range (0-99).Only ground units with the same ID.
-# as the air unit can uplink and RC.
+# Set the RC and uplink ID, the numeric range (0-99).Only ground units with the same ID as the air unit can uplink and RC.
 LINK_RC_KEY=3
 #
 # Set this to "mavlink" to enable R/C over wifibroadcast using mavlink protocol or "msp" for MSP protocol
@@ -134,10 +128,6 @@ FC_RC_BAUDRATE=115200
 FC_TELEMETRY_SERIALPORT=/dev/serial0
 FC_TELEMETRY_BAUDRATE=115200
 #
-# Not supported yet, do not change
-FC_MSP_SERIALPORT=/dev/ttyUSB0
-FC_MSP_BAUDRATE=115200
-#
 # Set additional USBCamera parameters here:(The default value for RUNCAM USBcamera)
 USBCAM="v4l2src device=/dev/video0 ! video/x-h264,width=1280,height=720,framerate=30/1,stream-format=byte-stream,profile=baseline"
 # Set additional IPCamera parameters here:(The default value for xm530ai/xm535ai Chip IPC)
@@ -147,7 +137,11 @@ IPCAM="rtspsrc location=\"rtsp://192.168.1.10:554/user=admin&password=&channel=1
 # RX settings
 # ============================================================
 #
-# Set to "Y" to scan for wifi networks with airodump-ng before starting RX
+# Auto find air unit frequency that are working(Don‘t support the STBC yet).Set to "Y" on the RX for auto-scanning. Frequency still has to be set on TX.
+# Even FREQSCAN=N, Frequency Scanning also can be forcibly enable by keeping GPIO18(PIN 12) connected to GND during startup!
+FREQSCAN=N
+#
+# Set to "Y" to scan for near wifi networks with airodump-ng before starting RX
 # Even AIRODUMP=N, scan for wifi networks also can be forcibly enable by insert the USB store(Unplug when prompted) in advance during startup!
 AIRODUMP=N
 #
@@ -197,11 +191,11 @@ OSD=Y
 EXTERNAL_TELEMETRY_SERIALPORT_GROUND=/dev/serial0
 EXTERNAL_TELEMETRY_SERIALPORT_GROUND_BAUDRATE=57600
 #
-# Set to "Y" to enable output of telemetry to serialport on ground Pi (for antenna tracker etc.)
+# Set to "Y" to enable output of telemetry to serialport on ground Pi(for antenna tracker etc.),Or connect the ground station via the serial port.
 ENABLE_SERIAL_TELEMETRY_OUTPUT=N
 #
 # Set this to "/dev/serial0" for Pi onboard serial port or  "/dev/ttyUSB0" for USB-to-serial adapter
-# serialport used for ground Pi telemetry output
+# serialport used for ground Pi telemetry output to ground station or antenna tracker.
 TELEMETRY_OUTPUT_SERIALPORT_GROUND=/dev/serial0
 #
 # Set this to "raw" to forward a raw h264 stream to 2nd display devices (for FPV_VR app), 
@@ -210,12 +204,9 @@ FORWARD_STREAM=raw
 #
 # Dual CAMS(USBCAM/IPCAM+CSI interface camera) using RAWSOCK method and SVPCOM method at same time transmission the tow videos and forward h264 stream.
 # Use GPIO18(PIN 12) to switch dual cameras (two type of item :usbcam / IPCAM / CSI interface camera)
-# UDP port to send video stream to android app or PC program , VIDEO_UDP_PORT for main CAM1,VIDEO_UDP_PORT2 for second CAM2
+# UDP port to send video stream to android app or PC program , VIDEO_UDP_PORT1 for main CAM1,VIDEO_UDP_PORT2 for second CAM2
 VIDEO_UDP_PORT1=5600
 VIDEO_UDP_PORT2=5601
-#
-# Mavlink forwarder to use. Choose "mavlink-routerd" or "cmavnode"
-MAVLINK_FORWARDER=mavlink-routerd
 #
 # Set this to "Y" to enable collection of extra debug logs. If you experience any issues,
 # please reproduce them with debug set to "Y" and plug a USB memory stick afterwards, you
