@@ -1,37 +1,31 @@
 LDFLAGS=-lrt -lpcap -lwiringPi
-CPPFLAGS=-Wall -D _GNU_SOURCE
+CPPFLAGS=-Wall -O2 -march=armv6zk -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -D _GNU_SOURCE
 
-all: rx_rc_telemetry_buf rx rx_rc_telemetry rssirx rssitx tx_rawsock tx_telemetry tx_measure rx_status tracker rssilogger syslogger channelscan check_alive rssi_forward wifiscan wifibackgroundscan sharedmem_init_rx sharedmem_init_tx
+all: rx_rc_telemetry_buf rx rx_rc_telemetry rssirx rssitx tx_rawsock tx_telemetry rx_status tracker rssilogger syslogger channelscan check_alive rssi_forward wifiscan wifibackgroundscan sharedmem_init_rx sharedmem_init_tx
 
 %.o: %.c
 	gcc -c -o $@ $< $(CPPFLAGS)
 
 
-rx: rx.o lib.o radiotap.o fec.o
+rx: rx.o lib.o fec.o
 	gcc -o $@ $^ $(LDFLAGS)
 
-rx_rc_telemetry: rx_rc_telemetry.o lib.o radiotap.o
+rx_rc_telemetry: rx_rc_telemetry.o lib.o radiotap_rc.o
 	gcc -o $@ $^ $(LDFLAGS)
 
-rx_rc_telemetry_buf: rx_rc_telemetry_buf.o lib.o radiotap.o
+rx_rc_telemetry_buf: rx_rc_telemetry_buf.o lib.o
 	gcc -o $@ $^ $(LDFLAGS)
 
-rssirx: rssirx.o lib.o radiotap.o
+rssirx: rssirx.o lib.o radiotap_rc.o
 	gcc -o $@ $^ $(LDFLAGS)
 
-rssitx: rssitx.o lib.o radiotap.o
-	gcc -o $@ $^ $(LDFLAGS)
-
-tx: tx.o lib.o fec.o
+rssitx: rssitx.o lib.o
 	gcc -o $@ $^ $(LDFLAGS)
 
 tx_rawsock: tx_rawsock.o lib.o fec.o
 	gcc -o $@ $^ $(LDFLAGS)
 
-tx_telemetry: tx_telemetry.o lib.o fec.o
-	gcc -o $@ $^ $(LDFLAGS)
-
-tx_measure: tx_measure.o lib.o fec.o
+tx_telemetry: tx_telemetry.o lib.o
 	gcc -o $@ $^ $(LDFLAGS)
 
 rx_status: rx_status.o
@@ -54,7 +48,7 @@ check_alive: check_alive.o
 
 rssi_forward: rssi_forward.o
 	gcc -o $@ $^ $(LDFLAGS)
-
+	
 wifiscan: wifiscan.o radiotap.o
 	gcc -o $@ $^ $(LDFLAGS)
 
@@ -68,4 +62,4 @@ sharedmem_init_tx: sharedmem_init_tx.o lib.o
 	gcc -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm -f rx_rc_telemetry_buf rx rx_rc_telemetry rssirx rssitx tx_rawsock tx_telemetry tx_measure rx_status tracker rssilogger syslogger channelscan check_alive rssi_forward wifiscan wifibackgroundscan sharedmem_init_rx sharedmem_init_tx *~ *.o
+	rm -f rx_rc_telemetry_buf rx rx_rc_telemetry rssirx rssitx tx_rawsock tx_telemetry rx_status tracker rssilogger syslogger channelscan check_alive rssi_forward wifiscan wifibackgroundscan sharedmem_init_rx sharedmem_init_tx *~ *.o

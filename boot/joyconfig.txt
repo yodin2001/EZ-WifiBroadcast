@@ -1,13 +1,12 @@
 // Axis number to channel number mapping. Joystick axis 0-7 maps to R/C channel 1-8.
 // Axis mapping is AETR1234
 
-//
-#define JSSWITCHES	16	/// 8 for 8 axis + 8 switches = 16 channels / 16 for 8 + 16 = 24 channels to send
+//#define JSSWITCHES	8	/// 8 for 8 axis + 8 switches = 16 channels / 16 for 8 + 16 = 24 channels to send
 
 #define ROLL_AXIS      0
 #define PITCH_AXIS     1
-#define YAW_AXIS       3
 #define THROTTLE_AXIS  2
+#define YAW_AXIS       3
 #define AUX1_AXIS      4
 #define AUX2_AXIS      5
 #define AUX3_AXIS      6
@@ -28,6 +27,7 @@
 #define AXIS6_INITIAL 1000
 #define AXIS7_INITIAL 1000
 
-#define UPDATE_NTH_TIME 8 // 3 = 6ms (167Hz), 4 = 8ms (125Hz), 5 = 10ms (100Hz), 6 = 12ms (83Hz), 7 = 14ms (71Hz), 8 = 16ms (63Hz), 9 = 18ms (56Hz), 10 = 20ms (50Hz) 
+// 3 = 6ms (167Hz), 4 = 8ms (125Hz), 5 = 10ms (100Hz), 6 = 12ms (83Hz), 7 = 14ms (71Hz), 8 = 16ms (63Hz), 9 = 18ms (56Hz), 10 = 20ms (50Hz) 
+#define UPDATE_NTH_TIME 10
 #define TRANSMISSIONS 2
-
+

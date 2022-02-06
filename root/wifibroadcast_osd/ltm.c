@@ -130,7 +130,7 @@ int ltm_check(telemetry_data_t *td) {
     td->longitude = (double)((int32_t)ltmread_u32())/10000000;
     uint8_t uav_groundspeedms = ltmread_u8();
     td->speed = (float)(uav_groundspeedms * 3.6f); // convert to kmh
-    td->altitude = (float)((int32_t)ltmread_u32())/100.0f;
+    td->rel_altitude = (float)((int32_t)ltmread_u32())/100.0f;
     uint8_t ltm_satsfix = ltmread_u8();
     td->sats = (ltm_satsfix >> 2) & 0xFF;
     td->fix = ltm_satsfix & 0b00000011;
@@ -139,7 +139,7 @@ int ltm_check(telemetry_data_t *td) {
     printf("LTM G FRAME: ");
     printf("fix:%d  ", td->fix);
     printf("sats:%d  ", td->sats);
-    printf("altitude:%.2f  ", td->altitude);
+    printf("altitude:%.2f  ", td->rel_altitude);
     printf("latitude:%.2f  ", td->latitude);
     printf("longitude:%.2f  ", td->longitude);
     printf("groundspeed:%.2f  ", td->speed);
@@ -164,9 +164,9 @@ int ltm_check(telemetry_data_t *td) {
     td->ltm_homefix = ltmread_u8();
     td->validmsgsrx++;
     printf("LTM O FRAME: ");
-    printf("home_altitude:%.2f  ", td->ltm_home_latitude);
-    printf("home_latitude:%.2f  ", td->ltm_home_longitude);
-    printf("home_longitude:%.2f  ", td->ltm_home_altitude);
+    printf("home_altitude:%.2f  ", td->ltm_home_altitude);
+    printf("home_latitude:%.2f  ", td->ltm_home_latitude);
+    printf("home_longitude:%.2f  ", td->ltm_home_longitude);
     printf("osdon:%d  ", td->ltm_osdon);
     printf("homefix:%d  ", td->ltm_homefix);
 
@@ -176,9 +176,9 @@ int ltm_check(telemetry_data_t *td) {
     //LTM_X_counter 	uint8
     //Disarm Reason 	uint8
     //(unused) 		1byte
-    td->ltm_hdop = (float)((uint16_t)ltmread_u16())/10000.0f;
+    td->hdop = (float)((uint16_t)ltmread_u16())/10000.0f;
     printf("LTM X FRAME:\n");
-    printf("GPS hdop:%.2f  ", td->ltm_hdop);
+    printf("GPS hdop:%.2f  ", td->hdop);
 
   }else if (LTMcmd==LIGHTTELEMETRY_SFRAME)  {
     //Vbat 			uint16, mV

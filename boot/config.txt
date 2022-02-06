@@ -6,7 +6,7 @@
 
 # uncomment this if your display has a black border of unused pixels visible
 # and your display can output without overscan
-# disable_overscan=1
+disable_overscan=1
 
 # uncomment if hdmi display is not detected and composite is being output
 # also set this in conjunction with a specific HDMI mode below if you want
@@ -14,6 +14,7 @@
 # display has not been connected during power-up
 #
 #hdmi_force_hotplug=1
+#hdmi_ignore_hotplug=1
 
 # uncomment to force a specific HDMI mode
 #
@@ -77,7 +78,7 @@
 #config_hdmi_boost=4
 
 # uncomment for composite PAL
-#sdtv_mode=2
+sdtv_mode=2
 
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=off
@@ -122,7 +123,8 @@ usb_mdio=0x7000
 # uncomment for I2C
 #dtparam=i2c1=on
 #dtparam=i2c_arm=on
+dtparam=i2c_vc=on
 #
 # uncomment for SPI
 #dtparam=spi=on
-
+

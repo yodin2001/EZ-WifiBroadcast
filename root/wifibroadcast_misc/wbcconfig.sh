@@ -1,7 +1,6 @@
 #!/bin/bash
 
-#CONFIGFILE=`/root/wifibroadcast_misc/gpio-config.py`
-CONFIGFILE=wifibroadcast-1.txt
+CONFIGFILE=`/root/wifibroadcast_misc/gpio-config.py`
 
 # check if config file exists
 if [ -e "/boot/$CONFIGFILE" ]; then

@@ -4,11 +4,10 @@
 # ============================================================
 #
 # Desired frequency in MHz
-FREQ=2472
-#
-# Set to "Y" on the RX for auto-scanning. Frequency still has to be set on TX!
-# Feature might be buggy or not work at all!
-FREQSCAN=N
+# 2.3Ghz and 2.5-2.7Ghz band only works with Atheros cards. Check your local regulations before transmitting!
+# Frequencies higher than 2512MHz work with Atheros, but with a lot lower transmit power and sensitivity and
+# thus greatly reduced range. Only useable for short-range applications!
+FREQ=2412
 #
 # the following frequencies are supported:
 # 2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452, 2457, 2462, 2467, 2472, 2484 (Ralink and Atheros)
@@ -19,52 +18,44 @@ FREQSCAN=N
 # 5500, 5520, 5540, 5560, 5580, 5600, 5620, 5640, 5660, 5680, 5700
 # 5745, 5765, 5785, 5805, 5825
 #
-# 2.3Ghz and 2.5-2.7Ghz band only works with Atheros cards. Check your local regulations before transmitting!
-# Frequencies higher than 2512MHz work with Atheros, but with a lot lower transmit power and sensitivity and
-# thus greatly reduced range. Only useable for short-range applications!
-#
-#
-# Set this to "single" for single TX wifi card, for dual TX wifi cards set "dual".
-# MAC addresses and frequency for the RX and TX wifi need to be set here when dual TX mode is enabled.
-#
+# Set this to "single" for single TX wifi card, for dual TX wifi cards set "dual" or "auto".
+# MAC addresses and frequency for the RX and TX wifi need to be set here when dual TX mode is enabled as "dual".(The AR9271 cards does not support dual mode) 
+# Only frequency for the TX wifi need to be set here when dual TX mode be is enableda as "auto".("auto" must used two identical CARDS) 
 TXMODE=single
 #
-MAC_RX[0]=00c0ca91ee30
-FREQ_RX[0]=2484
+FREQ_TX[0]=5805
+#MAC_TX[0]=ec3dfd3090ce
+#MAC_RX[0]=a854b22e6532
+#MAC_RX[2]=24050f953378
 #
-MAC_RX[1]=24050f953384
-FREQ_RX[1]=2484
+FREQ_TX[1]=5220
+#MAC_TX[1]=08107a4e1a4c
+#MAC_RX[1]=a854b22e620d
+#MAC_RX[3]=24050f953373
 #
-MAC_RX[2]=24050f953378
-FREQ_RX[2]=2484
+# Set to "Y" on the RX for auto-scanning. Frequency still has to be set on TX!
+# Feature might be buggy or not work at all!
+FREQSCAN=N
 #
-MAC_RX[3]=24050f953373
-FREQ_RX[3]=2484
+# TXPOWER-AIR/GROUND-- for all types of CARDS.
+txpower=54
 #
+# RTL8812au and RTL8814AU support STBC and LDPC set STBC_LDPC=Y enable,
+# RTL8811AU card does not support STBC set STBC_LDPC=N.
+# Ralink series and Atheros cards set STBC_LDPC=N.
+STBC_LDPC=N
 #
-MAC_TX[0]=24050f953378
-FREQ_TX[0]=5745
-#
-MAC_TX[1]=ec086b1c7834
-FREQ_TX[1]=2472
-#
-#
-# Wifi Datarate. Lower settings yield higher range and vice versa.
-# 1=5.5Mbit, 2=11Mbit, 3=12Mbit, 4=19.5Mbit/18Mbit, 5=24Mbit, 6=36Mbit
-DATARATE=4
-#
-#
-# Choose between 30, 40, 48, 59.9
-FPS=48
-#
+# Set to "svpcom" to used SVPCOM method transmission video and Set to "rawsock" to used RAWSOCK method.
+# svpcom more friendly for ipcam and usbcam,rawsock is more friendly to CSI interface cameras
+# rawsock is more friendly to HDMI output monitors, svpcom is more suitable for android/ios phones/tablets or PCs ground stations
+STREAM=rawsock
 #
 # FEC SETTINGS
 # max. blocklength Ralink = 2278, Atheros = 1550
 # min. sensible blocklength ~ 700
-VIDEO_BLOCKS=8
-VIDEO_FECS=4
-VIDEO_BLOCKLENGTH=1024
-#
+VIDEO_BLOCKS=6
+VIDEO_FECS=2
+VIDEO_BLOCKLENGTH=1536
 #
 # Telemetry transmission method:
 # wbc = use wifibroadcast as telemetry up/downlink
@@ -73,73 +64,84 @@ VIDEO_BLOCKLENGTH=1024
 # both on ground and air pi
 TELEMETRY_TRANSMISSION=wbc
 #
+# Set OSD protocol:
+# mavlink -> Mavlink protocol (APM/Pixhawk)
+# ltm -> Light Telemetry (iNav/Cleanflight/Betaflight)
+# frsky -> Older Frsky protocol (Frsky D-series receivers)
+# smartport -> Newer Frsky protocol (Frsky X-series receivers)
+# vot -> Eagletree Vector Open Telemetry
+TELEMETRY_OSD=mavlink
 #
 # Set to "disabled" or "mavlink" for Mavlink (Tower App, Missionplanner, etc.)
 TELEMETRY_UPLINK=mavlink
 #
+# Set the RC and uplink ID, the numeric range (0-99).Only ground units with the same ID.
+# as the air unit can uplink and RC.
+LINK_RC_KEY=3
 #
 # Set this to "mavlink" to enable R/C over wifibroadcast using mavlink protocol or "msp" for MSP protocol
 # Set to "sumd" for Graupner SUMD, "ibus" for Flysky IBUS, "srxl" for Multiplex SRXL / XBUS Mode B. Set to "disabled" to disable
 # See joyconfig.txt for other settings, default settings work for Taranis in USB Joystick mode
-RC=mavlink
+# Set RC=disabled when using Ralink series and RTL8814AU card (that does not support RTS frame).
+# Enable R/C need using RTS frame (only support by ar7010/ar9271/rtl8812au/rtl8811au).
+RC=disabled
 #
+# >>>>>>>>>>[DEDICATED WIFI-CARD UPLINK/RC MAC ADDR.]-- 
+#RC_NIC=112233445566
 #
 #
 # TX settings
 # ============================================================
 #
-# set to "auto" for automatic video bitrate measuring. Set to a fixed value to
-# disable automatic measuring
+# Wifi Datarate. Lower settings yield higher range and vice versa.
+# 1=5.5Mbit, 2=11Mbit, 3=12Mbit, 4=18Mbit, 5=24Mbit, 6=36Mbit
+DATARATE=2
+#
+# Set to "auto" for automatic video bitrate measuring and and multiplying it with VIDEO_BLOCKS/(VIDEO_FECS+VIDEO_BLOCKS).
+# Set to a Less than 100 fixed value for automatic video bitrate measuring and multiplying it with VIDEO_BITRATE.（for example：VIDEO_BITRATE=70）
+# Set to a greater than 100 fixed value to disable automatic measuring.（for example：VIDEO_BITRATE=4096）
 VIDEO_BITRATE=auto
 #
-#
-# if VIDEO_BITRATE above is set to "auto" the videobitrate will be determined
-# by measuring the available bitrate and multiplying it with BITRATE_PERCENT
-# Depending on channel utilization by other wifi networks you may need to set
-# this to a lower value like 60% to avoid a delayed video stream.
-# On free channels you may set this to a higher value like 75% to get a higher
-# bitrate and thus image quality.
-BITRATE_PERCENT=65
-#
-#
-# CTS protection (use in areas with other wifi networks)
-# set to "auto" for automatic detection, "N" to disable, "Y" to enable
-CTS_PROTECTION=auto
-#
-#
 # Camera image settings
-# V1 cam: 1280x720: 30fps, 48fps. 1920x1080: 30fps
-# V2 cam: 1280x720: 30fps, 48fps, 59.9fps. 1640x922: 30fps, 40fps. 1920x1080: 30fps
-WIDTH=1280
-HEIGHT=720
-#
+# V1 cam: 1296x730: 25fps, 30fps, 48fps. 1920x1080: 25fps, 30fps
+# V2 cam: 1280x720: 25fps, 30fps, 59fps, 90fps. 1640x922: 25fps, 30fps, 40fps. 1920x1080: 25fps, 30fps
+WIDTH=1920
+HEIGHT=1080
+FPS=30
 #
 # Lower values mean faster glitch-recovery, but also lower video quality.
 # With fps=48 and keyframerate=5, glitches will stay visible for around 100ms in worst case.
 # You can set this higher or lower according to your needs. Minimum value is 2.
-KEYFRAMERATE=5
-#
+KEYFRAMERATE=8
 #
 # Set additional raspivid parameters here
-EXTRAPARAMS="-cd H264 -n -fl -ih -pf high -if both -ex sports -mm average -awb horizon"
-#
+# CSI Interface common Settings:
+# The "-cs 1" parameter should be added when using the CAM1 connectors of computing module(CM/CM3) 
+#EXTRAPARAMS="-cd H264 -n -fl -ih -pf high -if both -cs 1"
+EXTRAPARAMS="-cd H264 -n -fl -ih -pf high -if both" 
+# 
+# Raspberry camera effects Settings(V1/V2/HQ cam):
+#EFFECT="-ex auto -mm matrix -awb horizon -drc high -vs -sa 20 -sh 25 -co 10 -vf -hf"
+EFFECT="-ex auto -mm spot -awb auto"
 #
 # Serial port and baudrate (19200 is minimum) to use for the R/C connection between air Pi and flight control
 # Set this to "/dev/serial0" for Pi onboard serial port or  "/dev/ttyUSB0" for USB-to-serial adapter
 FC_RC_SERIALPORT=/dev/serial0
 FC_RC_BAUDRATE=57600
 #
-#
 # Serial port and baudrate to use for the telemetry connection between air Pi and flight control
 # Set this to "/dev/serial0" for Pi onboard serial port or  "/dev/ttyUSB0" for USB-to-serial adapter
 FC_TELEMETRY_SERIALPORT=/dev/serial0
 FC_TELEMETRY_BAUDRATE=57600
 #
-#
-# not supported yet, do not change
+# Not supported yet, do not change
 FC_MSP_SERIALPORT=/dev/ttyUSB0
 FC_MSP_BAUDRATE=115200
 #
+# Set additional USBCamera parameters here:(The default value for RUNCAM USBcamera)
+USBCAM="v4l2src device=/dev/video0 ! video/x-h264,width=1280,height=720,framerate=30/1,stream-format=\"byte-stream\""
+# Set additional IPCamera parameters here:(The default value for xm530ai/xm535ai Chip IPC)
+IPCAM="rtspsrc location=\"rtsp://192.168.1.10:554/user=admin&password=&channel=1&stream=0.sdp\" latency=0"
 #
 #
 # RX settings
@@ -151,66 +153,143 @@ AIRODUMP=N
 # Number of seconds wifi scanner is shown. Minimum recommended scanning time is 25 seconds.
 AIRODUMP_SECONDS=25
 #
-#
-# set this to "Y" to enable Wifi Hotspot. Default SSID is "EZ-Wifibroadcast", password is "wifibroadcast".
+# Set this to "Y" to enable Wifi Hotspot. Default SSID is "EZ-Wifibroadcast", no password.
 # See apconfig.txt for configuration. This will forward the received video and telemetry streams to a
 # smartphone/tablet or computer connected to the RX Pi via WiFi.
-WIFI_HOTSPOT=N
+# When useing the PI with built-in wifi(PI Zero W \3B\3A+\3B+...) or useing rtl88xxau/ralink series wifi cards on the air unit
+# then wifihotspot of the ground unit is enabled, the config file auto sync will be carried out in the background. 
+# To use config file auto sync, the ground unit should be complete start first, and then turned on the air unit.
+WIFI_HOTSPOT=Y
 #
-# Set to "internal" to use the interal Pi3 wifi chip or the MAC address of the USB wifi card you want to use
+# Set to "internal" to use the interal Pi wifi chip or the MAC address of the USB wifi card you want to use
 WIFI_HOTSPOT_NIC=internal
 #
-# set this to "Y" to enable Ethernet hotspot. This will forward the received video and telemetry streams
+# Set this to "Y" to enable Ethernet hotspot. This will forward the received video and telemetry streams
 # to another computer or other device connected to the Raspberry via Ethernet
 ETHERNET_HOTSPOT=N
 #
 # Set to "Y" to enable periodic screenshots every 10 seconds
+# Haved disabled periodic screenshots when Pi zero/W,A+,B+ was used as the ground unit,this item is invalid.
 ENABLE_SCREENSHOTS=N
 #
 # Set to "memory" to use RAMdisk for temporary video/screenshot/telemetry storage. This limits recording time
 # to ~12-14 minutes, but is the safe way. If you need longer recording times, use "sdcard", to use the sdcard
 # as the temporary video storage. Keep in mind though, that this might introduce video stutter and/or bad blocks.
 # Use a fast sdcard and TEST CAREFULLY BEFORE USING!
-VIDEO_TMP=memory
+# Haved disabled video storage when Pi zero/W,A+,B+ was used as the ground unit,this item is invalid.
+VIDEO_TMP=disabled
 #
-#
-# set this to "Y" to enable wifibroadcast relay mode. This will forward the received video and telemetry streams
+# Set this to "Y" to enable wifibroadcast relay mode. This will forward the received video and telemetry streams
 # to another wifibroadcast RX. Note! Currently, the RSSI display you see on the RX behind the relay is not the RSSI
 # between aircraft and ground, but between relay and rx on the ground!
 RELAY=N
-RELAY_NIC=112233445566
-RELAY_FREQ=5220
+RELAY_NIC=a854b22e6532
+RELAY_FREQ=2382
 #
-# Set this to "Y" to disable text messages about Display and Wifi card setup etc.
-QUIET=N
+# Set to "Y", OSD display，text messages functions can be enabled, 
+# and USB storage device can be inserted into the ground unit to obtain telemetry analysis after the flight is done.
+# Set this to "N" to disabled OSD,text messages and periodic screenshots,video storage at same time.
+# There is no OSD display when Pi zero/W,A+,B+ was used as the ground unit,this item is invalid.
+OSD=Y
 #
-#
-# serial port settings if using TELEMETRY_TRANSMISSION=external
+# Serial port settings if using TELEMETRY_TRANSMISSION=external
+# Set this to "/dev/serial0" for Pi onboard serial port or  "/dev/ttyUSB0" for USB-to-serial adapter
+# baudrate and serialport used for ground Pi external telemetry.
 EXTERNAL_TELEMETRY_SERIALPORT_GROUND=/dev/serial0
 EXTERNAL_TELEMETRY_SERIALPORT_GROUND_BAUDRATE=57600
 #
-#
-# set to "Y" to enable output of telemetry to serialport on ground Pi (for antenna tracker etc.)
+# Set to "Y" to enable output of telemetry to serialport on ground Pi (for antenna tracker etc.)
 ENABLE_SERIAL_TELEMETRY_OUTPUT=N
-# baudrate and serialport used for ground Pi telemetry output
+#
+# Set this to "/dev/serial0" for Pi onboard serial port or  "/dev/ttyUSB0" for USB-to-serial adapter
+# serialport used for ground Pi telemetry output
 TELEMETRY_OUTPUT_SERIALPORT_GROUND=/dev/serial0
-TELEMETRY_OUTPUT_SERIALPORT_GROUND_BAUDRATE=57600
 #
-#
-# Set this to "raw" to forward a raw h264 stream to 2nd display devices (for FPV_VR app)
-# Set to "rtp" to forward RTP h264 stream (for Tower app and gstreamer etc.)
+# Set this to "raw" to forward a raw h264 stream to 2nd display devices (for FPV_VR app), 
+# Set this to "rtp" to forward RTP h264 stream (for QGC/Tower app and gstreamer etc.).
 FORWARD_STREAM=rtp
 #
-# UDP port to send video stream to, set to 5000 for FPV_VR app or 5600 for Mission Planner
-VIDEO_UDP_PORT=5600
-#
+# Dual CAMS(USBCAM/IPCAM+CSI interface camera) using RAWSOCK method and SVPCOM method at same time transmission the tow videos and forward h264 stream.
+# Use GPIO18(PIN 12) to switch dual cameras (usbcam / IPCAM + CSI interface camera)
+# UDP port to send video stream to android app or PC program , VIDEO_UDP_PORT for main CAM1,VIDEO_UDP_PORT2 for second CAM2
+VIDEO_UDP_PORT1=5600
+VIDEO_UDP_PORT2=5601
 #
 # Mavlink forwarder to use. Choose "mavlink-routerd" or "cmavnode"
 MAVLINK_FORWARDER=mavlink-routerd
-#
 #
 # Set this to "Y" to enable collection of extra debug logs. If you experience any issues,
 # please reproduce them with debug set to "Y" and plug a USB memory stick afterwards, you
 # will find the debug logs on the memory stick.
 DEBUG=N
 #
+#
+# VEYE IMX290/IMX327 camera settings
+# ============================================================
+# IMX327_videoformat value:PAL PAL(50Hz 25FPS),NTSC NTSC(60Hz 30FPS).
+IMX327_videoformat=NTSC
+#
+# IMX327_mirrormode value:0x00 Normal,0x01 Mirror,0x02 V-Flip,0x03 Mirror And V-Flip(180 Degree Rotate) 
+IMX327_mirrormode=0x00
+#
+# IMX327_denoise value:
+# 0x00 2D=OFF;3D=OFF,0x01 2D=OFF;3D=LOW,0x02 2D=OFF;3D=MIDDLE,0x03 2D=OFF;3D=HIGH
+# 0x04 2D=LOW;3D=OFF,0x05 2D=LOW;3D=LOW,0x06 2D=LOW;3D=MIDDLE,0x07 2D=LOW;3D=HIGH
+# 0x08 2D=MIDDLE;3D=OFF,0x09 2D=MIDDLE;3D=LOW,0x0A 2D=MIDDLE;3D=MIDDLE,0x0B 2D=MIDDLE;3D=HIGH
+# 0x0C 2D=HIGH;3D=OFF,0x0D 2D=HIGH;3D=LOW,0x0E 2D=HIGH;3D=MIDDLE,0x0F 2D=HIGH;3D=HIGH 
+IMX327_denoise=0x00
+#
+# IMX327_daynightmode value:0xFF Color Mode,0xFE Black&White Mode,0xFC Trigger Mode 
+IMX327_daynightmode=0xFC
+#
+# IMX327_agc value range:[0x00~0x0F] AGC intensity,agc indicated max gain of AE mode.
+IMX327_agc=0x00
+#
+# IMX327_aespeed1 and IMX327_aespeed2 value range:[0x00-0x64],AE adjust speed,IMX327_aespeed1 is agc speed, IMX327_aespeed2 is shutter speed,Slow to Fast.
+IMX327_aespeed1=0x32
+IMX327_aespeed2=0x32
+#
+# IMX327_contrast value range:[0x00-0xFF],contrast.
+IMX327_contrast=0x80
+#
+# IMX327_saturation value range:[0x00-0x64],saturation.
+IMX327_saturation=0x32
+#
+# IMX327_brightness value range:[0x00-0x64],brightness.
+IMX327_brightness=0x32
+#
+# IMX327_sharppen1 value:0x0 sharppen disable,0x1 sharppen enable.IMX327_sharppen2 value:[0x0-0xA],sharppen strength.
+IMX327_sharppen1=0x1
+IMX327_sharppen2=0xA
+#
+# IMX327_wdrmode value:0x00 Back Light Mode OFF,0x01 Back Light Mode ON, LOW,0x02 Back Light Mode ON, HIGH 0x03 DOL WDR Enable.
+IMX327_wdrmode=0x03
+#
+# IMX327_wdrtargetbr value range:[0x00-0xFF],The overall AE target value in WDR mode.Takes effect in WDR mode.
+IMX327_wdrtargetbr=0x80
+#
+# IMX327_wdrbtargetbr value range:[0x00-0xFF],The AE target value of the bright area in WDR mode.Takes effect in WDR mode.
+IMX327_wdrbtargetbr=0x30
+
+# VEYE IMX307/SC132 camera settings
+# ============================================================
+# IMX307_videoformat value:50 PAL(50Hz 25FPS、50FPS、100FPS),60 NTSC(60Hz 30FPS、60FPS、120FPS).
+IMX307_videoformat=60
+#
+# IMX307_mirrormode value:0 Normal,1 Flip,2 Mirror,3 Mirror And Flip(180 Degree Rotate)
+IMX307_mirrormode=0
+#
+# IMX307_daynightmode value:0x1 Color Mode,0x2 Black&White Mode,0x0 Trigger Mode,0x3 IR-CUT day, Image Black&White mode,0x4 IR-CUT night, Image Color mode
+IMX307_daynightmode=0x1
+#
+# IMX307_contrast value range:[0,100],contrast.
+IMX307_contrast=50
+#
+# IMX307_saturation value range:[0,100],saturation.
+IMX307_saturation=50
+#
+# IMX307_hue value range:[0,100],hue.
+IMX307_hue=50
+#
+# IMX307_aetarget value range:[0,255],The target brightnes.
+IMX307_aetarget=127

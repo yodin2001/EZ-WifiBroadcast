@@ -27,7 +27,7 @@
 #define JOYSTICK_N 0
 #define JOY_DEV "/sys/class/input/js0"
 
-#ifdef JSSWITCHES  // 1 or 2 byte more for channels 9 - 16/24 as switches
+#ifdef JSSWITCHES  // 1 byte more for channels 9 - 16 as switches
 
 	static uint16_t *rcData = NULL;
 
@@ -62,6 +62,8 @@ char *ifname = NULL;
 int flagHelp = 0;
 int sock = 0;
 int socks[5];
+int type[5];
+int num_interfaces = 0;
 
 struct framedata_s {
     // 88 bits of data (11 bits per channel * 8 channels) = 11 bytes
@@ -83,6 +85,71 @@ struct framedata_s {
     uint8_t fc2;
     uint8_t dur1;
     uint8_t dur2;
+	
+    uint8_t mac1_1; // Port
+	
+    uint8_t seqnumber;
+
+    unsigned int chan1 : 11;
+    unsigned int chan2 : 11;
+    unsigned int chan3 : 11;
+    unsigned int chan4 : 11;
+    unsigned int chan5 : 11;
+    unsigned int chan6 : 11;
+    unsigned int chan7 : 11;
+    unsigned int chan8 : 11;
+#ifdef JSSWITCHES
+    unsigned int switches : JSSWITCHES; // 8 or 16 bits for rc channels 9 - 16/24  as switches
+#endif
+} __attribute__ ((__packed__));
+
+struct framedata_s framedatas;
+
+struct framedata_n {
+    // 88 bits of data (11 bits per channel * 8 channels) = 11 bytes
+    uint8_t rt1;
+    uint8_t rt2;
+    uint8_t rt3;
+    uint8_t rt4;
+    uint8_t rt5;
+    uint8_t rt6;
+    uint8_t rt7;
+    uint8_t rt8;
+
+    uint8_t rt9;
+    uint8_t rt10;
+    uint8_t rt11;
+    uint8_t rt12;
+	uint8_t rt13;
+
+    uint8_t fc1;
+    uint8_t fc2;
+    uint8_t dur1;
+    uint8_t dur2;
+	
+	uint8_t mac1_1; // Port
+    uint8_t mac1_2;
+    uint8_t mac1_3;
+    uint8_t mac1_4;
+    uint8_t mac1_5;
+    uint8_t mac1_6;
+
+    uint8_t mac2_1;
+    uint8_t mac2_2;
+    uint8_t mac2_3;
+    uint8_t mac2_4;
+    uint8_t mac2_5;
+    uint8_t mac2_6;
+
+    uint8_t mac3_1;
+    uint8_t mac3_2;
+    uint8_t mac3_3;
+    uint8_t mac3_4;
+    uint8_t mac3_5;
+    uint8_t mac3_6;
+
+    uint8_t ieeeseq1;
+    uint8_t ieeeseq2;
 
     uint8_t seqnumber;
 
@@ -99,7 +166,7 @@ struct framedata_s {
 #endif
 } __attribute__ ((__packed__));
 
-struct framedata_s framedata;
+struct framedata_n framedatan;
 
 
 void usage(void)
@@ -107,10 +174,12 @@ void usage(void)
     printf(
         "rctx by Rodizio. Based on JS2Serial by Oliver Mueller and wbc all-in-one tx by Anemostec. GPL2\n"
         "\n"
-        "Usage: rctx <interfaces>\n"
-        "\n"
+        "Usage: rctx [options] <interfaces>\n"
+        "Options:\n"
+		"-p <port>   Port. Default = 3\n"
+		"-d <stbc>   stbc ldpc enable (Realtek only)\n"
         "Example:\n"
-        "  rctx wlan0\n"
+        "  rctx -p 3 -d 0 wlan0\n"
         "\n");
     exit(1);
 }
@@ -223,8 +292,9 @@ static int eventloop_joystick (void) {
 			return 4;
 			break;
 #endif
-			case SDL_QUIT:
+		case SDL_QUIT:
 			return 0;
+			break;
     }
     usleep(100);
   }
@@ -235,17 +305,32 @@ void sendRC(unsigned char seqno, telemetry_data_t *td) {
     uint8_t i;
     uint8_t z;
 
-    framedata.seqnumber = seqno;
-    framedata.chan1 = rcData[0];
-    framedata.chan2 = rcData[1];
-    framedata.chan3 = rcData[2];
-    framedata.chan4 = rcData[3];
-    framedata.chan5 = rcData[4];
-    framedata.chan6 = rcData[5];
-    framedata.chan7 = rcData[6];
-    framedata.chan8 = rcData[7];
+    framedatas.seqnumber = seqno;
+    framedatas.chan1 = rcData[0];
+    framedatas.chan2 = rcData[1];
+    framedatas.chan3 = rcData[2];
+    framedatas.chan4 = rcData[3];
+    framedatas.chan5 = rcData[4];
+    framedatas.chan6 = rcData[5];
+    framedatas.chan7 = rcData[6];
+    framedatas.chan8 = rcData[7];
 #ifdef JSSWITCHES
-	framedata.switches = rcData[8];	/// channels 9 - 24 as switches
+	framedatas.switches = rcData[8];	/// channels 9 - 24 as switches
+//	printf ("rcdata0:%x\t",rcData[8]);
+#endif
+//  printf ("rcdata0:%d\n",rcData[0]);
+
+    framedatan.seqnumber = seqno;
+    framedatan.chan1 = rcData[0];
+    framedatan.chan2 = rcData[1];
+    framedatan.chan3 = rcData[2];
+    framedatan.chan4 = rcData[3];
+    framedatan.chan5 = rcData[4];
+    framedatan.chan6 = rcData[5];
+    framedatan.chan7 = rcData[6];
+    framedatan.chan8 = rcData[7];
+#ifdef JSSWITCHES
+	framedatan.switches = rcData[8];	/// channels 9 - 24 as switches
 //	printf ("rcdata0:%x\t",rcData[8]);
 #endif
 //  printf ("rcdata0:%d\n",rcData[0]);
@@ -253,19 +338,24 @@ void sendRC(unsigned char seqno, telemetry_data_t *td) {
     int best_adapter = 0;
     if(td->rx_status != NULL) {
 	int j = 0;
-	int ac = td->rx_status->wifi_adapter_cnt;
 	int best_dbm = -1000;
 
-	// find out which card has best signal and ignore ralink (type=1) ones
-	for(j=0; j<ac; ++j) {
-	    if ((best_dbm < td->rx_status->adapter[j].current_signal_dbm)&&(td->rx_status->adapter[j].type == 0)) {
+        if (num_interfaces > 1) {
+// find out which card has best signal and ignore ralink (type[j]== 0) ones
+	    for(j=0; j<num_interfaces; ++j) {
+	    if ((best_dbm < td->rx_status->adapter[j].current_signal_dbm)&&(type[j] != 0)) {
 		best_dbm = td->rx_status->adapter[j].current_signal_dbm;
 		best_adapter = j;
 		//printf ("best_adapter: :%d\n",best_adapter);
 	    }
-	}
+	    }
+	    }
+	    if (type[best_adapter] == 2) {
 //	printf ("bestadapter: %d (%d dbm)\n",best_adapter, best_dbm);
-	if (write(socks[best_adapter], &framedata, sizeof(framedata)) < 0 ) fprintf(stderr, "!");	/// framedata_s = 28 or 29 bytes
+	    if (write(socks[best_adapter], &framedatan, sizeof(framedatan)) < 0 ) fprintf(stderr, "!");	/// framedata_n = 28 or 29 bytes
+	    } else {
+	    if (write(socks[best_adapter], &framedatas, sizeof(framedatas)) < 0 ) fprintf(stderr, "!");	/// framedata_s = 28 or 29 bytes
+	    }
     } else {
 	printf ("ERROR: Could not open rx status memory!");
     }
@@ -314,6 +404,11 @@ int main (int argc, char *argv[]) {
     int joy_connected = 0;
     int joy = 1;
     int update_nth_time = 0;
+	int param_port = 3;
+	int stbc_ldpc = 0;
+	
+	char line[100], path[100];
+    FILE* procfile;
 
     while (1) {
 	int nOptionIndex;
@@ -321,9 +416,7 @@ int main (int argc, char *argv[]) {
 	    { "help", no_argument, &flagHelp, 1 },
 	    { 0, 0, 0, 0 }
 	};
-	int c = getopt_long(argc, argv, "h:",
-	    optiona, &nOptionIndex);
-
+	int c = getopt_long(argc, argv, "h:p:d:", optiona, &nOptionIndex);
 	if (c == -1)
 	    break;
 	switch (c) {
@@ -332,45 +425,128 @@ int main (int argc, char *argv[]) {
 	case 'h': // help
 	    usage();
 	    break;
+	case 'p': // port
+		param_port = atoi(optarg);
+		break;
+    case 'd': // stbc ldpc enable
+		stbc_ldpc = atoi(optarg);
+    	break;
 	default:
 	    fprintf(stderr, "unknown switch %c\n", c);
 	    usage();
 	}
     }
 
-    if (optind >= argc) {
-	usage();
-    }
+    if (optind >= argc) usage();
+	
+	int x = optind;
 
-    int x = optind;
-    int num_interfaces = 0;
-    while(x < argc && num_interfaces < 8) {
+    while(x < argc && num_interfaces < 5) {
+    	snprintf(path, 45, "/sys/class/net/%s/device/uevent", argv[x]);
+        procfile = fopen(path, "r");
+        if(!procfile) {fprintf(stderr,"ERROR: opening %s failed!\n", path); return 0;}
+        fgets(line, 100, procfile); // read the first line
+        fgets(line, 100, procfile); // read the 2nd line
+	if (strncmp(line, "DRIVER=ath9k_htc", 16) == 0 || 
+        (
+         strncmp(line, "DRIVER=8812au",    13) == 0 || 
+         strncmp(line, "DRIVER=8814au",    13) == 0 || 
+         strncmp(line, "DRIVER=rtl8812au", 16) == 0 || 
+         strncmp(line, "DRIVER=rtl8814au", 16) == 0 || 
+         strncmp(line, "DRIVER=rtl88xxau", 16) == 0
+        )) {   
+		if (strncmp(line, "DRIVER=ath9k_htc", 16) == 0) {
+			  fprintf(stderr, "rctx: Atheros card detected\n");
+	          type[num_interfaces] = 1;
+		} else {
+			  fprintf(stderr, "rctx: Realtek card detected\n");
+			  type[num_interfaces] = 2;
+		}
+    } else { // ralink or mediatek
+              fprintf(stderr, "rctx: Ralink card detected\n");
+	          type[num_interfaces] = 0;
+    }
 	socks[num_interfaces] = open_sock(argv[x]);
-	++num_interfaces;
-	++x;
-	usleep(20000); // wait a bit between configuring interfaces to reduce Atheros and Pi USB flakiness
+        ++num_interfaces;
+	    ++x;
+        fclose(procfile);
+    usleep(20000); // wait a bit between configuring interfaces to reduce Atheros and Pi USB flakiness
     }
 
-	framedata.rt1 = 0; // <-- radiotap version
-	framedata.rt2 = 0; // <-- radiotap version
+	framedatan.rt1 = 0; // <-- radiotap version      (0x00)
+	framedatan.rt2 = 0; // <-- radiotap version      (0x00)
 
-	framedata.rt3 = 12; // <- radiotap header length
-	framedata.rt4 = 0; // <- radiotap header length
+	framedatan.rt3 = 13; // <- radiotap header length(0x0d)
+	framedatan.rt4 = 0; // <- radiotap header length (0x00)
 
-	framedata.rt5 = 4; // <-- radiotap present flags
-	framedata.rt6 = 128; // <-- radiotap present flags
-	framedata.rt7 = 0; // <-- radiotap present flags
-	framedata.rt8 = 0; // <-- radiotap present flags
+	framedatan.rt5 = 0; // <-- radiotap present flags(0x00)
+	framedatan.rt6 = 128; // <-- RADIOTAP_TX_FLAGS + (0x80)
+	framedatan.rt7 = 8; // <--  RADIOTAP_MCS         (0x08)
+	framedatan.rt8 = 0; //                           (0x00)
 
-	framedata.rt9 = 24; // <-- radiotap rate
-	framedata.rt10 = 0; // <-- radiotap stuff
-	framedata.rt11 = 0; // <-- radiotap stuff
-	framedata.rt12 = 0; // <-- radiotap stuff
+	framedatan.rt9 = 8; // <-- RADIOTAP_F_TX_NOACK   (0x08)
+	framedatan.rt10 = 0; //                          (0x00)
+	framedatan.rt11 = 55; // <-- bitmap              (0x37)
+	if (stbc_ldpc == 1) {
+	    framedatan.rt12 = 48; // <-- flags               (0x30)
+	} else {
+		framedatan.rt12 = 0; // <-- flags               (0x00)
+	}	
+	framedatan.rt13 = 0; // <-- mcs_index            (0x00)
 
-	framedata.fc1 = 180; // <-- frame control field (0xb4)
-	framedata.fc2 = 191; // <-- frame control field (0xbf)
-	framedata.dur1 = 0; // <-- duration
-	framedata.dur2 = 0; // <-- duration
+	framedatan.fc1 = 180; // <-- frame control field (0xb4)
+	framedatan.fc2 = 1; // <-- frame control field (0x01)
+	framedatan.dur1 = 0; // <-- duration
+	framedatan.dur2 = 0; // <-- duration
+	
+	framedatan.mac1_1 = (param_port * 2) + 1;
+	framedatan.mac1_2 = 0;
+	framedatan.mac1_3 = 0;
+	framedatan.mac1_4 = 0;
+	framedatan.mac1_5 = 0;
+	framedatan.mac1_6 = 0;
+
+	framedatan.mac2_1 = 0;
+	framedatan.mac2_2 = 0;
+	framedatan.mac2_3 = 0;
+	framedatan.mac2_4 = 0;
+	framedatan.mac2_5 = 0;
+	framedatan.mac2_6 = 0;
+
+	framedatan.mac3_1 = 0;
+	framedatan.mac3_2 = 0;
+	framedatan.mac3_3 = 0;
+	framedatan.mac3_4 = 0;
+	framedatan.mac3_5 = 0;
+	framedatan.mac3_6 = 0;
+
+	framedatan.ieeeseq1 = 0;
+	framedatan.ieeeseq2 = 0;
+	
+	
+	framedatas.rt1 = 0; // <-- radiotap version
+	framedatas.rt2 = 0; // <-- radiotap version
+
+	framedatas.rt3 = 12; // <- radiotap header length
+	framedatas.rt4 = 0; // <- radiotap header length
+
+	framedatas.rt5 = 4; // <-- radiotap present flags
+	framedatas.rt6 = 128; // <-- radiotap present flags
+	framedatas.rt7 = 0; // <-- radiotap present flags
+	framedatas.rt8 = 0; // <-- radiotap present flags
+
+	framedatas.rt9 = 24; // <-- radiotap rate
+	framedatas.rt10 = 0; // <-- radiotap stuff
+	framedatas.rt11 = 0; // <-- radiotap stuff
+	framedatas.rt12 = 0; // <-- radiotap stuff
+
+	framedatas.fc1 = 180; // <-- frame control field (0xb4)
+	framedatas.fc2 = 191; // <-- frame control field (0xbf)
+	framedatas.dur1 = 0; // <-- duration
+	framedatas.dur2 = 0; // <-- duration
+	
+	framedatas.mac1_1 = (param_port * 2) + 1;
+	
 
 	fprintf(stderr, "Waiting for joystick ...");
 	while (joy) {

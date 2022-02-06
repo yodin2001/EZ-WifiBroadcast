@@ -1,27 +1,38 @@
-/* TELEMETRY PROTOCOL */
-/* ------------------------------------------------------------*/
-/* MAVLINK -> Mavlink protocol (APM/Pixhawk)
-/* LTM -> Light Telemetry (iNav/Cleanflight/Betaflight)
-/* FRSKY -> Older Frsky protocol (Frsky D-series receivers)
-/* SMARTPORT -> Newer Frsky protocol (Frsky X-series receivers)
-/* ------------------------------------------------------------*/
-#define MAVLINK
-
-
-/* MISC SETTINGS */
+﻿/* MISC SETTINGS */
 /* --------------*/
-#define IMPERIAL false // set to true for imperial units, false for metric
-#define COPTER true // set to true for copter, false for plane
 
+#define IMPERIAL false
+#define COPTER  false
+
+// Only on the OSD, the digits to the left of the decimal point are replaced with "00"
+#define HIDE_LATLON false
+
+//reverse where msl altitude and relative altitudes are displayed
+//false= relative alt on altitude ladder AND mean sea level altitude on small number display
+//true= mean sea level altitude ladder AND relative altitude on small number display
+#define REVERSE_ALTITUDES false
+
+// RELATIVE ALTITUDE MAVLINK SOURCE. Default is "global_rel" 
+// "global_rel=1"     this is the fused altitude from all sensors and most accurate
+// "gps_raw=2"        WGS84 altitude derived from gps module. Ghetto station uses this as REL altitude
+// "vfr_hud=3"        Normally this is an MSL altitude
+// Set your selection below
+#define REL_ALT_SOURCE 1
+
+//SET CHINESE AS A LANGUAGE OPTION
+#define CHINESE false
 
 /* DISPLAY */
 /* --------*/
-#define COLOR 255,255,255,0.3 // Fill color. First three numbers RGB color, last number opacity. 1.0 = fully visible, 0.0 = fully opaque
-#define OUTLINECOLOR 0,0,0,0.7 // Outline color. First three numbers RGB color, last number opacity. 1.0 = fully visible, 0.0 = fully opaque
-#define OUTLINEWIDTH 1 // Outline width, default is 1, useable range from 1-3. Set to 0 to disable outline
-#define FONT "Archivo-Bold.ttf" // Font to use, case-sensitive!
-#define GLOBAL_SCALE 1.2 // Global scale factor, 1.2 is default, useable range is from about 0.5 to 2
-
+#define COLOR 0,200,0,0.7 // Fill color. First three numbers RGB color, last number opacity. 1.0 = fully visible, 0.0 = fully opaque
+#define OUTLINECOLOR 0,0,0,0.5 // Outline color. First three numbers RGB color, last number opacity. 1.0 = fully visible, 0.0 = fully opaque
+#define OUTLINEWIDTH 1.2 // Outline width, default is 1, useable range from 1-3. Set to 0 to disable outline
+#define FONT "Aldrich-Regular.ttf" // Font to use, case-sensitive!
+#define GLOBAL_SCALE 1 // Global scale factor, 1.2 is default, useable range is from about 0.5 to 2
+#define COLOR_WARNING 255,20,20,0.9
+#define COLOR_CAUTION 245,222,20,0.8
+#define COLOR_GOOD 43,240,36,0.7
+#define COLOR_DECLUTTER 255,255,255,0.0 // fully opaque
 
 /* OSD elements positions, sizes and options */
 /* ------------------------------------------*/
@@ -29,132 +40,305 @@
 /* POS_Y - from bottom to top (0-100)
 /* SCALE - scale factor
 /* ------------------------------------------*/
+//-------------------------------------------------------------------------------------------------------------------nwo
+
+#define RAPORT
+#define RAPORT_POS_X 50
+#define RAPORT_POS_Y 40
+#define RAPORT_SCALE 0.8
+
+#define BT_VOLT
+#define BT_VOLT_POS_X 4
+#define BT_VOLT_POS_Y 26
+#define BT_VOLT_SCALE 0.8
+
+#define CELL_V
+#define CELL_V_cells 4
+#define CELL_V_warn 3.4
+#define CELL_V_crit 3.1
+#define CELL_V_POS_X 4
+#define CELL_V_POS_Y 20
+#define CELL_V_SCALE 0.8
+
+#define BT_AMPER
+#define BT_AMPER_POS_X 4
+#define BT_AMPER_POS_Y 14
+#define BT_AMPER_SCALE 0.8
+
+#define EFFIC
+#define EFFIC_POS_X 4
+#define EFFIC_POS_Y 8
+#define EFFIC_SCALE 0.8
+
+#define TOTAL_AMPS true // set to false if you dont want to see this
+#define TOTAL_AMPS_POS_X 4
+#define TOTAL_AMPS_POS_Y 2
+#define TOTAL_AMPS_SCALE 0.8
+
+#define ARMSTAT
+#define ARMSTAT_POS_X 0
+#define ARMSTAT_POS_Y 75
+#define ARMSTAT_SCALE 1.2
+
+#define VARIO
+#define VARIO_POS_X 95.5
+#define VARIO_POS_Y 50
+#define VARIO_SCALE 0.8
+
+#define SIDE_THR
+#define SIDE_THR_POS_X 0
+#define SIDE_THR_POS_Y 50
+#define SIDE_THR_SCALE 0.8
+
+
+//-------------------------------------------------------------------------------------------------------------------nwo
+#define RSSI//.............RC_RSSI
+#define RSSI_POS_X 82
+#define RSSI_POS_Y 94
+#define RSSI_SCALE 1
+#define RSSI_WARN -40 // negative number
+#define RSSI_CAUTION -25
+#define RSSI_DECLUTTER 0 //1 for yes, 0 for no
+
 #define DOWNLINK_RSSI
-#define DOWNLINK_RSSI_POS_X 13
-#define DOWNLINK_RSSI_POS_Y 89
-#define DOWNLINK_RSSI_SCALE 1.2
+#define DOWNLINK_RSSI_POS_X 7
+#define DOWNLINK_RSSI_POS_Y 96
+#define DOWNLINK_RSSI_SCALE 1
 #define DOWNLINK_RSSI_FEC_BAR true // set to true to draw FEC bar display
 
 #define DOWNLINK_RSSI_DETAILED
-#define DOWNLINK_RSSI_DETAILED_POS_X 9
-#define DOWNLINK_RSSI_DETAILED_POS_Y 78
+#define DOWNLINK_RSSI_DETAILED_POS_X 6
+#define DOWNLINK_RSSI_DETAILED_POS_Y 90
 #define DOWNLINK_RSSI_DETAILED_SCALE 0.75
 
-#define UPLINK_RSSI
-#define UPLINK_RSSI_POS_X 92
-#define UPLINK_RSSI_POS_Y 89
-#define UPLINK_RSSI_SCALE 1.1
+#define UPLINK_RSSI     //网卡上行
+#define UPLINK_RSSI_POS_X 25
+#define UPLINK_RSSI_POS_Y 96
+#define UPLINK_RSSI_SCALE 1
 
-//#define RSSI
-#define RSSI_POS_X 32
-#define RSSI_POS_Y 89
-#define RSSI_SCALE 1
 
-#define KBITRATE
-#define KBITRATE_POS_X 73
-#define KBITRATE_POS_Y 91
-#define KBITRATE_SCALE 0.8
+#define KBITRATE     //视频码率
+#define KBITRATE_POS_X 96
+#define KBITRATE_POS_Y 70
+#define KBITRATE_SCALE 0.7
+#define KBITRATE_WARN 98 //percent approaching 100 maxbitrate
+#define KBITRATE_CAUTION 50
+#define KBITRATE_DECLUTTER 0 //1 for yes, 0 for no
 
-#define SYS
-#define SYS_POS_X 91
-#define SYS_POS_Y 78
+#define SYS     //天空地面CPU温度
+#define SYS_POS_X 95
+#define SYS_POS_Y 77
 #define SYS_SCALE 0.7
+#define CPU_LOAD_WARN 60 //percent cpu load
+#define CPU_LOAD_CAUTION 50
+#define CPU_TEMP_WARN 70 //degrees celsius
+#define CPU_TEMP_CAUTION 60
+#define SYS_DECLUTTER 0 //1 for yes, 0 for no
 
 #define HOME_ARROW
 #define HOME_ARROW_POS_X 50
-#define HOME_ARROW_POS_Y 78
+#define HOME_ARROW_POS_Y 10
 #define HOME_ARROW_SCALE 1
 #define HOME_ARROW_USECOG false // use course over ground (from gps) instead of magnetometer
-#define HOME_ARROW_INVERT false // set to true if arrow points in the opposite direction
+#define HOME_ARROW_INVERT true // set to true if arrow points in the opposite direction
 
-#define BATT_STATUS
-#define BATT_STATUS_POS_X 19
-#define BATT_STATUS_POS_Y 6
+//#define BATT_STATUS
+#define BATT_STATUS_POS_X 9
+#define BATT_STATUS_POS_Y 12
 #define BATT_STATUS_SCALE 1
 #define BATT_STATUS_CURRENT true // set to true to draw current (ampere) (mavlink only)
 
-#define BATT_GAUGE
-#define BATT_GAUGE_POS_X 3
-#define BATT_GAUGE_POS_Y 6
+//#define BATT_GAUGE
+#define BATT_GAUGE_POS_X 5
+#define BATT_GAUGE_POS_Y 5
 #define BATT_GAUGE_SCALE 1
-#define CELLS 3 // set to number of cells used
+#define CELLS 4 // set to number of cells used
 #define CELL_MAX 4.20 // maximum cell voltage
 #define CELL_MIN 3.20 // minimum cell voltage
 #define CELL_WARNING1 3.50 // warning level 1 -> orange, low
 #define CELL_WARNING2 3.40 // warning level 2 -> red, critical
 
 #define COMPASS
-#define COMPASS_POS_Y 87
+#define COMPASS_POS_Y 93
 #define COMPASS_SCALE 1
 #define COMPASS_USECOG false // set to true to use course over ground (from gps) instead of magnetometer
+#define COMPASS_INAV false // set to true to fix Inav vs Ardupilot digit difference. Otherwise false
+#define COMPASS_COMPLEX true
+#define COMPASS_LEN 70       
+#define COMPASS_BEARING true 
 
 #define ALTLADDER
-#define ALTLADDER_POS_X 73
-#define ALTLADDER_SCALE 1.2
-#define ALTLADDER_USEBAROALT false // set to true to use barometer altitude instead of gps altitude
+#define ALTLADDER_POS_X 85
+#define ALTLADDER_SCALE 1.1
+#define ALTLADDER_WARN 5 // height above launch to warn (only for relative alt)
+#define ALTLADDER_CAUTION 10 // height above launch to caution (only for relative alt)
+#define ALTLADDER_VSI_TIME 20 //(sensitivity)number of seconds vsi predicts future alt
+
 
 #define SPEEDLADDER
-#define SPEEDLADDER_POS_X 27
-#define SPEEDLADDER_SCALE 1.2
-#define SPEEDLADDER_USEAIRSPEED false // set to true to use GPS speed instead of airspeed
+#define SPEEDLADDER_POS_X 14
+#define SPEEDLADDER_SCALE 1.1
+#define SPEEDLADDER_USEAIRSPEED false //set to true to use GPS speed instead of airspeed 
+#define SPEEDLADDER_TREND_TIME 20 //(sensitivity)number of seconds speed trend predicts future speed
+#define SPEEDLADDER_LOW_LIMIT 0 // where the low speed que begins
+
+#define YAWDISPLAY
+#define YAWDISPLAY_POS_X 50
+#define YAWDISPLAY_POS_Y 88
+#define YAWDISPLAY_SCALE 1
+#define YAWDISPLAY_TREND_TIME 20 //(sensitivity)number of seconds speed trend predicts future yaw
 
 #define AHI
-#define AHI_SCALE 1.2
+#define AHI_SCALE 0.8
 #define AHI_LADDER false // set to true to draw ladders above and below the center horizon line
-#define AHI_INVERT_ROLL -1 // default -1, set to 1 if roll moves in the wrong direction
+#define AHI_INVERT_ROLL 1 // default -1, set to 1 if roll moves in the wrong direction
 #define AHI_INVERT_PITCH 1 // default -1, set to 1 if pitch moves in the wrong direction
-#define AHI_SWAP_ROLL_AND_PITCH true // set to true to swap roll and pitch (Frsky and Smartport only)
+#define AHI_SWAP_ROLL_AND_PITCH false // set to true to swap roll and pitch (Frsky and Smartport only)
+#define AHI_ROLLANGLE true //display bank angle
+#define AHI_ROLLANGLE_INVERT -1 //reverse bank angle display with 1 or -1
 
-#define POSITION
-#define POSITION_POS_X 76
-#define POSITION_POS_Y 6
-#define POSITION_SCALE 0.8
+#define POSITION      //GPS经纬度
+#define POSITION_POS_X 99
+#define POSITION_POS_Y 90
+#define POSITION_SCALE 0.7
 
-#define SAT
-#define SAT_POS_X 6
-#define SAT_POS_Y 12
+#define SAT    //  GPS数量
+#define SAT_POS_X 89	
+#define SAT_POS_Y 96
 #define SAT_SCALE 0.8
+#define SAT_HDOP_WARN 2 // meters accuracy (higher is worse)
+#define SAT_HDOP_CAUTION 1 
+#define SAT_DECLUTTER 0 //1 for yes, 0 for no
+       
+#define BAROALT                 //气压高度（已关闭显示，需要的自行打开）
+#define BAROALT_POS_X 95
+#define BAROALT_POS_Y 18
+#define BAROALT_SCALE 0.6
 
 #define DISTANCE
-#define DISTANCE_POS_X 95
-#define DISTANCE_POS_Y 6
+#define DISTANCE_POS_X 55
+#define DISTANCE_POS_Y 1
 #define DISTANCE_SCALE 1
 
 #define FLIGHTMODE
-#define FLIGHTMODE_POS_X 42
-#define FLIGHTMODE_POS_Y 6
+#define FLIGHTMODE_POS_X 25
+#define FLIGHTMODE_POS_Y 1
 #define FLIGHTMODE_SCALE 1
 
-#define CLIMB
-#define CLIMB_POS_X 93
-#define CLIMB_POS_Y 26
-#define CLIMB_SCALE 0.8
+//#define CLIMB
+#define CLIMB_POS_X 92
+#define CLIMB_POS_Y 33
+#define CLIMB_SCALE 0.6
 
-//#define AIRSPEED
-#define AIRSPEED_POS_X 93
-#define AIRSPEED_POS_Y 21
-#define AIRSPEED_SCALE 0.8
-
-#define BAROALT
-#define BAROALT_POS_X 93
-#define BAROALT_POS_Y 16
-#define BAROALT_SCALE 0.8
+//#define MSLALT
+#define MSLALT_POS_X 92
+#define MSLALT_POS_Y 30
+#define MSLALT_SCALE 0.6
 
 //#define COURSE_OVER_GROUND
-#define COURSE_OVER_GROUND_POS_X 92
-#define COURSE_OVER_GROUND_POS_Y 65
+#define COURSE_OVER_GROUND_POS_X 94
+#define COURSE_OVER_GROUND_POS_Y 77
 #define COURSE_OVER_GROUND_SCALE 0.8
 
-#define GPSSPEED
-#define GPSSPEED_POS_X 93
-#define GPSSPEED_POS_Y 60
+//#define GPSSPEED
+#define GPSSPEED_POS_X 8
+#define GPSSPEED_POS_Y 58
 #define GPSSPEED_SCALE 0.8
 
-//#define GPSALT
-#define GPSALT_POS_X 92
-#define GPSALT_POS_Y 55
-#define GPSALT_SCALE 0.8
+#define AIRSPEED
+#define AIRSPEED_POS_X 8
+#define AIRSPEED_POS_Y 34
+#define AIRSPEED_SCALE 0.8
 
 #define WARNING_POS_X 50
 #define WARNING_POS_Y 25
 
+
+#define TOTAL_DIST true // set to false if you dont want to see this
+#define TOTAL_DIST_POS_X 90	
+#define TOTAL_DIST_POS_Y 1
+#define TOTAL_DIST_SCALE 1
+
+#define TOTAL_TIME true // set to false if you dont want to see this
+#define TOTAL_TIME_POS_X 96
+#define TOTAL_TIME_POS_Y 7
+#define TOTAL_TIME_SCALE 1
+#define TOTAL_TIME_SCALE 1
+
+
+#define HOME_RADAR             //雷达
+#define HOME_RADAR_POS_X 60    //ÕâÀïµÄPOS_X²»±íÊ¾ºáÏòÎ»ÖÃ£¬±íÊ¾À×´ïÍ¼ºáÏòµÄ³¤¶È£¬ÆÁÄ»×Ü³¤¶ÈÎª100
+#define HOME_RADAR_POS_Y 65    //ÕâÀïµÄPOS_Y²»±íÊ¾×ÝÏòÎ»ÖÃ£¬±íÊ¾À×´ïÍ¼×ÝÏòµÄ³¤¶È£¬ÆÁÄ»×Ü¿í¶ÈÎª100
+#define HOME_RADAR_SCALE 0.8
+#define HOME_RADAR_USECOG true // ÄãµÄGPSÃ»ÓÐ´ÅÂÞÅÌ£¬ÉèÖÃÎªtrue£¬Ê¹ÓÃGPS¼ÆËãµÄ»úÍ·³¯Ïò£¬Ò»°ã¹Ì¶¨ÒíÓÃ¡£ÄãµÄGPSÓÐ´ÅÂÞÅÌ£¬ÉèÖÃÎªfalse£¬Ê¹ÓÃGPS´ÅÂÞÅÌµÄ³¯Ïò£¬Ò»°ã¶àÖáÓÃ£¬LTMÒ²ÉèÖÃÎªfalse¡£
+
+#define RPA            //Roll Pitch £¨ÐÂÔöÏîÄ¿£©ºá¹öºÍ¸©Ñö½Ç¶È,Èç¹û×ËÌ¬ÒÇµÄÓÒ²à¿ªÆôÁËºá¹ö½Ç¶È£¬½¨Òé¹Ø±Õ´ËÏîÏÔÊ¾
+#define RPA_POS_X 98
+#define RPA_POS_Y 15
+#define RPA_SCALE 0.7
+#define RPA_INVERT_ROLL -1   // Ä¬ÈÏ -1, Èç¹ûÄãµÄºá¹ö½Ç¶È·´ÁË¾ÍÉèÖÃÎª1 
+#define RPA_INVERT_PITCH 1
+
+//#define THROTTLE
+#define THROTTLE_POS_X 5
+#define THROTTLE_POS_Y 28
+#define THROTTLE_SCALE 1
+#define THROTTLE_GAUGE true //set to false for number only
+#define THROTTLE_TARGET 20 //set to position tick and trigger green needle
+
+//#define THROTTLE_V2               //this is ziprays throttle £¨ÐÂÔöÏîÄ¿£©ÓÍÃÅ
+#define THROTTLE_V2_POS_X 10.5
+#define THROTTLE_V2_POS_Y 28
+#define THROTTLE_V2_SCALE 0.65
+#define THROTTLE_V2_COMPLEX true //false for simple small throttle display
+
+//#define HDOP                    //NOT WORKING YET £¨ÐÂÔöÏîÄ¿£©GPSË®Æ½¾«¶È
+//#define HDOP_POS_X 98
+//#define HDOP_POS_Y 95
+//#define HDOP_SCALE 0.6
+
+#define MISSION                    //WAYPOINT COUNTER £¨ÐÂÔöÏîÄ¿£©º½µãÈÎÎñ
+#define MISSION_POS_X 75
+#define MISSION_POS_Y 1
+#define MISSION_SCALE 0.6
+
+#define ANGLE                    //Bank Angle £¨ÐÂÔöÏîÄ¿£©½Ç¶ÈÖ¸Ê¾Æ÷£¨Ô²»¡£©
+#define ANGLE_POS_X 50
+#define ANGLE_POS_Y 78
+#define ANGLE_SCALE 1
+
+#define ANGLE2                    //£¨ÐÂÔöÏîÄ¿£©½Ç¶ÈÖ¸Ê¾Æ÷£¨Ö¸Õë£©
+#define ANGLE2_POS_X 50
+#define ANGLE2_POS_Y 78
+#define ANGLE2_SCALE 1
+
+#define ALARM                    //£¨ÐÂÔöÏîÄ¿£©¾¯¸æ,ÔÚ·É¿ØÄÚ´¦ÓÚÆôÓÃ×´Ì¬²¢ÇÒ¹ÊÕÏµÄ´«¸ÐÆ÷£¬»áÓÐºì×ÖÌáÊ¾¡£
+#define ALARM_POS_X 82
+#define ALARM_POS_Y 33
+#define ALARM_SCALE 0.5          //¡ý½«ÏàÓ¦µÄ´«¸ÐÆ÷ÉèÖÃÎªfalse£¬¿ÉÒÔÇ¿ÖÆ¹Ø±ÕÆä¸æ¾¯
+#define ALARM_1 true             //3D_GYRO                ÍÓÂÝÒÇ
+#define ALARM_2 true             //3D_ACCEL               ¼ÓËÙ¶È¼Æ
+#define ALARM_3 true             //3D_MAG                 ´ÅÂÞÅÌ
+#define ALARM_4 true             //ABSOLUTE_PRESSURE      ¿ÕËÙ¼Æ¾²Ñ¹
+#define ALARM_5 true             //DIFFERENTIAL_PRESSURE  ¿ÕËÙ¼Æ¶¯Ñ¹
+#define ALARM_6 true             //GPS                    È«Çò¶¨Î»ÏµÍ³GPS
+#define ALARM_7 true             //OPTICAL_FLOW           ¹âÁ÷´«¸ÐÆ÷
+#define ALARM_8 true             //VISION_POSITION        ÊÓ¾õ´«¸ÐÆ÷
+#define ALARM_9 true             //LASER_POSITION         ¼¤¹â´«¸ÐÆ÷
+#define ALARM_10 true            //EXTERNAL_GROUND_TRUTH  (Vicon or Leica)£¬ÕâÊ²Ã´ÍæÒâ
+#define ALARM_11 true            //ANGULAR_RATE_CONTROL   ½ÇËÙÂÊ¿ØÖÆ
+#define ALARM_12 true            //ATTITUDE_STABILIZATION ×ËÌ¬ÎÈ¶¨
+#define ALARM_13 true            //YAW_POSITION           Æ«º½Î»ÖÃ
+#define ALARM_14 true            //Z_ALTITUDE_CONTROL     ZÖá¸ß¶È¿ØÖÆ
+#define ALARM_15 true            //XY_POSITION_CONTROL    X/YÖáÎ»ÖÃ¿ØÖÆ
+#define ALARM_16 true            //MOTOR_OUTPUTS          µç»úÊä³ö
+#define ALARM_17 false           //RC_RECEIVER            ½ÓÊÕ»ú
+#define ALARM_18 true            //3D_GYRO2               2ºÅÍÓÂÝÒÇ
+#define ALARM_19 true            //3D_ACCEL2              2ºÅ¼ÓËÙ¶È¼Æ
+#define ALARM_20 true            //3D_MAG2                2ºÅ´ÅÂÞÅÌ
+#define ALARM_21 true            //GEOFENCE               µØÀíÎ§À¸
+#define ALARM_22 true            //AHRS                   º½×Ë²Î¿¼ÏµÍ³AHRS
+#define ALARM_23 false            //TERRAIN                µØÐÎ
+#define ALARM_24 true            //REVERSE_MOTOR          µç»ú·´×ª
+//#define ALARM_25 true            //LOGGING                ÈÕÖ¾¼ÇÂ¼
+#define ALARM_26 true            //BATTERY                µç³Ø´«¸ÐÆ÷
