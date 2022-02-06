@@ -18,9 +18,11 @@ print_usage()
 	echo "    -p1 [param1] 			   param1 of each function"
 	echo "    -p2 [param1] 			   param2 of each function"
 	echo "    -b [i2c bus num] 		   i2c bus number"
-	echo "support functions: devid,hdver,wdrmode,videoformat,mirrormode,denoise,agc,lowlight,daynightmode,ircutdir,irtrigger£¬mshutter"
-    echo "cameramode, notf, capture, csienable,saturation,wdrbtargetbr,wdrtargetbr, brightness ,contrast , sharppen, aespeed,lsc"
+	echo "    -d [i2c addr] 		   i2c addr if not default 0x3b"
+	echo "support functions: devid,hdver,sensorid,wdrmode,videoformat,mirrormode,denoise,agc,lowlight,daynightmode,ircutdir,irtrigger£¬mshutter"
+    echo "cameramode, nodf, capture, csienable,saturation,wdrbtargetbr,wdrtargetbr, brightness ,contrast ,sharppen, aespeed,lsc,boardmodel,yuvseq,i2cauxenable,i2cwen,awbgain,wbmode,mwbgain,antiflicker"
 }
+
 ######################parse arg###################################
 MODE=read;
 FUNCTION=version;
@@ -32,6 +34,7 @@ b_arg_param2=0;
 b_arg_param3=0;
 b_arg_functin=0;
 b_arg_bus=0;
+b_arg_addr=0;
 
 for arg in $@
 do
@@ -60,6 +63,10 @@ do
 		b_arg_bus=0;
 		I2C_DEV=$arg;
 	fi
+    if [ $b_arg_addr -eq 1 ] ; then
+		b_arg_addr=0;
+		I2C_ADDR=$arg;
+	fi
 	case $arg in
 		"-r")
 			MODE=read;
@@ -81,6 +88,9 @@ do
 			;;
 		"-b")
 			b_arg_bus=1;
+			;;
+        "-d")
+			b_arg_addr=1;
 			;;
 		"-h")
 			print_usage;
@@ -116,6 +126,28 @@ read_hardver()
 	res=$(./i2c_read $I2C_DEV $I2C_ADDR  0x00 );
 	hardver=$?;
 	printf "hardware version is 0x%2x\n" $hardver;
+}
+#define SENSOR_TYPR_ADDR_L    0x20
+#define SENSOR_TYPR_ADDR_H    0x21
+#define BOARD_TYPR_ADDR    0x25
+read_sensorid()
+{
+    local sensorid_l=0;
+    local sensorid_h=0;
+    local board_type=0;
+	local res=0;
+    res=$(./i2c_read $I2C_DEV $I2C_ADDR 0x20);
+	sensorid_l=$?;
+    res=$(./i2c_read $I2C_DEV $I2C_ADDR 0x21);
+	sensorid_h=$?;
+    res=$(./i2c_read $I2C_DEV $I2C_ADDR 0x25);
+	board_type=$?;
+    printf "r sensor id is IMX%2x%2x;" $sensorid_l $sensorid_h;
+    if [ $board_type -eq 76 ] ; then
+		printf " ONE board\n";
+	else
+        printf " TWO board\n";
+    fi
 }
 
 read_wdrmode()
@@ -362,7 +394,7 @@ read_nodf()
 	local res=0;
 	res=$(./i2c_read $I2C_DEV $I2C_ADDR  0x1B );
 	nodf=$?;
-	printf "r nodf is 0x%2x\n" $notf;
+	printf "r nodf is 0x%2x\n" $nodf;
 }
 
 write_nodf()
@@ -398,6 +430,102 @@ write_csienable()
 	printf "w csienable is 0x%2x\n" $PARAM1;
 }
 
+read_yuvseq()
+{
+	local yuvseq=0;
+	local res=0;
+	res=$(./i2c_read $I2C_DEV $I2C_ADDR 0x1E );
+	yuvseq=$?;
+    if [ $yuvseq -eq 1 ] ; then
+		printf "r YUVseq is YUYV\n";
+    else
+        printf "r YUVseq is UYVY\n";
+	fi
+}
+
+write_yuvseq()
+{
+	local csienable=0;
+	local res=0;
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR 0x1E $PARAM1);
+    if [ $PARAM1 = "YUYV" ] ; then
+		res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x1E 0x1);
+    else
+        res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x1E 0x0);
+	fi
+	printf "w YUVseq is %s\n" $PARAM1;
+}
+
+read_board_model()
+{
+    local board_model=0;
+	local res=0;
+	res=$(./i2c_read $I2C_DEV $I2C_ADDR 0x25);
+	board_model=$?;
+     if [ $board_model -eq 255 ] ; then
+		printf "Board model is VEYE-MIPI-327 \n";
+	elif [ $board_model -eq 76 ] ; then
+		printf "Board model is VEYE-MIPI-IMX327S\n";
+	fi
+}
+
+read_i2c_aux_enable()
+{
+    local i2c_aux_enable=0;
+	local res=0;
+	res=$(./i2c_read $I2C_DEV $I2C_ADDR 0x1F);
+	i2c_aux_enable=$?;
+	if [ $i2c_aux_enable -eq 238 ] ; then
+		printf "i2c aux is enable \n";
+	else
+		printf "i2c aux is disable\n";
+	fi
+}
+
+write_i2c_aux_enable()
+{
+    local i2c_aux_enable=0;
+	local res=0;
+    if [ $PARAM1 -eq 0 ] ; then
+        i2c_aux_enable=0x11;
+    else
+		i2c_aux_enable=0xEE;
+	fi
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR 0x1F $i2c_aux_enable);
+    sleep 0.01;
+    res=$(./i2c_write $I2C_DEV $I2C_ADDR 0x1F $i2c_aux_enable);
+	printf "w i2c_aux_enable is 0x%2x\n" $PARAM1;
+}
+
+read_i2c_write_enable()
+{
+    local i2cwenable=0;
+	local res=0;
+	res=$(./i2c_read $I2C_DEV $I2C_ADDR 0x24);
+	i2cwenable=$?;
+    if [ $i2cwenable -eq 238 ] ; then
+        printf "r i2c write enable\n";
+    else
+		printf "r i2c write disable\n";
+	fi
+	
+}
+
+write_i2c_write_enable()
+{
+    local i2c_write_enable=0;
+	local res=0;
+    if [ $PARAM1 -eq 0 ] ; then
+        i2c_write_enable=0x11;
+    else
+		i2c_write_enable=0xEE;
+	fi
+
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR 0x24 $i2c_write_enable);
+    sleep 0.01;
+    res=$(./i2c_write $I2C_DEV $I2C_ADDR 0x24 $i2c_write_enable);
+	printf "w i2c_write_enable is 0x%2x\n" $PARAM1;
+}
 
 read_saturation()
 {
@@ -714,7 +842,119 @@ write_lsc()
 	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x13 0x00 );
     printf "w LSC enable is 0x%2x and strength %02x \n" $PARAM1 $PARAM2;
 }
+read_awbgain()
+{
+	local awbrgain=0;
+    local awbbgain=0;
+	local res=0;
+    res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x10 0x5E );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x11 0x0B );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x13 0x01 );
+    sleep 0.01;
+	res=$(./i2c_read $I2C_DEV $I2C_ADDR  0x14 );
+	awbrgain=$?;
+    sleep 0.01;
+    res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x10 0x5E );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x11 0x0F );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x13 0x01 );
+    sleep 0.01;
+	res=$(./i2c_read $I2C_DEV $I2C_ADDR  0x14 );
+	awbbgain=$?;
+    
+	printf "r awb Rgain is 0x%2x Bgain is 0x%2x\n" $awbrgain $awbbgain ;
+}
 
+read_wbmode()
+{
+	local wbmode=0;
+	local res=0;
+    res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x10 0xDA );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x11 0x34 );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x13 0x01 );
+    sleep 0.01;
+	res=$(./i2c_read $I2C_DEV $I2C_ADDR  0x14 );
+	wbmode=$?;
+	printf "r awb mode is 0x%2x \n" $wbmode ;
+}
+
+write_wbmode()
+{
+    local wbmode=0;
+	local res=0;
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x10 0xDA );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x11 0x34 );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x12 $PARAM1);
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x13 0x00 );
+	printf "w wbmode is 0x%2x\n" $PARAM1;
+}
+
+read_mwbgain()
+{
+	local mwbrgain=0;
+    local mwbbgain=0;
+	local res=0;
+    
+    res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x10 0xDA );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x11 0x2E );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x13 0x01 );
+    sleep 0.01;
+	res=$(./i2c_read $I2C_DEV $I2C_ADDR  0x14 );
+	mwbrgain=$?;
+    sleep 0.01;
+    res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x10 0xDA );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x11 0x29 );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x13 0x01 );
+    sleep 0.01;
+	res=$(./i2c_read $I2C_DEV $I2C_ADDR  0x14 );
+	mwbbgain=$?;
+    
+	printf "r mwb Rgain is 0x%2x Bgain is 0x%2x \n" $mwbrgain $mwbbgain ;
+}
+
+write_mwbgain()
+{
+	local res=0;
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x10 0xDA );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x11 0x2E );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x12 $PARAM1);
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x13 0x00 );
+    sleep 0.01;
+    res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x10 0xDA );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x11 0x29 );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x12 $PARAM2);
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x13 0x00 );
+    
+	printf "w mwb Rgain is 0x%2x Bgain is 0x%2x \n" $PARAM1 $PARAM2;
+}
+
+read_antiflicker()
+{
+    local antiflicker=0;
+	local res=0;
+    res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x10 0xDA );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x11 0x1F );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x13 0x01 );
+    sleep 0.01;
+	res=$(./i2c_read $I2C_DEV $I2C_ADDR  0x14 );
+	antiflicker=$(($?>>6));
+	printf "r antiflicker mode %x \n" $antiflicker ;
+}
+
+write_antiflicker()
+{
+    local res=0;
+    local antiflicker=0;
+    if [ $PARAM1 -eq 1 ] ; then
+		antiflicker=0x40;
+    else
+        antiflicker=0x0;
+	fi
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x10 0xDA );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x11 0x1F );
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x12 $antiflicker);
+	res=$(./i2c_write $I2C_DEV $I2C_ADDR  0x13 0x00 );
+    printf "w antiflicker %x\n" $PARAM1;
+}
 #######################Action# BEGIN##############################
 
 pinmux;
@@ -728,6 +968,9 @@ if [ ${MODE} = "read" ] ; then
 		"hdver"|"hardwareversion")
 			read_hardver;
 			;;
+        "sensorid")
+            read_sensorid;
+            ;;
 		"wdrmode")
 			read_wdrmode;
 			;;
@@ -797,6 +1040,30 @@ if [ ${MODE} = "read" ] ; then
         "lsc_slop")
 			read_lsc_slop;
 			;;
+        "boardmodel")
+			read_board_model;
+			;;
+        "i2cauxenable")
+			read_i2c_aux_enable;
+			;;
+        "i2cwen")
+			read_i2c_write_enable;
+			;;
+        "awbgain")
+			read_awbgain;
+			;;
+        "wbmode")
+			read_wbmode;
+			;;
+        "mwbgain")
+			read_mwbgain;
+			;;
+        "yuvseq")
+            read_yuvseq;
+                ;;
+        "antiflicker")
+            read_antiflicker;
+                ;;
 	esac
 fi
 
@@ -872,11 +1139,35 @@ if [ ${MODE} = "write" ] ; then
         "sharppen")
             write_sharppen;
             ;;
+        "wdrtargetbr")
+            write_wdrtargetbr;
+			;;
         "lsc")
 			write_lsc;
 			;;
         "lsc_slop")
 			write_lsc_slop;
 			;;
+        "i2cauxenable")
+			write_i2c_aux_enable;
+			;;
+        "i2cwen")
+			write_i2c_write_enable;
+			;;
+        "wbmode")
+			write_wbmode;
+			;;
+        "mwbgain")
+			write_mwbgain;
+			;;
+        "awbexpt")
+                write_awbexpt;
+                ;;
+        "yuvseq")
+            write_yuvseq;
+                ;;
+        "antiflicker")
+            write_antiflicker;
+                ;;
 	esac
 fi

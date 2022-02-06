@@ -6,8 +6,9 @@
 
 # http://elinux.org/RPi_HardwareHistory#Board_Revision_History
 rev=`cat /proc/cpuinfo | grep Revision | awk '{print substr($NF,length($NF)-5,6)}'`
-echo "setting GPIO for board revsion: $rev"
 
+kernel=`uname -r  | head --bytes 1`
+echo "setting GPIO for board revsion: $rev kernel ver:$kernel"
 camnum=$1
 
 case $rev in
@@ -99,8 +100,8 @@ if [ $camnum -eq 1 ]; then
 fi
 ;;
 
-'a02082'|'a22082'|'a020d3'|'9020e0'|'a03111'|'b03111'|'c03111'|'a03112'|'b03112'|'c03112')
-echo "Raspberry Pi3B / Pi3B+ / 3A / 4B(1G/2G/4G)"
+'a02082'|'a22082'|'a020d3'|'9020e0'|'a03111'|'b03111'|'c03111'|'a03112'|'b03112'|'b03114'|'c03112'|'d03114'|'902120')
+echo "Raspberry Pi3B / Pi3B+ / 3A / 4B(1G/2G/4G/8G) / Zero 2 W"
 # https://www.raspberrypi.org/forums/viewtopic.php?f=38&t=120702&start=100
 # "Direct i2c0 to GPIO44&45."
 # Pins 44&45 Alt1=i2c0, alt2=i2c1
@@ -114,16 +115,33 @@ gpio -g mode 44 in
 gpio -g mode 44 alt1
 gpio -g mode 45 in
 gpio -g mode 45 alt1
-#shutdown
+#reset pin control
 # you need this one: https://github.com/6by9/rpi3-gpiovirtbuf
-#gpio -g write 41 1
-#./rpi3-gpiovirtbuf s 133 1
+`dirname $0`/rpi3-gpiovirtbuf s 133 1
 #LED
 #gpio -g write 32 1
-i2cdetect -y 0
 ;;
+'b03140')
+echo "Compute Module/ CM4"
+echo "Download dt-blob.bin from https://www.raspberrypi.org/documentation/hardware/computemodule/dt-blob-dualcam.bin rename it to dt-blob.bin and place it in /boot/."
+gpio -g mode 28 in
+gpio -g mode 29 in
+gpio -g mode 44 in
+gpio -g mode 44 alt2
+gpio -g mode 45 in
+gpio -g mode 45 alt2
+`dirname $0`/rpi3-gpiovirtbuf s 133 1
+echo "use /dev/i2c0 for CAM 0;/dev/i2c10 for CAM 1"
 
+;;
 *)
 echo "Failed: don't know how to set GPIO for this board!"
 ;;
 esac
+
+if [ "$kernel" = "4" ]
+then
+	echo "Use i2c-0 for the sensor (-y 0)"
+else
+	echo "Use i2c-10 for the sensor (-y 10)"
+fi
