@@ -154,10 +154,8 @@ AIRODUMP=N
 AIRODUMP_SECONDS=25
 #
 # Set this to "Y" to enable Wifi Hotspot. Default SSID is "EZ-Wifibroadcast", no password.
-# See apconfig.txt for configuration. This will forward the received video and telemetry streams to a
-# smartphone/tablet or computer connected to the RX Pi via WiFi.
-# When useing the PI with built-in wifi(PI Zero W \3B\3A+\3B+...) or useing rtl88xxau/ralink series wifi cards on the air unit
-# then wifihotspot of the ground unit is enabled, the config file auto sync will be carried out in the background. 
+# See apconfig.txt for configuration. This will forward the received video and telemetry streams to a smartphone/tablet or PC via Wifi Hotspot.
+# When then wifihotspot of the ground unit is enabled, the config file auto sync will be carried out in the background. 
 # To use config file auto sync, the ground unit should be complete start first, and then turned on the air unit.
 WIFI_HOTSPOT=Y
 #
@@ -165,7 +163,7 @@ WIFI_HOTSPOT=Y
 WIFI_HOTSPOT_NIC=internal
 #
 # Set this to "Y" to enable Ethernet hotspot. This will forward the received video and telemetry streams
-# to another computer or other device connected to the Raspberry via Ethernet
+# to PC or other device connected to the Raspberry via Ethernet
 ETHERNET_HOTSPOT=N
 #
 # Set to "Y" to enable periodic screenshots every 10 seconds

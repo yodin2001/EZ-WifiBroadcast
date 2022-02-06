@@ -14,14 +14,14 @@
 14. txpower =** Set transmission power, range 1~63, valid for all types of CARDS.
 15. VIDEO_BITRATE=** When set to auto, use automatic transmission bandwidth measurement and automatic camera bitrate percentage. The bitrate percentage is calculated according to the FEC value.Automatic bandwidth measurement is used when the value is set to less than 100 number  the bitrate percentage is set to this number(for example, VIDEO_BITRATE=70, 70% transmission bandwidth is used as the camera bitrate).The camera bitrate set to this number when the value is set to greater than 100 number and disable automatic bandwidth measurement.(for example,VIDEO_BITRATE=4096, using a fixed bitrate of 4MB /s).
 16. During the auto sync process of config files, the air unit obtains the config files currently of the ground unit (Selected by ground unit GPIO23/PIN 16,GPIO24/PIN 18 status) and compares them. If they are inconsistent, the air unit config file (Selected by air unit GPIO23/PIN 16,GPIO24/PIN 18 status) will be overwritten and restarted.
-17. When useing the config file auto sync,the SSID definitionthe in the apconfig.txt of the air unit and the ground unit must be kept consistent. The default setting  no password. When the password is enabled, config sync will be disabled.When multiple ground units are used simultaneously, sync can be distinguished by modifying the SSID and channel.You can change the channel definition of a ground hotspot separately without affecting the sync function.
+17. When useing the config file auto sync,the SSID definitionthe in the apconfig.txt of the air unit and the ground unit must be kept consistent. The default setting  no password. When the password is enabled, config sync will be disabled.When multigroup air and ground units are used simultaneously, sync can be distinguished by modifying the SSID and channel.
 
 Insta 360 air usb camera useing:
 USBCAM="v4l2src device=/dev/video0 io-mode=4 ! video/x-h264,width=1920,height=960,framerate=30/1,stream-format=byte-stream,profile=baseline"
 Logitech C920 webcam useing:
-USBCAM="uvch264src device=/dev/video0 initial-bitrate=VIDEOBITRATE average-bitrate=VIDEOBITRATE iframe-period=1000 name=src auto-start=true src.vidsrc ! queue ! video/x-h264,width=1280,height=720,framerate=30/1,stream-format=byte-stream,profile=baseline"
+USBCAM="uvch264src device=/dev/video0 initial-bitrate=VIDEOBITRATE average-bitrate=VIDEOBITRATE iframe-period=1000 name=src auto-start=true src.vidsrc ! queue ! video/x-h264,width=800,height=600,framerate=30/1,stream-format=byte-stream,profile=baseline"
 InfiRay T2 Thermal Camera for Smartphone useing:
-USBCAM="v4l2src device=/dev/video0 ! video/x-raw,width=256,height=196,framerate=25/1 ! omxh264enc control-rate=1 target-bitrate=VIDEOBITRATE interval-intraframes=1 periodicty-idr=1"
+USBCAM="v4l2src device=/dev/video0 ! video/x-raw,width=256,height=196,framerate=25/1 ! omxh264enc control-rate=1 target-bitrate=VIDEOBITRATE interval-intraframes=10 periodicty-idr=10"
 HI35xx IPCAM useing:
 IPCAM="rtspsrc location=\"rtsp://192.168.0.10:554/11/user=admin&password=&channel=1&stream=0.sdp\" latency=0"
 

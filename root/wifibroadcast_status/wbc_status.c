@@ -20,21 +20,13 @@ int main(int argc, char *argv[]) {
 
     int width, height;
 
-
-    int widthpos = width / 2;
-    int heightpos = height / offset;
-    int fontpos = width / fontscale;
-
-
 //    fprintf(stderr,"before init\n");
     InitShapes(&width, &height);            // Graphics initialization
-
-
 
     float a = 0;
     for (a=0; a <= 1; a = a + 0.01) {
 	Start(width, height);
-	if (background == 1) { BackgroundRGB(0, 0, 0, 1); };
+	if (background == 1) { BackgroundRGBA(0, 0, 0, 1); };
 	Fill(255, 255, 255, a);
 	TextMid(width / 2, height / offset, text, SansTypeface, width / fontscale);
 	End();
@@ -45,7 +37,7 @@ int main(int argc, char *argv[]) {
 
     for (a=1; a >= 0; a = a - 0.02) {
 	Start(width, height);
-	if (background == 1) { BackgroundRGB(0, 0, 0, 1); };
+	if (background == 1) { BackgroundRGBA(0, 0, 0, 1); };
 	Fill(255, 255, 255, a);
 	TextMid(width / 2, height / offset, text, SansTypeface, width / fontscale);
 	End();
@@ -56,7 +48,7 @@ int main(int argc, char *argv[]) {
 	usleep(15000000);
     }
 
-    End();
+//    End();
 
     FinishShapes();                 // Graphics cleanup
     exit(0);
