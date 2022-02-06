@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include "lib.h"
+#include <wiringPi.h>
 
 wifibroadcast_rx_status_t_sysair *status_memory_open_sysair(char* shm_file) {
 	int fd;
@@ -46,6 +47,9 @@ long long current_timestamp() {
 
 int main(int argc, char *argv[]) {
 	wifibroadcast_rx_status_t_sysair *t = status_memory_open_sysair(argv[1]);
+	
+	wiringPiSetupGpio();
+	pinMode(6, OUTPUT); // FAN
 
 	int skipped_fec, skipped_fec_last, skipped_fec_per_second = 0;
 	int injected_block, injected_block_last, injected_block_per_second = 0;
@@ -74,23 +78,26 @@ int main(int argc, char *argv[]) {
 		fclose(fp);
 		cpuload_gnd = (((b[0]+b[1]+b[2]) - (a[0]+a[1]+a[2])) / ((b[0]+b[1]+b[2]+b[3]) - (a[0]+a[1]+a[2]+a[3]))) * 100;
 //		fprintf(stderr,"cpuload gnd:%d\n",cpuload_gnd);
-		fp = fopen("/proc/stat","r");
-		fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&b[0],&b[1],&b[2],&b[3]);
-		fclose(fp);
+		if (temp_gnd > 55000) {
+			digitalWrite (6, HIGH);
+		} else {
+			digitalWrite (6, LOW);
+		}
+
 		printf("%d,%d",cpuload_gnd,temp_gnd);
 
 		printf("%lli,",t->injection_time_block);
 
-                skipped_fec = t->skipped_fec_cnt;
+        skipped_fec = t->skipped_fec_cnt;
 		skipped_fec_per_second = (skipped_fec - skipped_fec_last);
 		skipped_fec_last = t->skipped_fec_cnt;
-                injected_block = t->injected_block_cnt;
+        injected_block = t->injected_block_cnt;
 		injected_block_per_second = (injected_block - injected_block_last);
 		injected_block_last = t->injected_block_cnt;
-                injection_fail = t->injection_fail_cnt;
+        injection_fail = t->injection_fail_cnt;
 		injection_fail_per_second = (injection_fail - injection_fail_last);
 		injection_fail_last = t->injection_fail_cnt;
-                printf("%d,%d,%d\n", skipped_fec_per_second,injected_block_per_second, injection_fail_per_second);
+        printf("%d,%d,%d\n", skipped_fec_per_second,injected_block_per_second, injection_fail_per_second);
 
 		fflush(stdout);
 		usleep(1000000);
