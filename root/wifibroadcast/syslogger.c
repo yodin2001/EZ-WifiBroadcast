@@ -47,9 +47,17 @@ long long current_timestamp() {
 
 int main(int argc, char *argv[]) {
 	wifibroadcast_rx_status_t_sysair *t = status_memory_open_sysair(argv[1]);
-	
-	wiringPiSetupGpio();
-	pinMode(6, OUTPUT); // FAN
+//	wPI：wiringPiSetup (void) ;
+//  BCM：wiringPiSetupGpio (void) ;
+//  physical：wiringPiSetupPhys (void) ;
+//	wiringPiSetupGpio();
+//	wiringPiSetup()
+	if(wiringPiSetupGpio() == -1){
+		printf("setup WiringPi failed");
+		return 1;
+	}
+	int fan = 25;// FAN BCM gpio25 pin22
+	pinMode(fan, OUTPUT); // FAN
 
 	int skipped_fec, skipped_fec_last, skipped_fec_per_second = 0;
 	int injected_block, injected_block_last, injected_block_per_second = 0;
@@ -79,9 +87,9 @@ int main(int argc, char *argv[]) {
 		cpuload_gnd = (((b[0]+b[1]+b[2]) - (a[0]+a[1]+a[2])) / ((b[0]+b[1]+b[2]+b[3]) - (a[0]+a[1]+a[2]+a[3]))) * 100;
 //		fprintf(stderr,"cpuload gnd:%d\n",cpuload_gnd);
 		if (temp_gnd > 55000) {
-			digitalWrite (6, HIGH);
+			digitalWrite (fan, HIGH);
 		} else {
-			digitalWrite (6, LOW);
+			digitalWrite (fan, LOW);
 		}
 
 		printf("%d,%d",cpuload_gnd,temp_gnd);

@@ -139,7 +139,7 @@ FC_MSP_SERIALPORT=/dev/ttyUSB0
 FC_MSP_BAUDRATE=115200
 #
 # Задайте здесь дополнительные параметры USB-камеры: (значение по умолчанию для RUNCAM USBcamera)
-USBCAM="v4l2src device=/dev/video0 ! video/x-h264,width=1280,height=720,framerate=30/1,stream-format=\"byte-stream\""
+USBCAM="v4l2src device=/dev/video0 ! video/x-h264,width=1280,height=720,framerate=30/1,stream-format=byte-stream,profile=baseline"
 # Задайте здесь дополнительные параметры IP-камеры: (значение по умолчанию для xm530ai/xm535ai Chip IPC)
 IPCAM="rtspsrc location=\"rtsp://192.168.1.10:554/user=admin&password=&channel=1&stream=0.sdp\" latency=0"
 #

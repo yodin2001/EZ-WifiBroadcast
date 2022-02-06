@@ -1,7 +1,7 @@
 1. when any usb camera insert air unit if it can start as TX mode that mean raspberry PI support this camera,If the camera does not display properly, please modify the "USBCAM=" parameter line.
 2. Using the IP camera need to modify the IPCAM = command line make sure the IP address consistent with IP camera's actual address (unnecessary modifying the IP camera) if the camera cannot display normally,refer to the attached to modify the configuration file in IPCAM = parameter. Automatic identification of IP camera will take up the startup time, if you don't use the IP camera or the ground unit using ETHERNET_HOTSPOT=Y can commenting IPCAM = command line in the configuration file.
 3. When set STREAM=rawsock, traditional RAWSOCK mode will be used for video transmission; when set STREAM=svpcom, SVPCOM mode will be used for video transmission. All types of cameras can use two video transmission modes.When using Pi Zero/W and Atheros/ Ralink chip wifi CARDS as air units, the CSI interface camera alone should set STREAM=rawsock or VIDEO_BITRATE=4096.
-4. When the Raspberry Pi CPU temperature is above 55°C, the GPIO25(PIN22) will pull high level (3.3V), which can be used to start the fan.
+4. When the ground Pi CPU temperature is above 55°C, the GPIO25(PIN22) will pull high level (3.3V), which can be used to start the fan.
 5. When only connected to a PC or Android/IOS ground station application as a display, you can set OSD=N to disable OSD to reduce startup time. 
 6. Set RC=sumd/ibus/srxl/mavlink/msp using RTS feames (ar7010/ar9271/rtl8812au/rtl8811au).Set RC=disabled using DATA feames when using a card that does not support RTS feames (Ralink series or RTL8814AU).
 7. RTL8812au and RTL8814AU support STBC and LDPC Set STBC_LDPC=Y enable,RTL8811AU does not support STBC Set STBC_LDPC=N.Ralink series and Atheros cards Set STBC_LDPC=N.
@@ -17,17 +17,19 @@
 17. When useing the config file auto sync,the SSID definitionthe in the apconfig.txt of the air unit and the ground unit must be kept consistent. The default setting  no password. When the password is enabled, config sync will be disabled.When multiple ground units are used simultaneously, sync can be distinguished by modifying the SSID and channel.You can change the channel definition of a ground hotspot separately without affecting the sync function.
 
 Insta 360 air usb camera useing:
-USBCAM="v4l2src device=/dev/video0 io-mode=4 ! video/x-h264,width=1920,height=960,framerate=30/1,stream-format=\"byte-stream\""
+USBCAM="v4l2src device=/dev/video0 io-mode=4 ! video/x-h264,width=1920,height=960,framerate=30/1,stream-format=byte-stream,profile=baseline"
 Logitech C920 webcam useing:
-USBCAM="uvch264src device=/dev/video0 initial-bitrate=VIDEOBITRATE average-bitrate=VIDEOBITRATE iframe-period=1000 name=src auto-start=true src.vidsrc ! queue ! video/x-h264,width=1280,height=720,framerate=30/1"
+USBCAM="uvch264src device=/dev/video0 initial-bitrate=VIDEOBITRATE average-bitrate=VIDEOBITRATE iframe-period=1000 name=src auto-start=true src.vidsrc ! queue ! video/x-h264,width=1280,height=720,framerate=30/1,stream-format=byte-stream,profile=baseline"
+InfiRay T2 Thermal Camera for Smartphone useing:
+USBCAM="v4l2src device=/dev/video0 ! video/x-raw,width=256,height=196,framerate=25/1 ! omxh264enc control-rate=1 target-bitrate=VIDEOBITRATE interval-intraframes=1 periodicty-idr=1"
 HI35xx IPCAM useing:
 IPCAM="rtspsrc location=\"rtsp://192.168.0.10:554/11/user=admin&password=&channel=1&stream=0.sdp\" latency=0"
 
-USBCAM="v4l2src device=/dev/video0 ! image/jpeg,framerate=25/1,width=640,height=480 ! jpegparse ! jpegdec ! omxh264enc control-rate=1 target-bitrate=VIDEOBITRATE interval-intraframes=1 periodicty-idr=1"
+USBCAM="v4l2src device=/dev/video0 ! image/jpeg,width=640,height=480,framerate=25/1 ! jpegparse ! jpegdec ! omxh264enc control-rate=1 target-bitrate=VIDEOBITRATE interval-intraframes=10 periodicty-idr=10"
 
-USBCAM="uvch264src device=/dev/video0 ! video/x-h264,width=1920,height=1080,framerate=30/1"
+USBCAM="v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! omxh264enc control-rate=1 target-bitrate=VIDEOBITRATE interval-intraframes=10 periodicty-idr=10"
 
-USBCAM="v4l2src device=/dev/video0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! omxh264enc control-rate=1 target-bitrate=VIDEOBITRATE"
+USBCAM="uvch264src device=/dev/video0 ! video/x-h264,width=1920,height=1080,framerate=30/1,stream-format=byte-stream,profile=baseline"
 
 USBCAM="videotestsrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! omxh264enc control-rate=1 target-bitrate=VIDEOBITRATE interval-intraframes=1 periodicty-idr=1"
 

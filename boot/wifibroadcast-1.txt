@@ -139,7 +139,7 @@ FC_MSP_SERIALPORT=/dev/ttyUSB0
 FC_MSP_BAUDRATE=115200
 #
 # Set additional USBCamera parameters here:(The default value for RUNCAM USBcamera)
-USBCAM="v4l2src device=/dev/video0 ! video/x-h264,width=1280,height=720,framerate=30/1,stream-format=\"byte-stream\""
+USBCAM="v4l2src device=/dev/video0 ! video/x-h264,width=1280,height=720,framerate=30/1,stream-format=byte-stream,profile=baseline"
 # Set additional IPCamera parameters here:(The default value for xm530ai/xm535ai Chip IPC)
 IPCAM="rtspsrc location=\"rtsp://192.168.1.10:554/user=admin&password=&channel=1&stream=0.sdp\" latency=0"
 #
@@ -210,7 +210,7 @@ TELEMETRY_OUTPUT_SERIALPORT_GROUND=/dev/serial0
 FORWARD_STREAM=rtp
 #
 # Dual CAMS(USBCAM/IPCAM+CSI interface camera) using RAWSOCK method and SVPCOM method at same time transmission the tow videos and forward h264 stream.
-# Use GPIO18(PIN 12) to switch dual cameras (usbcam / IPCAM + CSI interface camera)
+# Use GPIO18(PIN 12) to switch dual cameras (two type of item :usbcam / IPCAM / CSI interface camera)
 # UDP port to send video stream to android app or PC program , VIDEO_UDP_PORT for main CAM1,VIDEO_UDP_PORT2 for second CAM2
 VIDEO_UDP_PORT1=5600
 VIDEO_UDP_PORT2=5601
