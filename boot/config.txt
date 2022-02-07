@@ -121,7 +121,6 @@ usb_mdio=0x7000
 #hvs_priority=0x32ff
 #
 # uncomment for I2C
-#dtparam=i2c1=on
 #dtparam=i2c_arm=on
 dtparam=i2c_vc=on
 #

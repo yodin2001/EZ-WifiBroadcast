@@ -1,0 +1,1400 @@
+ 07:32:38 up 0 min,  0 users,  load average: 3.45, 1.04, 0.36
+
+Camera: supported=1 detected=0
+[   41.090479] usb 1-1.3: USB disconnect, device number 4
+
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 5  bytes 560 (560.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 5  bytes 560 (560.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+
+global
+country 00: DFS-UNSET
+	(2302 - 2472 @ 40), (6, 30), (N/A)
+	(2457 - 2482 @ 40), (6, 30), (N/A)
+	(2474 - 2742 @ 40), (6, 30), (N/A)
+	(4910 - 5250 @ 160), (6, 30), (N/A)
+	(5250 - 5330 @ 80), (6, 30), (N/A)
+	(5490 - 5730 @ 160), (6, 30), (N/A)
+	(5735 - 6110 @ 160), (6, 30), (N/A)
+	(57240 - 63720 @ 2160), (N/A, 0), (N/A)
+
+global
+country 00: DFS-UNSET
+	(2302 - 2472 @ 40), (6, 30), (N/A)
+	(2457 - 2482 @ 40), (6, 30), (N/A)
+	(2474 - 2742 @ 40), (6, 30), (N/A)
+	(4910 - 5250 @ 160), (6, 30), (N/A)
+	(5250 - 5330 @ 80), (6, 30), (N/A)
+	(5490 - 5730 @ 160), (6, 30), (N/A)
+	(5735 - 6110 @ 160), (6, 30), (N/A)
+	(57240 - 63720 @ 2160), (N/A, 0), (N/A)
+
+
+Wiphy phy2
+	max # scan SSIDs: 9
+	max scan IEs length: 2304 bytes
+	max # sched scan SSIDs: 0
+	max # match sets: 0
+	Retry short limit: 7
+	Retry long limit: 4
+	Coverage class: 0 (up to 0m)
+	Supported Ciphers:
+		* WEP40 (00-0f-ac:1)
+		* WEP104 (00-0f-ac:5)
+		* TKIP (00-0f-ac:2)
+		* CCMP (00-0f-ac:4)
+	Available Antennas: TX 0 RX 0
+	Supported interface modes:
+		 * IBSS
+		 * managed
+		 * AP
+		 * monitor
+		 * P2P-client
+		 * P2P-GO
+	Band 1:
+		Bitrates (non-HT):
+			* 1.0 Mbps
+			* 2.0 Mbps
+			* 5.5 Mbps
+			* 11.0 Mbps
+			* 6.0 Mbps
+			* 9.0 Mbps
+			* 12.0 Mbps
+			* 18.0 Mbps
+			* 24.0 Mbps
+			* 36.0 Mbps
+			* 48.0 Mbps
+			* 54.0 Mbps
+		Frequencies:
+			* 2412 MHz [21] (30.0 dBm)
+			* 2417 MHz [22] (30.0 dBm)
+			* 2422 MHz [23] (30.0 dBm)
+			* 2427 MHz [24] (30.0 dBm)
+			* 2432 MHz [25] (30.0 dBm)
+			* 2437 MHz [26] (30.0 dBm)
+			* 2442 MHz [27] (30.0 dBm)
+			* 2447 MHz [28] (30.0 dBm)
+			* 2452 MHz [29] (30.0 dBm)
+			* 2457 MHz [30] (30.0 dBm)
+			* 2462 MHz [31] (30.0 dBm)
+			* 2467 MHz [32] (30.0 dBm)
+			* 2472 MHz [33] (30.0 dBm)
+			* 2484 MHz [35] (30.0 dBm)
+	Band 2:
+		Bitrates (non-HT):
+			* 6.0 Mbps
+			* 9.0 Mbps
+			* 12.0 Mbps
+			* 18.0 Mbps
+			* 24.0 Mbps
+			* 36.0 Mbps
+			* 48.0 Mbps
+			* 54.0 Mbps
+		Frequencies:
+			* 5180 MHz [36] (30.0 dBm)
+			* 5200 MHz [40] (30.0 dBm)
+			* 5220 MHz [44] (30.0 dBm)
+			* 5240 MHz [48] (30.0 dBm)
+			* 5260 MHz [52] (30.0 dBm)
+			* 5280 MHz [56] (30.0 dBm)
+			* 5300 MHz [60] (30.0 dBm)
+			* 5320 MHz [64] (30.0 dBm)
+			* 5500 MHz [100] (30.0 dBm)
+			* 5520 MHz [104] (30.0 dBm)
+			* 5540 MHz [108] (30.0 dBm)
+			* 5560 MHz [112] (30.0 dBm)
+			* 5580 MHz [116] (30.0 dBm)
+			* 5600 MHz [120] (30.0 dBm)
+			* 5620 MHz [124] (30.0 dBm)
+			* 5640 MHz [128] (30.0 dBm)
+			* 5660 MHz [132] (30.0 dBm)
+			* 5680 MHz [136] (30.0 dBm)
+			* 5700 MHz [140] (30.0 dBm)
+			* 5720 MHz [144] (30.0 dBm)
+			* 5745 MHz [149] (30.0 dBm)
+			* 5765 MHz [153] (30.0 dBm)
+			* 5785 MHz [157] (30.0 dBm)
+			* 5805 MHz [161] (30.0 dBm)
+			* 5825 MHz [165] (30.0 dBm)
+			* 5845 MHz [169] (30.0 dBm)
+			* 5865 MHz [173] (30.0 dBm)
+			* 5885 MHz [177] (30.0 dBm)
+	Supported commands:
+		 * new_interface
+		 * set_interface
+		 * new_key
+		 * start_ap
+		 * new_station
+		 * set_bss
+		 * join_ibss
+		 * set_pmksa
+		 * del_pmksa
+		 * flush_pmksa
+		 * remain_on_channel
+		 * frame
+		 * set_channel
+		 * connect
+		 * disconnect
+	Supported TX frame types:
+		 * IBSS: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 * managed: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 * AP: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 * AP/VLAN: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 * P2P-client: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 * P2P-GO: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+	Supported RX frame types:
+		 * IBSS: 0xd0
+		 * managed: 0x40 0xd0
+		 * AP: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
+		 * AP/VLAN: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
+		 * P2P-client: 0x40 0xd0
+		 * P2P-GO: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
+	WoWLAN support:
+		 * wake up on anything (device continues operating normally)
+	software interface modes (can always be added):
+		 * monitor
+	interface combinations are not supported
+	Device supports scan flush.
+Wiphy phy0
+	max # scan SSIDs: 10
+	max scan IEs length: 2048 bytes
+	max # sched scan SSIDs: 16
+	max # match sets: 16
+	Retry short limit: 7
+	Retry long limit: 4
+	Coverage class: 0 (up to 0m)
+	Supported Ciphers:
+		* WEP40 (00-0f-ac:1)
+		* WEP104 (00-0f-ac:5)
+		* TKIP (00-0f-ac:2)
+		* CCMP (00-0f-ac:4)
+	Available Antennas: TX 0 RX 0
+	Supported interface modes:
+		 * IBSS
+		 * managed
+		 * AP
+		 * P2P-client
+		 * P2P-GO
+		 * P2P-device
+	Band 1:
+		Capabilities: 0x1020
+			HT20
+			Static SM Power Save
+			RX HT20 SGI
+			No RX STBC
+			Max AMSDU length: 3839 bytes
+			DSSS/CCK HT40
+		Maximum RX AMPDU length 65535 bytes (exponent: 0x003)
+		Minimum RX AMPDU time spacing: 16 usec (0x07)
+		HT TX/RX MCS rate indexes supported: 0-7
+		Bitrates (non-HT):
+			* 1.0 Mbps
+			* 2.0 Mbps (short preamble supported)
+			* 5.5 Mbps (short preamble supported)
+			* 11.0 Mbps (short preamble supported)
+			* 6.0 Mbps
+			* 9.0 Mbps
+			* 12.0 Mbps
+			* 18.0 Mbps
+			* 24.0 Mbps
+			* 36.0 Mbps
+			* 48.0 Mbps
+			* 54.0 Mbps
+		Frequencies:
+			* 2412 MHz [21] (20.0 dBm)
+			* 2417 MHz [22] (20.0 dBm)
+			* 2422 MHz [23] (20.0 dBm)
+			* 2427 MHz [24] (20.0 dBm)
+			* 2432 MHz [25] (20.0 dBm)
+			* 2437 MHz [26] (20.0 dBm)
+			* 2442 MHz [27] (20.0 dBm)
+			* 2447 MHz [28] (20.0 dBm)
+			* 2452 MHz [29] (20.0 dBm)
+			* 2457 MHz [30] (20.0 dBm)
+			* 2462 MHz [31] (20.0 dBm)
+			* 2467 MHz [32] (20.0 dBm)
+			* 2472 MHz [33] (20.0 dBm)
+			* 2484 MHz [35] (20.0 dBm)
+	Supported commands:
+		 * new_interface
+		 * set_interface
+		 * new_key
+		 * start_ap
+		 * join_ibss
+		 * set_pmksa
+		 * del_pmksa
+		 * flush_pmksa
+		 * remain_on_channel
+		 * frame
+		 * set_wiphy_netns
+		 * set_channel
+		 * start_sched_scan
+		 * start_p2p_device
+		 * connect
+		 * disconnect
+		 * crit_protocol_start
+		 * crit_protocol_stop
+		 * Unknown command (122)
+	Supported TX frame types:
+		 * managed: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 * P2P-client: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 * P2P-GO: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+		 * P2P-device: 0x00 0x10 0x20 0x30 0x40 0x50 0x60 0x70 0x80 0x90 0xa0 0xb0 0xc0 0xd0 0xe0 0xf0
+	Supported RX frame types:
+		 * managed: 0x40 0xd0
+		 * P2P-client: 0x40 0xd0
+		 * P2P-GO: 0x00 0x20 0x40 0xa0 0xb0 0xc0 0xd0
+		 * P2P-device: 0x40 0xd0
+	software interface modes (can always be added):
+	valid interface combinations:
+		 * #{ managed } <= 1, #{ P2P-device } <= 1, #{ P2P-client, P2P-GO } <= 1,
+		   total <= 3, #channels <= 2
+		 * #{ managed } <= 1, #{ AP } <= 1, #{ P2P-client } <= 1, #{ P2P-device } <= 1,
+		   total <= 4, #channels <= 1
+	Device supports scan flush.
+
+  PID TTY      STAT   TIME COMMAND
+    1 ?        Ss     0:02 /sbin/init nofsck noswap
+    2 ?        S      0:00 [kthreadd]
+    3 ?        I      0:00 [kworker/0:0]
+    4 ?        I<     0:00 [kworker/0:0H]
+    5 ?        I      0:00 [kworker/u2:0]
+    6 ?        I<     0:00 [mm_percpu_wq]
+    7 ?        S      0:00 [ksoftirqd/0]
+    8 ?        S      0:00 [kdevtmpfs]
+    9 ?        S      0:00 [khungtaskd]
+   10 ?        S      0:00 [oom_reaper]
+   11 ?        I<     0:00 [writeback]
+   12 ?        S      0:00 [kcompactd0]
+   13 ?        I<     0:00 [crypto]
+   14 ?        I<     0:00 [kblockd]
+   15 ?        I      0:00 [kworker/0:1]
+   16 ?        I<     0:00 [cfg80211]
+   17 ?        I<     0:00 [watchdogd]
+   18 ?        S      0:00 [kswapd0]
+   28 ?        I<     0:00 [dwc_otg]
+   29 ?        I<     0:00 [DWC Notificatio]
+   30 ?        S<     0:00 [vchiq-slot/0]
+   31 ?        S<     0:00 [vchiq-recy/0]
+   32 ?        S<     0:00 [vchiq-sync/0]
+   33 ?        S      0:00 [vchiq-keep/0]
+   34 ?        S<     0:00 [SMIO]
+   35 ?        S      0:00 [irq/86-mmc1]
+   36 ?        I      0:00 [kworker/0:2]
+   37 ?        I      0:00 [kworker/0:3]
+   38 ?        S      0:00 [mmcqd/0]
+   39 ?        S      0:00 [jbd2/mmcblk0p2-]
+   40 ?        I<     0:00 [ext4-rsv-conver]
+   54 ?        I      0:00 [kworker/u2:1]
+   74 ?        I      0:00 [kworker/u2:2]
+  112 ?        Ss     0:00 /lib/systemd/systemd-udevd
+  158 ?        I<     0:00 [brcmf_wq/mmc1:0]
+  159 ?        S      0:00 [brcmf_wdog/mmc1]
+  170 ?        Ss     0:00 /usr/sbin/sshd -D
+  193 tty8     Ss     0:00 /bin/login -f     
+  194 tty3     Ss     0:00 /bin/login -f     
+  195 tty10    Ss     0:00 /bin/login -f     
+  196 tty12    Ss     0:00 /bin/login -f     
+  197 tty6     Ss     0:00 /bin/login -f     
+  198 tty2     Ss     0:00 /bin/login -f     
+  199 tty5     Ss     0:00 /bin/login -f     
+  200 tty11    Ss     0:00 /bin/login -f     
+  202 tty7     Ss     0:00 /bin/login -f     
+  203 tty4     Ss     0:00 /bin/login -f     
+  204 tty1     Ss     0:00 /bin/login -f     
+  205 tty9     Ss     0:00 /bin/login -f     
+  212 ?        I<     0:00 [kworker/0:1H]
+  235 ?        I      0:00 [kworker/u2:3]
+  237 ?        I      0:00 [kworker/u2:4]
+  239 ?        I      0:00 [kworker/u2:5]
+  241 ?        I      0:00 [kworker/u2:6]
+  243 ?        I      0:00 [kworker/u2:7]
+  245 ?        I      0:00 [kworker/u2:8]
+  247 ?        I      0:00 [kworker/u2:9]
+  250 ?        I      0:00 [kworker/u2:10]
+  252 ?        I      0:00 [kworker/u2:11]
+  254 ?        I      0:00 [kworker/u2:12]
+  290 tty5     S+     0:01 -bash
+  291 tty7     S+     0:01 -bash
+  293 tty11    S+     0:01 -bash
+  300 tty9     S+     0:01 -bash
+  304 tty3     S+     0:01 -bash
+  305 tty2     S+     0:01 -bash
+  306 tty10    S+     0:01 -bash
+  309 tty12    S+     0:01 -bash
+  310 tty1     S+     0:01 -bash
+  311 tty6     S+     0:01 -bash
+  336 tty8     S+     0:01 -bash
+  337 tty4     S+     0:01 -bash
+  973 tty5     S+     0:00 sleep 365d
+  974 tty8     S+     0:00 sleep 365d
+  975 tty7     S+     0:00 sleep 365d
+  976 tty4     S+     0:00 sleep 365d
+  977 tty3     S+     0:00 sleep 365d
+  978 tty9     S+     0:00 sleep 365d
+  980 tty6     S+     0:00 sleep 365d
+ 1057 tty11    S+     0:00 sleep 365d
+ 1081 tty2     SN+    0:00 cat /dev/serial0
+ 1093 tty10    S+     0:00 sleep 365d
+ 1144 ?        S      0:00 /lib/systemd/systemd-udevd
+ 1154 tty1     RN+    0:00 ps ax
+
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/root       1.7G  1.5G   42M  98% /
+devtmpfs        186M     0  186M   0% /dev
+tmpfs           187M   20K  186M   1% /dev/shm
+tmpfs           187M  272K  186M   1% /run
+tmpfs           5.0M     0  5.0M   0% /run/lock
+tmpfs           187M     0  187M   0% /sys/fs/cgroup
+tmpfs           630M     0  630M   0% /wbc_tmp
+tmpfs            10M     0   10M   0% /var/tmp
+tmpfs            10M   20K   10M   1% /var/log
+tmpfs            10M   60K   10M   1% /tmp
+/dev/mmcblk0p1   32M   18M   14M  57% /boot
+
+/dev/mmcblk0p2 on / type ext4 (ro,noatime,data=ordered)
+devtmpfs on /dev type devtmpfs (rw,relatime,size=189972k,nr_inodes=47493,mode=755)
+sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
+proc on /proc type proc (rw,relatime)
+tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev)
+devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000)
+tmpfs on /run type tmpfs (rw,nosuid,nodev,mode=755)
+tmpfs on /run/lock type tmpfs (rw,nosuid,nodev,noexec,relatime,size=5120k)
+tmpfs on /sys/fs/cgroup type tmpfs (ro,nosuid,nodev,noexec,mode=755)
+cgroup on /sys/fs/cgroup/systemd type cgroup (rw,nosuid,nodev,noexec,relatime,xattr,release_agent=/lib/systemd/systemd-cgroups-agent,name=systemd)
+cgroup on /sys/fs/cgroup/cpu type cgroup (rw,nosuid,nodev,noexec,relatime,cpu)
+debugfs on /sys/kernel/debug type debugfs (rw,relatime)
+mqueue on /dev/mqueue type mqueue (rw,relatime)
+configfs on /sys/kernel/config type configfs (rw,relatime)
+tmpfs on /wbc_tmp type tmpfs (rw,nosuid,nodev,noatime,size=645120k)
+tmpfs on /var/tmp type tmpfs (rw,nosuid,nodev,noatime,size=10240k)
+tmpfs on /var/log type tmpfs (rw,nosuid,nodev,noatime,size=10240k)
+tmpfs on /tmp type tmpfs (rw,nosuid,nodev,noatime,size=10240k)
+/dev/mmcblk0p1 on /boot type vfat (rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,errors=remount-ro)
+
+
+Disk /dev/mmcblk0: 30 GiB, 32220643328 bytes, 62930944 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x09c1b27d
+
+Device         Boot Start     End Sectors  Size Id Type
+/dev/mmcblk0p1 *     8192   73727   65536   32M  6 FAT16
+/dev/mmcblk0p2      73728 3575807 3502080  1.7G 83 Linux
+
+
+Module                  Size  Used by
+88XXau               1830912  0 
+brcmfmac              212992  0 
+brcmutil               16384  1 brcmfmac
+i2c_bcm2835            16384  0 
+i2c_dev                16384  0 
+
+Bus 001 Device 005: ID 0846:9052 NetGear, Inc. A6100 AC600 DB Wireless Adapter [Realtek RTL8811AU]
+Bus 001 Device 003: ID 0424:ec00 Standard Microsystems Corp. SMSC9512/9514 Fast Ethernet Adapter
+Bus 001 Device 002: ID 0424:9514 Standard Microsystems Corp. SMC9514 Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+
+Bus 001 Device 005: ID 0846:9052 NetGear, Inc. A6100 AC600 DB Wireless Adapter [Realtek RTL8811AU]
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               2.10
+  bDeviceClass            0 (Defined at Interface level)
+  bDeviceSubClass         0 
+  bDeviceProtocol         0 
+  bMaxPacketSize0        64
+  idVendor           0x0846 NetGear, Inc.
+  idProduct          0x9052 A6100 AC600 DB Wireless Adapter [Realtek RTL8811AU]
+  bcdDevice            2.00
+  iManufacturer           1 Realtek 
+  iProduct                2 802.11ac WLAN Adapter 
+  iSerial                 3 00e04c000001
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength           60
+    bNumInterfaces          1
+    bConfigurationValue     1
+    iConfiguration          0 
+    bmAttributes         0xe0
+      Self Powered
+      Remote Wakeup
+    MaxPower              500mA
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           6
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass    255 Vendor Specific Subclass
+      bInterfaceProtocol    255 Vendor Specific Protocol
+      iInterface              2 802.11ac WLAN Adapter 
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x84  EP 4 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x05  EP 5 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x06  EP 6 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x87  EP 7 IN
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               3
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x08  EP 8 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x09  EP 9 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+Binary Object Store Descriptor:
+  bLength                 5
+  bDescriptorType        15
+  wTotalLength           12
+  bNumDeviceCaps          1
+  USB 2.0 Extension Device Capability:
+    bLength                 7
+    bDescriptorType        16
+    bDevCapabilityType      2
+    bmAttributes   0x00000002
+      Link Power Management (LPM) Supported
+Device Status:     0x0001
+  Self Powered
+
+Bus 001 Device 003: ID 0424:ec00 Standard Microsystems Corp. SMSC9512/9514 Fast Ethernet Adapter
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               2.00
+  bDeviceClass          255 Vendor Specific Class
+  bDeviceSubClass         0 
+  bDeviceProtocol         1 
+  bMaxPacketSize0        64
+  idVendor           0x0424 Standard Microsystems Corp.
+  idProduct          0xec00 SMSC9512/9514 Fast Ethernet Adapter
+  bcdDevice            2.00
+  iManufacturer           0 
+  iProduct                0 
+  iSerial                 0 
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength           39
+    bNumInterfaces          1
+    bConfigurationValue     1
+    iConfiguration          0 
+    bmAttributes         0xe0
+      Self Powered
+      Remote Wakeup
+    MaxPower                2mA
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           3
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass      0 
+      bInterfaceProtocol    255 
+      iInterface              0 
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x81  EP 1 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x02  EP 2 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x83  EP 3 IN
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0010  1x 16 bytes
+        bInterval               4
+Device Qualifier (for other device speed):
+  bLength                10
+  bDescriptorType         6
+  bcdUSB               2.00
+  bDeviceClass          255 Vendor Specific Class
+  bDeviceSubClass         0 
+  bDeviceProtocol         1 
+  bMaxPacketSize0        64
+  bNumConfigurations      1
+Device Status:     0x0001
+  Self Powered
+
+Bus 001 Device 002: ID 0424:9514 Standard Microsystems Corp. SMC9514 Hub
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               2.00
+  bDeviceClass            9 Hub
+  bDeviceSubClass         0 Unused
+  bDeviceProtocol         2 TT per port
+  bMaxPacketSize0        64
+  idVendor           0x0424 Standard Microsystems Corp.
+  idProduct          0x9514 SMC9514 Hub
+  bcdDevice            2.00
+  iManufacturer           0 
+  iProduct                0 
+  iSerial                 0 
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength           41
+    bNumInterfaces          1
+    bConfigurationValue     1
+    iConfiguration          0 
+    bmAttributes         0xe0
+      Self Powered
+      Remote Wakeup
+    MaxPower                2mA
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           1
+      bInterfaceClass         9 Hub
+      bInterfaceSubClass      0 Unused
+      bInterfaceProtocol      1 Single TT
+      iInterface              0 
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x81  EP 1 IN
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0001  1x 1 bytes
+        bInterval              12
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       1
+      bNumEndpoints           1
+      bInterfaceClass         9 Hub
+      bInterfaceSubClass      0 Unused
+      bInterfaceProtocol      2 TT per port
+      iInterface              0 
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x81  EP 1 IN
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0001  1x 1 bytes
+        bInterval              12
+Hub Descriptor:
+  bLength               9
+  bDescriptorType      41
+  nNbrPorts             5
+  wHubCharacteristic 0x000d
+    Per-port power switching
+    Compound device
+    Per-port overcurrent protection
+    TT think time 8 FS bits
+  bPwrOn2PwrGood       50 * 2 milli seconds
+  bHubContrCurrent      1 milli Ampere
+  DeviceRemovable    0x02
+  PortPwrCtrlMask    0xff
+ Hub Port Status:
+   Port 1: 0000.0503 highspeed power enable connect
+   Port 2: 0000.0100 power
+   Port 3: 0000.0503 highspeed power enable connect
+   Port 4: 0000.0100 power
+   Port 5: 0000.0100 power
+Device Qualifier (for other device speed):
+  bLength                10
+  bDescriptorType         6
+  bcdUSB               2.00
+  bDeviceClass            9 Hub
+  bDeviceSubClass         0 Unused
+  bDeviceProtocol         0 Full speed (or root) hub
+  bMaxPacketSize0        64
+  bNumConfigurations      1
+Device Status:     0x0001
+  Self Powered
+
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               2.00
+  bDeviceClass            9 Hub
+  bDeviceSubClass         0 Unused
+  bDeviceProtocol         1 Single TT
+  bMaxPacketSize0        64
+  idVendor           0x1d6b Linux Foundation
+  idProduct          0x0002 2.0 root hub
+  bcdDevice            4.14
+  iManufacturer           3 Linux 4.14.71+ dwc_otg_hcd
+  iProduct                2 DWC OTG Controller
+  iSerial                 1 20980000.usb
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength           25
+    bNumInterfaces          1
+    bConfigurationValue     1
+    iConfiguration          0 
+    bmAttributes         0xe0
+      Self Powered
+      Remote Wakeup
+    MaxPower                0mA
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           1
+      bInterfaceClass         9 Hub
+      bInterfaceSubClass      0 Unused
+      bInterfaceProtocol      0 Full speed (or root) hub
+      iInterface              0 
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x81  EP 1 IN
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0004  1x 4 bytes
+        bInterval              12
+Hub Descriptor:
+  bLength               9
+  bDescriptorType      41
+  nNbrPorts             1
+  wHubCharacteristic 0x0008
+    Ganged power switching
+    Per-port overcurrent protection
+    TT think time 8 FS bits
+  bPwrOn2PwrGood        1 * 2 milli seconds
+  bHubContrCurrent      0 milli Ampere
+  DeviceRemovable    0x00
+  PortPwrCtrlMask    0xff
+ Hub Port Status:
+   Port 1: 0000.0503 highspeed power enable connect
+Device Status:     0x0001
+  Self Powered
+
+total 4
+drwxr-xr-x 12 root root        3140 Mar 20 07:32 .
+drwxr-xr-x 24 root root        4096 Jan 24  2022 ..
+drwxr-xr-x  2 root root         420 Mar 20 07:31 block
+drwxr-xr-x  3 root root          60 Jan  1  1970 bus
+crw-------  1 root root     10,  63 Mar 20 07:31 cachefiles
+drwxr-xr-x  2 root root        2540 Mar 20 07:32 char
+crw-------  1 root root      5,   1 Mar 20 07:32 console
+crw-------  1 root root     10,  62 Mar 20 07:31 cpu_dma_latency
+drwxr-xr-x  6 root root         120 Mar 20 07:31 disk
+crw-rw----  1 root video    29,   0 Mar 20 07:31 fb0
+lrwxrwxrwx  1 root root          13 Jan  1  1970 fd -> /proc/self/fd
+crw-rw-rw-  1 root root      1,   7 Mar 20 07:31 full
+crw-------  1 root root    254,   0 Mar 20 07:31 gpiochip0
+crw-rw----  1 root gpio    249,   0 Mar 20 07:31 gpiomem
+crw-------  1 root root     10, 183 Mar 20 07:31 hwrng
+crw-rw----  1 root i2c      89,   0 Mar 20 07:32 i2c-0
+lrwxrwxrwx  1 root root          25 Jan  1  1970 initctl -> /run/systemd/initctl/fifo
+drwxr-xr-x  2 root root          60 Jan  1  1970 input
+crw-r--r--  1 root root      1,  11 Mar 20 07:31 kmsg
+crw-r-----  1 root kmem      1,   1 Mar 20 07:31 mem
+crw-------  1 root root     10,  59 Mar 20 07:31 memory_bandwidth
+brw-rw----  1 root disk    179,   0 Mar 20 07:31 mmcblk0
+brw-rw----  1 root disk    179,   1 Mar 20 07:31 mmcblk0p1
+brw-rw----  1 root disk    179,   2 Mar 20 07:31 mmcblk0p2
+drwxrwxrwt  2 root root          40 Jan  1  1970 mqueue
+crw-------  1 root root     10,  61 Mar 20 07:31 network_latency
+crw-------  1 root root     10,  60 Mar 20 07:31 network_throughput
+crw-rw-rw-  1 root root      1,   3 Mar 20 07:31 null
+crw-rw-rw-  1 root tty       5,   2 Mar 20 07:31 ptmx
+drwxr-xr-x  2 root root           0 Jan  1  1970 pts
+brw-rw----  1 root disk      1,   0 Mar 20 07:31 ram0
+brw-rw----  1 root disk      1,   1 Mar 20 07:31 ram1
+brw-rw----  1 root disk      1,  10 Mar 20 07:31 ram10
+brw-rw----  1 root disk      1,  11 Mar 20 07:31 ram11
+brw-rw----  1 root disk      1,  12 Mar 20 07:31 ram12
+brw-rw----  1 root disk      1,  13 Mar 20 07:31 ram13
+brw-rw----  1 root disk      1,  14 Mar 20 07:31 ram14
+brw-rw----  1 root disk      1,  15 Mar 20 07:31 ram15
+brw-rw----  1 root disk      1,   2 Mar 20 07:31 ram2
+brw-rw----  1 root disk      1,   3 Mar 20 07:31 ram3
+brw-rw----  1 root disk      1,   4 Mar 20 07:31 ram4
+brw-rw----  1 root disk      1,   5 Mar 20 07:31 ram5
+brw-rw----  1 root disk      1,   6 Mar 20 07:31 ram6
+brw-rw----  1 root disk      1,   7 Mar 20 07:31 ram7
+brw-rw----  1 root disk      1,   8 Mar 20 07:31 ram8
+brw-rw----  1 root disk      1,   9 Mar 20 07:31 ram9
+crw-rw-rw-  1 root root      1,   8 Mar 20 07:31 random
+drwxr-xr-x  2 root root          60 Jan  1  1970 raw
+lrwxrwxrwx  1 root root           7 Mar 20 07:31 serial0 -> ttyAMA0
+lrwxrwxrwx  1 root root           5 Mar 20 07:31 serial1 -> ttyS0
+drwxrwxrwt  2 root root         140 Mar 20 07:32 shm
+drwxr-xr-x  2 root root          60 Mar 20 07:31 snd
+lrwxrwxrwx  1 root root          15 Jan  1  1970 stderr -> /proc/self/fd/2
+lrwxrwxrwx  1 root root          15 Jan  1  1970 stdin -> /proc/self/fd/0
+lrwxrwxrwx  1 root root          15 Jan  1  1970 stdout -> /proc/self/fd/1
+crw-rw-rw-  1 root tty       5,   0 Mar 20 07:31 tty
+crw--w----  1 root tty       4,   0 Mar 20 07:31 tty0
+crw-------  1 root tty       4,   1 Mar 20 07:32 tty1
+crw-------  1 root tty       4,  10 Mar 20 07:32 tty10
+crw-------  1 root tty       4,  11 Mar 20 07:32 tty11
+crw-------  1 root tty       4,  12 Mar 20 07:32 tty12
+crw--w----  1 root tty       4,  13 Mar 20 07:31 tty13
+crw--w----  1 root tty       4,  14 Mar 20 07:31 tty14
+crw--w----  1 root tty       4,  15 Mar 20 07:31 tty15
+crw--w----  1 root tty       4,  16 Mar 20 07:31 tty16
+crw--w----  1 root tty       4,  17 Mar 20 07:31 tty17
+crw--w----  1 root tty       4,  18 Mar 20 07:31 tty18
+crw--w----  1 root tty       4,  19 Mar 20 07:31 tty19
+crw-------  1 root tty       4,   2 Mar 20 07:32 tty2
+crw--w----  1 root tty       4,  20 Mar 20 07:31 tty20
+crw--w----  1 root tty       4,  21 Mar 20 07:31 tty21
+crw--w----  1 root tty       4,  22 Mar 20 07:31 tty22
+crw--w----  1 root tty       4,  23 Mar 20 07:31 tty23
+crw--w----  1 root tty       4,  24 Mar 20 07:31 tty24
+crw--w----  1 root tty       4,  25 Mar 20 07:31 tty25
+crw--w----  1 root tty       4,  26 Mar 20 07:31 tty26
+crw--w----  1 root tty       4,  27 Mar 20 07:31 tty27
+crw--w----  1 root tty       4,  28 Mar 20 07:31 tty28
+crw--w----  1 root tty       4,  29 Mar 20 07:31 tty29
+crw-------  1 root tty       4,   3 Mar 20 07:32 tty3
+crw--w----  1 root tty       4,  30 Mar 20 07:31 tty30
+crw--w----  1 root tty       4,  31 Mar 20 07:31 tty31
+crw--w----  1 root tty       4,  32 Mar 20 07:32 tty32
+crw--w----  1 root tty       4,  33 Mar 20 07:32 tty33
+crw--w----  1 root tty       4,  34 Mar 20 07:32 tty34
+crw--w----  1 root tty       4,  35 Mar 20 07:32 tty35
+crw--w----  1 root tty       4,  36 Mar 20 07:32 tty36
+crw--w----  1 root tty       4,  37 Mar 20 07:32 tty37
+crw--w----  1 root tty       4,  38 Mar 20 07:32 tty38
+crw--w----  1 root tty       4,  39 Mar 20 07:32 tty39
+crw-------  1 root tty       4,   4 Mar 20 07:32 tty4
+crw--w----  1 root tty       4,  40 Mar 20 07:32 tty40
+crw--w----  1 root tty       4,  41 Mar 20 07:32 tty41
+crw--w----  1 root tty       4,  42 Mar 20 07:32 tty42
+crw--w----  1 root tty       4,  43 Mar 20 07:32 tty43
+crw--w----  1 root tty       4,  44 Mar 20 07:32 tty44
+crw--w----  1 root tty       4,  45 Mar 20 07:32 tty45
+crw--w----  1 root tty       4,  46 Mar 20 07:32 tty46
+crw--w----  1 root tty       4,  47 Mar 20 07:32 tty47
+crw--w----  1 root tty       4,  48 Mar 20 07:32 tty48
+crw--w----  1 root tty       4,  49 Mar 20 07:32 tty49
+crw-------  1 root tty       4,   5 Mar 20 07:32 tty5
+crw--w----  1 root tty       4,  50 Mar 20 07:32 tty50
+crw--w----  1 root tty       4,  51 Mar 20 07:32 tty51
+crw--w----  1 root tty       4,  52 Mar 20 07:32 tty52
+crw--w----  1 root tty       4,  53 Mar 20 07:32 tty53
+crw--w----  1 root tty       4,  54 Mar 20 07:32 tty54
+crw--w----  1 root tty       4,  55 Mar 20 07:32 tty55
+crw--w----  1 root tty       4,  56 Mar 20 07:32 tty56
+crw--w----  1 root tty       4,  57 Mar 20 07:32 tty57
+crw--w----  1 root tty       4,  58 Mar 20 07:32 tty58
+crw--w----  1 root tty       4,  59 Mar 20 07:32 tty59
+crw-------  1 root tty       4,   6 Mar 20 07:32 tty6
+crw--w----  1 root tty       4,  60 Mar 20 07:32 tty60
+crw--w----  1 root tty       4,  61 Mar 20 07:32 tty61
+crw--w----  1 root tty       4,  62 Mar 20 07:32 tty62
+crw--w----  1 root tty       4,  63 Mar 20 07:32 tty63
+crw-------  1 root tty       4,   7 Mar 20 07:32 tty7
+crw-------  1 root tty       4,   8 Mar 20 07:32 tty8
+crw-------  1 root tty       4,   9 Mar 20 07:32 tty9
+crw-rw----  1 root dialout 204,  64 Mar 20 07:32 ttyAMA0
+crw-------  1 root root      5,   3 Mar 20 07:32 ttyprintk
+crw-rw----  1 root dialout   4,  64 Mar 20 07:31 ttyS0
+crw-rw-rw-  1 root root      1,   9 Mar 20 07:31 urandom
+crw-rw----  1 root video   246,   0 Mar 20 07:32 vchiq
+crw-rw----  1 root video   250,   0 Mar 20 07:31 vcio
+crw-------  1 root root    251,   0 Mar 20 07:32 vc-mem
+crw-rw----  1 root tty       7,   0 Mar 20 07:32 vcs
+crw-rw----  1 root tty       7,   1 Mar 20 07:32 vcs1
+crw-rw----  1 root tty       7,  10 Mar 20 07:32 vcs10
+crw-rw----  1 root tty       7,  11 Mar 20 07:32 vcs11
+crw-rw----  1 root tty       7,  12 Mar 20 07:32 vcs12
+crw-rw----  1 root tty       7,   2 Mar 20 07:32 vcs2
+crw-rw----  1 root tty       7,   3 Mar 20 07:32 vcs3
+crw-rw----  1 root tty       7,   4 Mar 20 07:32 vcs4
+crw-rw----  1 root tty       7,   5 Mar 20 07:32 vcs5
+crw-rw----  1 root tty       7,   6 Mar 20 07:32 vcs6
+crw-rw----  1 root tty       7,   7 Mar 20 07:32 vcs7
+crw-rw----  1 root tty       7,   8 Mar 20 07:32 vcs8
+crw-rw----  1 root tty       7,   9 Mar 20 07:32 vcs9
+crw-rw----  1 root tty       7, 128 Mar 20 07:32 vcsa
+crw-rw----  1 root tty       7, 129 Mar 20 07:32 vcsa1
+crw-rw----  1 root tty       7, 138 Mar 20 07:32 vcsa10
+crw-rw----  1 root tty       7, 139 Mar 20 07:32 vcsa11
+crw-rw----  1 root tty       7, 140 Mar 20 07:32 vcsa12
+crw-rw----  1 root tty       7, 130 Mar 20 07:32 vcsa2
+crw-rw----  1 root tty       7, 131 Mar 20 07:32 vcsa3
+crw-rw----  1 root tty       7, 132 Mar 20 07:32 vcsa4
+crw-rw----  1 root tty       7, 133 Mar 20 07:32 vcsa5
+crw-rw----  1 root tty       7, 134 Mar 20 07:32 vcsa6
+crw-rw----  1 root tty       7, 135 Mar 20 07:32 vcsa7
+crw-rw----  1 root tty       7, 136 Mar 20 07:32 vcsa8
+crw-rw----  1 root tty       7, 137 Mar 20 07:32 vcsa9
+crw-rw----  1 root video   247,   0 Mar 20 07:32 vcsm
+crw-------  1 root root     10, 130 Mar 20 07:31 watchdog
+crw-------  1 root root    253,   0 Mar 20 07:31 watchdog0
+crw-rw-rw-  1 root root      1,   5 Mar 20 07:31 zero
+total 0
+drwxr-xr-x  2 root root      60 Jan  1  1970 .
+drwxr-xr-x 12 root root    3140 Mar 20 07:32 ..
+crw-rw----  1 root input 13, 63 Mar 20 07:31 mice
+
+volt=1.4000V
+temp=35.2'C
+throttled=0x0
+
+aphy_params_current=547
+arm_freq=900
+audio_pwm_mode=514
+config_hdmi_boost=5
+disable_auto_turbo=1
+disable_commandline_tags=2
+disable_overscan=1
+disable_splash=1
+display_hdmi_rotate=-1
+display_lcd_rotate=-1
+dphy_params_current=547
+enable_uart=1
+force_eeprom_read=1
+force_pwm_open=1
+force_turbo=1
+framebuffer_ignore_alpha=1
+framebuffer_swap=1
+gpu_freq=400
+ignore_lcd=1
+init_uart_clock=0x2dc6c00
+over_voltage=3
+over_voltage_avs=0x249f0
+pause_burst_frames=1
+program_serial_random=1
+sdram_freq=433
+sdtv_mode=2
+usb_mdio=28672
+hdmi_force_cec_address:0=65535
+hdmi_force_cec_address:1=65535
+hdmi_pixel_freq_limit:0=0x9a7ec80
+hdmi_pixel_freq_limit:1=0x9a7ec80
+
+[   38.262222] rtl88xxau 1-1.3:1.0 10da4305cfbd: renamed from wlan0
+[   38.306748] uart-pl011 20201000.serial: no DMA platform data
+[   38.393452] smsc95xx 1-1.1:1.0 eth0: hardware isn't capable of remote wakeup
+[   40.470729] smsc95xx 1-1.1:1.0 eth0: hardware isn't capable of remote wakeup
+[   41.090479] usb 1-1.3: USB disconnect, device number 4
+[   41.289739] usb 1-1.3: new high-speed USB device number 5 using dwc_otg
+[   41.379131] usb 1-1.3: New USB device found, idVendor=0846, idProduct=9052
+[   41.379163] usb 1-1.3: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[   41.379170] usb 1-1.3: Product: 802.11ac WLAN Adapter 
+[   41.379176] usb 1-1.3: Manufacturer: Realtek 
+[   41.379183] usb 1-1.3: SerialNumber: 00e04c000001
+[   46.288054] FAT-fs (mmcblk0p1): Volume was not properly unmounted. Some data may be corrupt. Please run fsck.
+
+
+options rt2800usb txpower=4
+options ath9k_htc blink=0 ps_enable=0 debug=0x00000000
+options ath9k_hw txpower=54 aifs=2 cwmin=0 cwmax=3 cck_sifs=10 ofdm_sifs=16 slottime=9 thresh62=26
+# for 4.3.21 
+# options 8812au rtw_wifi_spec=1
+# for 5.2.20.2
+options 8812au rtw_tx_pwr_idx_override=54 rtw_wifi_spec=1 rtw_tx_pwr_by_rate=0 rtw_tx_pwr_lmt_enable=0
+options 88XXau rtw_tx_pwr_idx_override=54 rtw_wifi_spec=1 rtw_tx_pwr_by_rate=0 rtw_tx_pwr_lmt_enable=0
+
+
+FREQ=5280
+TXMODE=single
+FREQ_TX[0]=5805
+FREQ_TX[1]=5220
+txpower=54
+STBC_LDPC=Y
+STREAM=svpcom
+VIDEO_BLOCKS=6
+VIDEO_FECS=2
+VIDEO_BLOCKLENGTH=1536
+TELEMETRY_TRANSMISSION=wbc
+TELEMETRY_OSD=mavlink
+TELEMETRY_UPLINK=Y
+LINK_RC_KEY=3
+RC=disabled
+DATARATE=2
+VIDEO_BITRATE=auto
+WIDTH=1920
+HEIGHT=1080
+FPS=30
+KEYFRAMERATE=8
+EXTRAPARAMS="-cd H264 -n -fl -ih -pf high -if both" 
+EFFECT="-ex auto -mm spot -awb auto"
+FC_RC_SERIALPORT=/dev/serial0
+FC_RC_BAUDRATE=57600
+FC_TELEMETRY_SERIALPORT=/dev/serial0
+FC_TELEMETRY_BAUDRATE=57600
+USBCAM="v4l2src device=/dev/video0 io-mode=4 ! video/x-h264,width=1920,height=960,framerate=30/1,stream-format=byte-stream,profile=baseline"
+IPCAM="rtspsrc location=\"rtsp://192.168.1.10:554/user=admin&password=&channel=1&stream=0.sdp\" latency=0"
+FREQSCAN=N
+AIRODUMP=N
+AIRODUMP_SECONDS=25
+WIFI_HOTSPOT=Y
+WIFI_HOTSPOT_NIC=internal
+ETHERNET_HOTSPOT=N
+ENABLE_SCREENSHOTS=N
+VIDEO_TMP=disabled
+RELAY=N
+RELAY_NIC=a854b22e6532
+RELAY_FREQ=2382
+OSD=Y
+EXTERNAL_TELEMETRY_SERIALPORT_GROUND=/dev/serial0
+EXTERNAL_TELEMETRY_SERIALPORT_GROUND_BAUDRATE=57600
+ENABLE_SERIAL_TELEMETRY_OUTPUT=N
+TELEMETRY_OUTPUT_SERIALPORT_GROUND=/dev/serial0
+FORWARD_STREAM=rtp
+VIDEO_UDP_PORT1=5600
+VIDEO_UDP_PORT2=5601
+DEBUG=N
+IMX327_videoformat=NTSC
+IMX327_mirrormode=0x00
+IMX327_denoise=0x00
+IMX327_daynightmode=0xFC
+IMX327_agc=0x00
+IMX327_aespeed1=0x32
+IMX327_aespeed2=0x32
+IMX327_contrast=0x80
+IMX327_saturation=0x32
+IMX327_brightness=0x32
+IMX327_sharppen1=0x1
+IMX327_sharppen2=0xA
+IMX327_wdrmode=0x03
+IMX327_wdrtargetbr=0x80
+IMX327_wdrbtargetbr=0x30
+IMX307_videoformat=60
+IMX307_mirrormode=0
+IMX307_daynightmode=0x1
+IMX307_contrast=50
+IMX307_saturation=50
+IMX307_hue=50
+IMX307_aetarget=127
+
+
+﻿/* MISC SETTINGS */
+/* --------------*/
+#define IMPERIAL false
+#define COPTER  false
+#define HIDE_LATLON false
+#define REVERSE_ALTITUDES false
+#define REL_ALT_SOURCE 1
+#define CHINESE false
+/* DISPLAY */
+/* --------*/
+#define COLOR 0,200,0,0.7 // Fill color. First three numbers RGB color, last number opacity. 1.0 = fully visible, 0.0 = fully opaque
+#define OUTLINECOLOR 0,0,0,0.5 // Outline color. First three numbers RGB color, last number opacity. 1.0 = fully visible, 0.0 = fully opaque
+#define OUTLINEWIDTH 1.2 // Outline width, default is 1, useable range from 1-3. Set to 0 to disable outline
+#define FONT "Aldrich-Regular.ttf" // Font to use, case-sensitive!
+#define GLOBAL_SCALE 1 // Global scale factor, 1.2 is default, useable range is from about 0.5 to 2
+#define COLOR_WARNING 255,20,20,0.9
+#define COLOR_CAUTION 245,222,20,0.8
+#define COLOR_GOOD 43,240,36,0.7
+#define COLOR_DECLUTTER 255,255,255,0.0 // fully opaque
+/* OSD elements positions, sizes and options */
+/* ------------------------------------------*/
+/* POS_X - from left to right (0-100)
+/* POS_Y - from bottom to top (0-100)
+/* SCALE - scale factor
+/* ------------------------------------------*/
+#define RAPORT
+#define RAPORT_POS_X 50
+#define RAPORT_POS_Y 40
+#define RAPORT_SCALE 0.8
+#define BT_VOLT
+#define BT_VOLT_POS_X 4
+#define BT_VOLT_POS_Y 26
+#define BT_VOLT_SCALE 0.8
+#define CELL_V
+#define CELL_V_cells 4
+#define CELL_V_warn 3.4
+#define CELL_V_crit 3.1
+#define CELL_V_POS_X 4
+#define CELL_V_POS_Y 20
+#define CELL_V_SCALE 0.8
+#define BT_AMPER
+#define BT_AMPER_POS_X 4
+#define BT_AMPER_POS_Y 14
+#define BT_AMPER_SCALE 0.8
+#define EFFIC
+#define EFFIC_POS_X 4
+#define EFFIC_POS_Y 8
+#define EFFIC_SCALE 0.8
+#define TOTAL_AMPS true // set to false if you dont want to see this
+#define TOTAL_AMPS_POS_X 4
+#define TOTAL_AMPS_POS_Y 2
+#define TOTAL_AMPS_SCALE 0.8
+#define ARMSTAT
+#define ARMSTAT_POS_X 0
+#define ARMSTAT_POS_Y 75
+#define ARMSTAT_SCALE 1.2
+#define VARIO
+#define VARIO_POS_X 95.5
+#define VARIO_POS_Y 50
+#define VARIO_SCALE 0.8
+#define SIDE_THR
+#define SIDE_THR_POS_X 0
+#define SIDE_THR_POS_Y 50
+#define SIDE_THR_SCALE 0.8
+#define RSSI//.............RC_RSSI
+#define RSSI_POS_X 82
+#define RSSI_POS_Y 94
+#define RSSI_SCALE 1
+#define RSSI_WARN -40 // negative number
+#define RSSI_CAUTION -25
+#define RSSI_DECLUTTER 0 //1 for yes, 0 for no
+#define DOWNLINK_RSSI
+#define DOWNLINK_RSSI_POS_X 7
+#define DOWNLINK_RSSI_POS_Y 96
+#define DOWNLINK_RSSI_SCALE 1
+#define DOWNLINK_RSSI_FEC_BAR true // set to true to draw FEC bar display
+#define DOWNLINK_RSSI_DETAILED
+#define DOWNLINK_RSSI_DETAILED_POS_X 6
+#define DOWNLINK_RSSI_DETAILED_POS_Y 90
+#define DOWNLINK_RSSI_DETAILED_SCALE 0.75
+#define UPLINK_RSSI     //网卡上行
+#define UPLINK_RSSI_POS_X 25
+#define UPLINK_RSSI_POS_Y 96
+#define UPLINK_RSSI_SCALE 1
+#define KBITRATE     //视频码率
+#define KBITRATE_POS_X 96
+#define KBITRATE_POS_Y 70
+#define KBITRATE_SCALE 0.7
+#define KBITRATE_WARN 98 //percent approaching 100 maxbitrate
+#define KBITRATE_CAUTION 50
+#define KBITRATE_DECLUTTER 0 //1 for yes, 0 for no
+#define SYS     //天空地面CPU温度
+#define SYS_POS_X 95
+#define SYS_POS_Y 77
+#define SYS_SCALE 0.7
+#define CPU_LOAD_WARN 60 //percent cpu load
+#define CPU_LOAD_CAUTION 50
+#define CPU_TEMP_WARN 70 //degrees celsius
+#define CPU_TEMP_CAUTION 60
+#define SYS_DECLUTTER 0 //1 for yes, 0 for no
+#define HOME_ARROW
+#define HOME_ARROW_POS_X 50
+#define HOME_ARROW_POS_Y 10
+#define HOME_ARROW_SCALE 1
+#define HOME_ARROW_USECOG false // use course over ground (from gps) instead of magnetometer
+#define HOME_ARROW_INVERT true // set to true if arrow points in the opposite direction
+#define BATT_STATUS_POS_X 9
+#define BATT_STATUS_POS_Y 12
+#define BATT_STATUS_SCALE 1
+#define BATT_STATUS_CURRENT true // set to true to draw current (ampere) (mavlink only)
+#define BATT_GAUGE_POS_X 5
+#define BATT_GAUGE_POS_Y 5
+#define BATT_GAUGE_SCALE 1
+#define CELLS 4 // set to number of cells used
+#define CELL_MAX 4.20 // maximum cell voltage
+#define CELL_MIN 3.20 // minimum cell voltage
+#define CELL_WARNING1 3.50 // warning level 1 -> orange, low
+#define CELL_WARNING2 3.40 // warning level 2 -> red, critical
+#define COMPASS
+#define COMPASS_POS_Y 93
+#define COMPASS_SCALE 1
+#define COMPASS_USECOG false // set to true to use course over ground (from gps) instead of magnetometer
+#define COMPASS_INAV false // set to true to fix Inav vs Ardupilot digit difference. Otherwise false
+#define COMPASS_COMPLEX true
+#define COMPASS_LEN 70       
+#define COMPASS_BEARING true 
+#define ALTLADDER
+#define ALTLADDER_POS_X 85
+#define ALTLADDER_SCALE 1.1
+#define ALTLADDER_WARN 5 // height above launch to warn (only for relative alt)
+#define ALTLADDER_CAUTION 10 // height above launch to caution (only for relative alt)
+#define ALTLADDER_VSI_TIME 20 //(sensitivity)number of seconds vsi predicts future alt
+#define SPEEDLADDER
+#define SPEEDLADDER_POS_X 14
+#define SPEEDLADDER_SCALE 1.1
+#define SPEEDLADDER_USEAIRSPEED false //set to true to use GPS speed instead of airspeed 
+#define SPEEDLADDER_TREND_TIME 20 //(sensitivity)number of seconds speed trend predicts future speed
+#define SPEEDLADDER_LOW_LIMIT 0 // where the low speed que begins
+#define YAWDISPLAY
+#define YAWDISPLAY_POS_X 50
+#define YAWDISPLAY_POS_Y 88
+#define YAWDISPLAY_SCALE 1
+#define YAWDISPLAY_TREND_TIME 20 //(sensitivity)number of seconds speed trend predicts future yaw
+#define AHI
+#define AHI_SCALE 0.8
+#define AHI_LADDER false // set to true to draw ladders above and below the center horizon line
+#define AHI_INVERT_ROLL 1 // default -1, set to 1 if roll moves in the wrong direction
+#define AHI_INVERT_PITCH 1 // default -1, set to 1 if pitch moves in the wrong direction
+#define AHI_SWAP_ROLL_AND_PITCH false // set to true to swap roll and pitch (Frsky and Smartport only)
+#define AHI_ROLLANGLE true //display bank angle
+#define AHI_ROLLANGLE_INVERT -1 //reverse bank angle display with 1 or -1
+#define POSITION      //GPS经纬度
+#define POSITION_POS_X 99
+#define POSITION_POS_Y 90
+#define POSITION_SCALE 0.7
+#define SAT    //  GPS数量
+#define SAT_POS_X 89	
+#define SAT_POS_Y 96
+#define SAT_SCALE 0.8
+#define SAT_HDOP_WARN 2 // meters accuracy (higher is worse)
+#define SAT_HDOP_CAUTION 1 
+#define SAT_DECLUTTER 0 //1 for yes, 0 for no
+       
+#define BAROALT                 //气压高度（已关闭显示，需要的自行打开）
+#define BAROALT_POS_X 95
+#define BAROALT_POS_Y 18
+#define BAROALT_SCALE 0.6
+#define DISTANCE
+#define DISTANCE_POS_X 55
+#define DISTANCE_POS_Y 1
+#define DISTANCE_SCALE 1
+#define FLIGHTMODE
+#define FLIGHTMODE_POS_X 25
+#define FLIGHTMODE_POS_Y 1
+#define FLIGHTMODE_SCALE 1
+#define CLIMB_POS_X 92
+#define CLIMB_POS_Y 33
+#define CLIMB_SCALE 0.6
+#define MSLALT_POS_X 92
+#define MSLALT_POS_Y 30
+#define MSLALT_SCALE 0.6
+#define COURSE_OVER_GROUND_POS_X 94
+#define COURSE_OVER_GROUND_POS_Y 77
+#define COURSE_OVER_GROUND_SCALE 0.8
+#define GPSSPEED_POS_X 8
+#define GPSSPEED_POS_Y 58
+#define GPSSPEED_SCALE 0.8
+#define AIRSPEED
+#define AIRSPEED_POS_X 8
+#define AIRSPEED_POS_Y 34
+#define AIRSPEED_SCALE 0.8
+#define WARNING_POS_X 50
+#define WARNING_POS_Y 25
+#define TOTAL_DIST true // set to false if you dont want to see this
+#define TOTAL_DIST_POS_X 90	
+#define TOTAL_DIST_POS_Y 1
+#define TOTAL_DIST_SCALE 1
+#define TOTAL_TIME true // set to false if you dont want to see this
+#define TOTAL_TIME_POS_X 96
+#define TOTAL_TIME_POS_Y 7
+#define TOTAL_TIME_SCALE 1
+#define TOTAL_TIME_SCALE 1
+#define HOME_RADAR             //雷达
+#define HOME_RADAR_POS_X 60    //ÕâÀïµÄPOS_X²»±íÊ¾ºáÏòÎ»ÖÃ£¬±íÊ¾À×´ïÍ¼ºáÏòµÄ³¤¶È£¬ÆÁÄ»×Ü³¤¶ÈÎª100
+#define HOME_RADAR_POS_Y 65    //ÕâÀïµÄPOS_Y²»±íÊ¾×ÝÏòÎ»ÖÃ£¬±íÊ¾À×´ïÍ¼×ÝÏòµÄ³¤¶È£¬ÆÁÄ»×Ü¿í¶ÈÎª100
+#define HOME_RADAR_SCALE 0.8
+#define HOME_RADAR_USECOG true // ÄãµÄGPSÃ»ÓÐ´ÅÂÞÅÌ£¬ÉèÖÃÎªtrue£¬Ê¹ÓÃGPS¼ÆËãµÄ»úÍ·³¯Ïò£¬Ò»°ã¹Ì¶¨ÒíÓÃ¡£ÄãµÄGPSÓÐ´ÅÂÞÅÌ£¬ÉèÖÃÎªfalse£¬Ê¹ÓÃGPS´ÅÂÞÅÌµÄ³¯Ïò£¬Ò»°ã¶àÖáÓÃ£¬LTMÒ²ÉèÖÃÎªfalse¡£
+#define RPA            //Roll Pitch £¨ÐÂÔöÏîÄ¿£©ºá¹öºÍ¸©Ñö½Ç¶È,Èç¹û×ËÌ¬ÒÇµÄÓÒ²à¿ªÆôÁËºá¹ö½Ç¶È£¬½¨Òé¹Ø±Õ´ËÏîÏÔÊ¾
+#define RPA_POS_X 98
+#define RPA_POS_Y 15
+#define RPA_SCALE 0.7
+#define RPA_INVERT_ROLL -1   // Ä¬ÈÏ -1, Èç¹ûÄãµÄºá¹ö½Ç¶È·´ÁË¾ÍÉèÖÃÎª1 
+#define RPA_INVERT_PITCH 1
+#define THROTTLE_POS_X 5
+#define THROTTLE_POS_Y 28
+#define THROTTLE_SCALE 1
+#define THROTTLE_GAUGE true //set to false for number only
+#define THROTTLE_TARGET 20 //set to position tick and trigger green needle
+#define THROTTLE_V2_POS_X 10.5
+#define THROTTLE_V2_POS_Y 28
+#define THROTTLE_V2_SCALE 0.65
+#define THROTTLE_V2_COMPLEX true //false for simple small throttle display
+#define MISSION                    //WAYPOINT COUNTER £¨ÐÂÔöÏîÄ¿£©º½µãÈÎÎñ
+#define MISSION_POS_X 75
+#define MISSION_POS_Y 1
+#define MISSION_SCALE 0.6
+#define ANGLE                    //Bank Angle £¨ÐÂÔöÏîÄ¿£©½Ç¶ÈÖ¸Ê¾Æ÷£¨Ô²»¡£©
+#define ANGLE_POS_X 50
+#define ANGLE_POS_Y 78
+#define ANGLE_SCALE 1
+#define ANGLE2                    //£¨ÐÂÔöÏîÄ¿£©½Ç¶ÈÖ¸Ê¾Æ÷£¨Ö¸Õë£©
+#define ANGLE2_POS_X 50
+#define ANGLE2_POS_Y 78
+#define ANGLE2_SCALE 1
+#define ALARM                    //£¨ÐÂÔöÏîÄ¿£©¾¯¸æ,ÔÚ·É¿ØÄÚ´¦ÓÚÆôÓÃ×´Ì¬²¢ÇÒ¹ÊÕÏµÄ´«¸ÐÆ÷£¬»áÓÐºì×ÖÌáÊ¾¡£
+#define ALARM_POS_X 82
+#define ALARM_POS_Y 33
+#define ALARM_SCALE 0.5          //¡ý½«ÏàÓ¦µÄ´«¸ÐÆ÷ÉèÖÃÎªfalse£¬¿ÉÒÔÇ¿ÖÆ¹Ø±ÕÆä¸æ¾¯
+#define ALARM_1 true             //3D_GYRO                ÍÓÂÝÒÇ
+#define ALARM_2 true             //3D_ACCEL               ¼ÓËÙ¶È¼Æ
+#define ALARM_3 true             //3D_MAG                 ´ÅÂÞÅÌ
+#define ALARM_4 true             //ABSOLUTE_PRESSURE      ¿ÕËÙ¼Æ¾²Ñ¹
+#define ALARM_5 true             //DIFFERENTIAL_PRESSURE  ¿ÕËÙ¼Æ¶¯Ñ¹
+#define ALARM_6 true             //GPS                    È«Çò¶¨Î»ÏµÍ³GPS
+#define ALARM_7 true             //OPTICAL_FLOW           ¹âÁ÷´«¸ÐÆ÷
+#define ALARM_8 true             //VISION_POSITION        ÊÓ¾õ´«¸ÐÆ÷
+#define ALARM_9 true             //LASER_POSITION         ¼¤¹â´«¸ÐÆ÷
+#define ALARM_10 true            //EXTERNAL_GROUND_TRUTH  (Vicon or Leica)£¬ÕâÊ²Ã´ÍæÒâ
+#define ALARM_11 true            //ANGULAR_RATE_CONTROL   ½ÇËÙÂÊ¿ØÖÆ
+#define ALARM_12 true            //ATTITUDE_STABILIZATION ×ËÌ¬ÎÈ¶¨
+#define ALARM_13 true            //YAW_POSITION           Æ«º½Î»ÖÃ
+#define ALARM_14 true            //Z_ALTITUDE_CONTROL     ZÖá¸ß¶È¿ØÖÆ
+#define ALARM_15 true            //XY_POSITION_CONTROL    X/YÖáÎ»ÖÃ¿ØÖÆ
+#define ALARM_16 true            //MOTOR_OUTPUTS          µç»úÊä³ö
+#define ALARM_17 false           //RC_RECEIVER            ½ÓÊÕ»ú
+#define ALARM_18 true            //3D_GYRO2               2ºÅÍÓÂÝÒÇ
+#define ALARM_19 true            //3D_ACCEL2              2ºÅ¼ÓËÙ¶È¼Æ
+#define ALARM_20 true            //3D_MAG2                2ºÅ´ÅÂÞÅÌ
+#define ALARM_21 true            //GEOFENCE               µØÀíÎ§À¸
+#define ALARM_22 true            //AHRS                   º½×Ë²Î¿¼ÏµÍ³AHRS
+#define ALARM_23 false            //TERRAIN                µØÐÎ
+#define ALARM_24 true            //REVERSE_MOTOR          µç»ú·´×ª
+#define ALARM_26 true            //BATTERY                µç³Ø´«¸ÐÆ÷
+
+
+
+
+#define ROLL_AXIS      0
+#define PITCH_AXIS     1
+#define THROTTLE_AXIS  2
+#define YAW_AXIS       3
+#define AUX1_AXIS      4
+#define AUX2_AXIS      5
+#define AUX3_AXIS      6
+#define AUX4_AXIS      7
+
+
+#define AXIS0_INITIAL 1500
+#define AXIS1_INITIAL 1500
+#define AXIS2_INITIAL 1020
+#define AXIS3_INITIAL 1500
+#define AXIS4_INITIAL 1000
+#define AXIS5_INITIAL 1000
+#define AXIS6_INITIAL 1000
+#define AXIS7_INITIAL 1000
+
+#define UPDATE_NTH_TIME 10
+#define TRANSMISSIONS 2
+
+
+
+hw_mode=g
+channel=7
+ssid=EZ-WifiBroadcast
+interface=wifihotspot0
+driver=nl80211
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+ieee80211n=1          # 802.11n support
+wmm_enabled=1         # QoS support
+ht_capab=[HT40][SHORT-GI-20][DSSS_CCK-40]
+
+supported_rates=10 20 55 110 60 90 120 180 240 360 480 540
+basic_rates=10 20 55 110 60 90 120 180 240 360 480 540
+
+disassoc_low_ack=0
+ap_max_inactivity=3600
+
+tx_queue_data3_aifs=1
+tx_queue_data3_cwmin=3
+tx_queue_data3_cwmax=7
+tx_queue_data3_burst=0
+tx_queue_data2_aifs=1
+tx_queue_data2_cwmin=3
+tx_queue_data2_cwmax=7
+tx_queue_data2_burst=0
+tx_queue_data1_aifs=1
+tx_queue_data1_cwmin=3
+tx_queue_data1_cwmax=7
+tx_queue_data1_burst=0
+tx_queue_data0_aifs=1
+tx_queue_data0_cwmin=3
+tx_queue_data0_cwmax=7
+tx_queue_data0_burst=0
+
+
+wmm_ac_bk_cwmin=2
+wmm_ac_bk_cwmax=2
+wmm_ac_bk_aifs=3
+wmm_ac_bk_txop_limit=47
+wmm_ac_bk_acm=0
+wmm_ac_be_aifs=2
+wmm_ac_be_cwmin=2
+wmm_ac_be_cwmax=3
+wmm_ac_be_txop_limit=47
+wmm_ac_be_acm=0
+wmm_ac_vi_aifs=2
+wmm_ac_vi_cwmin=2
+wmm_ac_vi_cwmax=3
+wmm_ac_vi_txop_limit=47
+wmm_ac_vi_acm=0
+wmm_ac_vo_aifs=2
+wmm_ac_vo_cwmin=2
+wmm_ac_vo_cwmax=3
+wmm_ac_vo_txop_limit=47
+wmm_ac_vo_acm=0
