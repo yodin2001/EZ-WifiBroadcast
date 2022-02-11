@@ -95,8 +95,40 @@ void telemetry_init(telemetry_data_t *td) {
 		td->rx_status_rc = telemetry_wbc_status_memory_open_rc();
 	#endif
 
-td->rx_status_osd = telemetry_wbc_status_memory_open_osd();
-td->rx_status_sysair = telemetry_wbc_status_memory_open_sysair();
+	td->rx_status_osd = telemetry_wbc_status_memory_open_osd();
+	td->rx_status_sysair = telemetry_wbc_status_memory_open_sysair();
+#else
+	td->rx_status->damaged_block_cnt = 0;
+	td->rx_status->lost_packet_cnt = 0;
+	td->rx_status->skipped_packet_cnt = 0;
+	td->rx_status->injection_fail_cnt = 0;
+	td->rx_status->received_packet_cnt = 0;
+	td->rx_status->kbitrate = 0;
+	td->rx_status->kbitrate_measured = 0;
+	td->rx_status->kbitrate_set = 0;
+	td->rx_status->lost_packet_cnt_telemetry_up = 0;
+	td->rx_status->lost_packet_cnt_telemetry_down = 0;
+	td->rx_status->lost_packet_cnt_msp_up = 0;
+	td->rx_status->lost_packet_cnt_msp_down = 0;
+	td->rx_status->lost_packet_cnt_rc = 0;
+	td->rx_status->current_signal_joystick_uplink = 0;
+	td->rx_status->current_signal_telemetry_uplink = 0;
+	td->rx_status->joystick_connected = 0;
+	td->rx_status->HomeLat = 0;
+	td->rx_status->HomeLon = 0;
+	td->rx_status->cpuload_gnd = 0;
+	td->rx_status->temp_gnd = 0;
+	td->rx_status->cpuload_air = 0;
+	td->rx_status->temp_air = 0;
+	td->rx_status->wifi_adapter_cnt = 1;
+	int i = 0;
+	for(i=0; i < 6; i++)
+	{
+		td->rx_status->adapter[i].received_packet_cnt = 0;
+    	td->rx_status->adapter[i].current_signal_dbm = 0;
+    	td->rx_status->adapter[i].type = 0; // 0 = Atheros, 1 = Ralink
+    	td->rx_status->adapter[i].signal_good = 0;
+	}
 #endif
 }
 

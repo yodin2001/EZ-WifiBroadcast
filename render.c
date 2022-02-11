@@ -134,17 +134,16 @@ void loopUpdate(telemetry_data_t *td) {
  }
 
 void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t undervolt, int osdfps) {
-
     // call loopUpdate to update stuff that should be updated even when particular elements are off (like total curent);
     loopUpdate(td);
 
     Start(width,height); // render start
     setfillstroke();
-
+#ifndef RELAY
     if (td->rx_status_sysair->undervolt == 1) draw_message(0,"Undervoltage on TX","  ","Bitrate limited to 1 Mbit",WARNING_POS_X, WARNING_POS_Y, GLOBAL_SCALE);
+#endif
     if (undervolt == 1) draw_message(0,"Undervoltage on RX","  "," ",WARNING_POS_X, WARNING_POS_Y, GLOBAL_SCALE);
-
-    #if defined(FRSKY)
+#if defined(FRSKY)
     //we assume that we have a fix if we get the NS and EW values from frsky protocol
     if (((td->ew == 'E' || td->ew == 'W') && (td->ns == 'N' || td->ns == 'S')) && !home_set){
     setting_home = true;
@@ -238,9 +237,9 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
     }
     #endif
 
-
- //    draw_osdinfos(osdfps, 20, 20, 1);
-
+    #ifdef FPS
+        draw_osdinfos(osdfps, FPS_POS_X, FPS_POS_Y, FPS_SCALE);
+    #endif
 
 #ifdef UPLINK_RSSI
     draw_uplink_signal(td->rx_status_uplink->adapter[0].current_signal_dbm, td->rx_status_uplink->lost_packet_cnt, td->rx_status_rc->adapter[0].current_signal_dbm, td->rx_status_rc->lost_packet_cnt, UPLINK_RSSI_POS_X, UPLINK_RSSI_POS_Y, UPLINK_RSSI_SCALE * GLOBAL_SCALE);
@@ -263,7 +262,6 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
         draw_sys(td->rx_status->cpuload_air, td->rx_status->temp_air, td->rx_status->cpuload_gnd, td->rx_status->temp_gnd, td->armed, SYS_POS_X, SYS_POS_Y, SYS_SCALE * GLOBAL_SCALE, CPU_LOAD_WARN, CPU_LOAD_CAUTION, CPU_TEMP_WARN, CPU_TEMP_CAUTION, SYS_DECLUTTER);
     #endif
  #endif
-
 
 #ifdef FLIGHTMODE
     #ifdef MAVLINK
@@ -323,7 +321,6 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
     draw_cog((int)td->cog, COURSE_OVER_GROUND_POS_X, COURSE_OVER_GROUND_POS_Y, COURSE_OVER_GROUND_SCALE * GLOBAL_SCALE);
  #endif
 
-
 #ifdef ALTLADDER //by default in osdconfig uses mslalt = false (relative alt should be shown)
         #if REVERSE_ALTITUDES == true
         draw_alt_ladder((int)td->msl_altitude, ALTLADDER_POS_X, 50, ALTLADDER_SCALE * GLOBAL_SCALE, ALTLADDER_WARN, ALTLADDER_CAUTION, ALTLADDER_VSI_TIME, td->mav_climb);
@@ -331,7 +328,6 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
         draw_alt_ladder((int)td->rel_altitude, ALTLADDER_POS_X, 50, ALTLADDER_SCALE * GLOBAL_SCALE, ALTLADDER_WARN, ALTLADDER_CAUTION, ALTLADDER_VSI_TIME, td->mav_climb);
         #endif  
  #endif
-
 
 #ifdef MSLALT 
         #if REVERSE_ALTITUDES == true
@@ -377,7 +373,6 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
     #endif
  #endif
 
-
 #ifdef COMPASS
     #if COMPASS_USECOG == true
     draw_compass(td->cog, course_to(home_lat, home_lon, td->latitude, td->longitude), COMPASS_LEN, 50, COMPASS_POS_Y, COMPASS_SCALE * GLOBAL_SCALE);
@@ -398,7 +393,6 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 #ifdef TOTAL_DIST
     draw_TOTAL_DIST((int)td->speed, TOTAL_DIST_POS_X, TOTAL_DIST_POS_Y, TOTAL_DIST_SCALE * GLOBAL_SCALE);
  #endif
-
 #ifdef TOTAL_TIME
     draw_TOTAL_TIME((float)total_time, TOTAL_TIME_POS_X, TOTAL_TIME_POS_Y, TOTAL_TIME_SCALE * GLOBAL_SCALE);
  #endif
@@ -438,12 +432,15 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
         draw_total_signal(best_dbm, td->rx_status->received_packet_cnt, td->rx_status->damaged_block_cnt, td->rx_status->lost_packet_cnt, td->rx_status->received_packet_cnt, 0, DOWNLINK_RSSI_POS_X, DOWNLINK_RSSI_POS_Y, DOWNLINK_RSSI_SCALE * GLOBAL_SCALE);
     #endif
     #ifdef DOWNLINK_RSSI_DETAILED
-    for(j=0; j<ac; ++j) {
+    if(ac > 1)
+    {
+        for(j=0; j<ac; ++j) {
         #ifndef RELAY
             draw_card_signal(td->rx_status->adapter[j].current_signal_dbm, td->rx_status->adapter[j].signal_good, j, ac, td->rx_status->tx_restart_cnt, td->rx_status->adapter[j].received_packet_cnt, td->rx_status->adapter[j].wrong_crc_cnt, td->rx_status->adapter[j].type, td->rx_status->received_packet_cnt, td->rx_status->lost_packet_cnt, DOWNLINK_RSSI_DETAILED_POS_X, DOWNLINK_RSSI_DETAILED_POS_Y, DOWNLINK_RSSI_DETAILED_SCALE * GLOBAL_SCALE);
         #else
             draw_card_signal(td->rx_status->adapter[j].current_signal_dbm, td->rx_status->adapter[j].signal_good, j, ac, 0, td->rx_status->adapter[j].received_packet_cnt, 0, td->rx_status->adapter[j].type, td->rx_status->received_packet_cnt, td->rx_status->lost_packet_cnt, DOWNLINK_RSSI_DETAILED_POS_X, DOWNLINK_RSSI_DETAILED_POS_Y, DOWNLINK_RSSI_DETAILED_SCALE * GLOBAL_SCALE);
         #endif
+        }
     }
     #endif
  #endif
@@ -466,7 +463,6 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 #ifdef BATT_GAUGE
     draw_batt_gauge(((td->voltage/CELLS)-CELL_MIN)/(CELL_MAX-CELL_MIN)*100, BATT_GAUGE_POS_X, BATT_GAUGE_POS_Y, BATT_GAUGE_SCALE * GLOBAL_SCALE);
  #endif
-
 
 #ifdef HOME_RADAR 
     #if HOME_RADAR_USECOG == true
@@ -503,7 +499,6 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 #ifdef RPA  //roll and pitch angle
     draw_RPA(RPA_INVERT_ROLL * td->roll, RPA_INVERT_PITCH * td->pitch, RPA_POS_X, RPA_POS_Y, RPA_SCALE * GLOBAL_SCALE);
  #endif
-
 #ifdef AHI
     #if defined(FRSKY) || defined(SMARTPORT)
     float x_val, y_val, z_val;
@@ -533,7 +528,6 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 #ifdef ANGLE //bank angle indicator. Must follow AHI 
   draw_Angle(ANGLE_POS_X, ANGLE_POS_Y, ANGLE_SCALE * GLOBAL_SCALE);
  #endif
-
     End(); // Render end (causes everything to be drawn on next vsync)
  }
 
@@ -2559,7 +2553,7 @@ void rotatePoints(float *x, float *y, float angle, int points, int center_x, int
 
 void draw_RPA(float roll, float pitch, float pos_x, float pos_y, float scale){
     float text_scale = getWidth(2) * scale;
-    VGfloat width_value = TextWidth("00000.0", myfont, text_scale)*1.1;
+    VGfloat width_value = TextWidth("0000.0", myfont, text_scale)*1.1;
     VGfloat height_text = TextHeight(myfont, text_scale)+getHeight(0.3)*scale;
     Fill(COLOR);
     Stroke(OUTLINECOLOR);

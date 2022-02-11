@@ -97,9 +97,9 @@ uint8_t wbc_buf[255];
 struct pollfd fds_wbc[1];
 int fd_wbc;
 
-void get_wbc_telemetry(telemetry_data_t *td)
+void get_wbc_telemetry(telemetry_data_t *td, int timeout)
 {
-    int rc = poll(fds_wbc, 1, 10);
+    int rc = poll(fds_wbc, 1, timeout);
 
     if (fds_wbc[0].revents & (POLLERR | POLLNVAL))
     {
@@ -153,19 +153,24 @@ int main(int argc, char *argv[]) {
     int do_render = 0;
     int counter = 0;
 
+    telemetry_data_t td;
+
 
 #ifdef FRSKY
     frsky_state_t fs;
 #endif
 
 #if defined RELAY
-    //open wbc socet
+    //open wbc socket
     fd_wbc = open_udp_socket_for_rx(5003, (struct pollfd *) &fds_wbc);
     if(fcntl(fd_wbc, F_SETFL, fcntl(fd_wbc, F_GETFL, 0) | O_NONBLOCK) < 0)
     {
         perror("Unable to set socket into nonblocked mode");
         exit(1);
     }
+    memset(&wbc_buf, 0, sizeof(wbc_buf));
+    td.rx_status = (wifibroadcast_rx_status_forward_t *)&wbc_buf;
+
     //open mavlink socket
     int fd_mavlink;
     struct pollfd fds_mavlink[1];
@@ -197,7 +202,7 @@ int main(int argc, char *argv[]) {
 #endif
 
     fprintf(stderr,"OSD: Initializing sharedmem ...\n");
-    telemetry_data_t td;
+    
     telemetry_init(&td);
     fprintf(stderr,"OSD: Sharedmem init done\n");
 
@@ -219,6 +224,7 @@ int main(int argc, char *argv[]) {
     FILE *fp3;
     long double a[4], b[4];
 
+#ifndef RELAY
     fp3 = fopen("/tmp/undervolt","r");
     if(NULL == fp3) {
         perror("ERROR: Could not open /tmp/undervolt");
@@ -227,17 +233,17 @@ int main(int argc, char *argv[]) {
     fscanf(fp3,"%d",&undervolt_gnd);
     fclose(fp3);
 //    fprintf(stderr,"undervolt:%d\n",undervolt_gnd);
-
+#endif
     usleep(500000);
     while(1) {
 //		fprintf(stderr," start while ");
 //		prev_time = current_timestamp();
 
 #if defined RELAY
-        get_wbc_telemetry(&td);
+        get_wbc_telemetry(&td, 10);
 
         //read mavlink
-        int rc = poll(fds_mavlink, 1, 50);
+        int rc = poll(fds_mavlink, 1, 25);
 
         if (rc < 0){
             if (errno == EINTR || errno == EAGAIN) continue;
@@ -307,7 +313,7 @@ int main(int argc, char *argv[]) {
             render(&td, td.rx_status->cpuload_gnd, td.rx_status->temp_gnd/1000, 0,fps);
         #endif
 		long long took = current_timestamp() - prev_time;
-//		fprintf(stderr,"Render took %lldms\n", took);
+		//fprintf(stderr,"Render took %lldms\n", took);
 		do_render = 0;
 		counter = 0;
 	    }
