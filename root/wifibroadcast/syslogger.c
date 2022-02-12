@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 //		fprintf(stderr,"cpuload gnd:%d\n",cpuload_gnd);
 		if (temp_gnd > 55000) {
 			digitalWrite (fan, HIGH);
-		} else {
+		} else if (temp < 50000) {
 			digitalWrite (fan, LOW);
 		}
 
