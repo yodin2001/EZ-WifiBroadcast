@@ -1700,8 +1700,24 @@ void draw_home_distance(int distance, bool home_fixed, float pos_x, float pos_y,
     Text(getWidth(pos_x)+getWidth(0.4), getHeight(pos_y), "ft", myfont, text_scale*0.6);
     sprintf(buffer, "%05d", (int)(distance*TO_FEET));
     #else
-    Text(getWidth(pos_x)+getWidth(0.4), getHeight(pos_y), "m", myfont, text_scale*0.6);
-    sprintf(buffer, "%05d", distance);
+    if(distance < 1000)
+    {
+        Text(getWidth(pos_x)+getWidth(0.4), getHeight(pos_y), "m", myfont, text_scale*0.6);
+        sprintf(buffer, "%05d", distance);
+    }
+    else
+    {
+        Text(getWidth(pos_x)+getWidth(0.4), getHeight(pos_y), "km", myfont, text_scale*0.6);
+        if(distance < 100000)
+        {
+            sprintf(buffer, "%02.2f", (float)distance/1000);
+        }
+        else
+        {
+            sprintf(buffer, "%03.1f", (float)distance/1000);
+        }
+    }
+    
     curr_home_dist=distance;//to raport
     #endif
     TextEnd(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
