@@ -98,6 +98,24 @@ int open_udp_socket(int port, struct pollfd *pollfd_struct)
     printf("UDP port %d opened\n", port);
     return fd;
 }
+int udp_poll(struct pollfd (*pfd)[1], int timeout)
+{
+    int rc = poll(*pfd, 1, timeout);
+    if (rc < 0)
+    {
+        if (errno == EINTR || errno == EAGAIN) return -1;
+        perror("Poll error");
+        exit(1);
+    }
+
+    if (pfd[0]->revents & (POLLERR | POLLNVAL))
+    {
+        fprintf(stderr, "socket error!");
+        exit(1);
+    }
+    return rc;
+}
+
 
 uint8_t wbc_buf[255];
 struct pollfd fds_wbc[1];
@@ -105,15 +123,10 @@ int fd_wbc;
 
 void get_wbc_telemetry(telemetry_data_t *td, int timeout)
 {
-    int rc = poll(fds_wbc, 1, timeout);
+    if (udp_poll(&fds_wbc, timeout) < 0) return;
 
-    if (fds_wbc[0].revents & (POLLERR | POLLNVAL))
+    if (fds_wbc[0].revents & POLLIN)
     {
-        fprintf(stderr, "socket error!");
-        exit(1);
-    }
-
-    if (fds_wbc[0].revents & POLLIN){
         ssize_t rsize;
         while((rsize = recv(fd_wbc, wbc_buf, sizeof(wbc_buf), 0)) >= 0)
         {
@@ -124,6 +137,32 @@ void get_wbc_telemetry(telemetry_data_t *td, int timeout)
             exit(1);
         }
     }
+}
+
+
+int get_mavlink_udp_telemetry(int fd, telemetry_data_t *td, int timeout)
+{
+    struct pollfd poll_fd[1];
+    int do_render = 0;
+    uint8_t buff[263];
+
+    poll_fd[0].fd = fd;
+
+    if ( udp_poll(&poll_fd, timeout) < 0) return 0;
+    if (poll_fd[0].revents & (POLLIN | POLLRDNORM))
+    {
+        ssize_t rsize;
+        while((rsize = recv(fd, buff, sizeof(buff), 0)) >= 0)
+        {
+	        do_render = mavlink_read(td, buff, rsize);
+        }
+        if (rsize < 0 && errno != EWOULDBLOCK)
+        {
+            perror("Error receiving packet");
+            exit(1);
+        }
+    }
+    return do_render;
 }
 #endif
 
@@ -139,21 +178,49 @@ fd_set set;
 
 struct timeval timeout;
 
-uint8_t GetUndervoltageLocal()
+void GetGroundPiSysStateLocal(telemetry_data_t *td)
 {
-    FILE *fp = fopen("/tmp/undervolt","r");
+    FILE *fp;
+    long double a[4];
+    uint8_t undervolt_gnd;
+    static long double b[4];
+
+    fp = fopen("/sys/class/thermal/thermal_zone0/temp","r");
+    uint32_t gnd_temp = 0;
+    fscanf(fp,"%d",&gnd_temp);
+    td->status_sys_gnd.temp = gnd_temp/1000;
+	fclose(fp);
+    //fprintf(stderr,"temp gnd:%d\n",td.status_sys_gnd.temp);
+            
+
+	fp = fopen("/proc/stat","r");
+	fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&a[0],&a[1],&a[2],&a[3]);
+	fclose(fp);
+	td->status_sys_gnd.cpuload = (((b[0]+b[1]+b[2]) - (a[0]+a[1]+a[2])) / ((b[0]+b[1]+b[2]+b[3]) - (a[0]+a[1]+a[2]+a[3]))) * 100;
+    //fprintf(stderr,"cpuload gnd:%d\n",td.status_sys_gnd.cpuload);
+
+	fp = fopen("/proc/stat","r");
+	fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&b[0],&b[1],&b[2],&b[3]);
+	fclose(fp);
+
+    //Undervoltage status
+    fp = fopen("/tmp/undervolt","r");
     if(fp == NULL)
     {
         perror("ERROR: Could not open /tmp/undervolt");
         exit(EXIT_FAILURE);
     }
-    uint8_t undervolt_gnd;
     fscanf(fp,"%d",&undervolt_gnd);
     fclose(fp);
     //fprintf(stderr,"undervolt:%d\n",undervolt_gnd);
-
-    return undervolt_gnd;
+    td->status_sys_gnd.undervolt = undervolt_gnd;
 }
+
+
+
+
+
+
 
 
 int main(int argc, char *argv[])
@@ -178,40 +245,39 @@ int main(int argc, char *argv[])
     telemetry_data_t td;
     
 
-#ifdef FRSKY
-    frsky_state_t fs;
-#endif
+    #ifdef FRSKY
+        frsky_state_t fs;
+    #endif
 
-#if defined RELAY
-    //open wbc socket
-    fd_wbc = open_udp_socket(5003, (struct pollfd *) &fds_wbc);
-    memset(&wbc_buf, 0, sizeof(wbc_buf));
-    td.rx_status = (wifibroadcast_rx_status_forward_t *)&wbc_buf;
+    #if defined RELAY
+        //open wbc socket
+        fd_wbc = open_udp_socket(5003, (struct pollfd *) &fds_wbc);
+        memset(&wbc_buf, 0, sizeof(wbc_buf));
+        td.rx_status = (wifibroadcast_rx_status_forward_t *)&wbc_buf;
 
-    //open mavlink socket
-    struct pollfd fds_mavlink[1];
-    char *osd_port = getenv("OSD_PORT");
-    memset(fds_mavlink, '\0', sizeof(fds_mavlink));
-    telemetry_fd = open_udp_socket(osd_port == NULL ? 14550 : atoi(osd_port), (struct pollfd *) &fds_mavlink);
+        //open mavlink socket
+        struct pollfd fds_mavlink[1];
+        char *osd_port = getenv("OSD_PORT");
+        memset(fds_mavlink, '\0', sizeof(fds_mavlink));
+        telemetry_fd = open_udp_socket(osd_port == NULL ? 14550 : atoi(osd_port), (struct pollfd *) &fds_mavlink);
+    #else
 
-#else
+        struct stat fdstatus;
+        signal(SIGPIPE, SIG_IGN);
+        char fifonam[100];
+        sprintf(fifonam, "/root/telemetryfifo1");
 
-    struct stat fdstatus;
-    signal(SIGPIPE, SIG_IGN);
-    char fifonam[100];
-    sprintf(fifonam, "/root/telemetryfifo1");
-
-    telemetry_fd = open(fifonam, O_RDONLY | O_NONBLOCK);
-    if(-1==telemetry_fd) {
-        perror("ERROR: Could not open /root/telemetryfifo1");
-        exit(EXIT_FAILURE);
-    }
-    if(-1==fstat(telemetry_fd, &fdstatus)) {
-        perror("ERROR: fstat /root/telemetryfifo1");
-        close(telemetry_fd);
-        exit(EXIT_FAILURE);
-    }
-#endif
+        telemetry_fd = open(fifonam, O_RDONLY | O_NONBLOCK);
+        if(-1==telemetry_fd) {
+            perror("ERROR: Could not open /root/telemetryfifo1");
+            exit(EXIT_FAILURE);
+        }
+        if(-1==fstat(telemetry_fd, &fdstatus)) {
+            perror("ERROR: fstat /root/telemetryfifo1");
+            close(telemetry_fd);
+            exit(EXIT_FAILURE);
+        }
+    #endif
 
     fprintf(stderr,"OSD: Initializing sharedmem ...\n");
     telemetry_init(&td);
@@ -228,14 +294,8 @@ int main(int argc, char *argv[])
     long long delta = 0;
 
     int undervolt_gnd = 0;
-    FILE *fp;
-    FILE *fp2;
-    FILE *fp3;
-    long double a[4], b[4];
+    //FILE *fp3;
 
-#ifndef RELAY
-    td.status_sys_gnd.undervolt = GetUndervoltageLocal();
-#endif
     usleep(500000);
 
 
@@ -250,33 +310,7 @@ int main(int argc, char *argv[])
             get_wbc_telemetry(&td, 10);
 
             //read mavlink
-            int rc = poll(fds_mavlink, 1, 50);
-
-            if (rc < 0)
-            {
-                if (errno == EINTR || errno == EAGAIN) continue;
-                perror("Poll error");
-                exit(1);
-            }
-
-            if (fds_mavlink[0].revents & (POLLERR | POLLNVAL))
-            {
-                fprintf(stderr, "socket error!");
-                exit(1);
-            }
-
-            if (fds_mavlink[0].revents & POLLIN)
-            {
-                ssize_t rsize;
-                while((rsize = recv(telemetry_fd, telemBuffer, sizeof(telemBuffer), 0)) >= 0)
-                {
-	        	    do_render = mavlink_read(&td, telemBuffer, rsize);
-                }
-                if (rsize < 0 && errno != EWOULDBLOCK){
-                    perror("Error receiving packet");
-                    exit(1);
-                }
-            }
+            do_render = get_mavlink_udp_telemetry(telemetry_fd, &td, 50);
         #else
 	        FD_ZERO(&set);
 	        FD_SET(telemetry_fd, &set);
@@ -286,7 +320,7 @@ int main(int argc, char *argv[])
 	        n = select(telemetry_fd + 1, &set, NULL, NULL, &timeout);
 	        if(n > 0)
             { // if data there, read it and parse it
-	            n = read(telemetry_fd, buf, sizeof(buf));
+	            n = read(telemetry_fd, telemBuffer, sizeof(telemBuffer));
                 //printf("OSD: %d bytes read\n",n);
 	            if(n == 0) { continue; } // EOF
 		        if(n<0)
@@ -295,15 +329,15 @@ int main(int argc, char *argv[])
 		            exit(-1);
 		        }
                 #ifdef FRSKY
-		            frsky_parse_buffer(&fs, &td, buf, n);
+		            frsky_parse_buffer(&fs, &td, telemBuffer, n);
                 #elif defined(LTM)
-		            do_render = ltm_read(&td, buf, n);
+		            do_render = ltm_read(&td, telemBuffer, n);
                 #elif defined(MAVLINK)
-		            do_render = mavlink_read(&td, buf, n);
+		            do_render = mavlink_read(&td, telemBuffer, n);
                 #elif defined(SMARTPORT)
-		            smartport_read(&td, buf, n);
+		            smartport_read(&td, telemBuffer, n);
                 #elif defined(VOT)
-		        do_render =  vot_read(&td, buf, n);
+		        do_render =  vot_read(&td, telemBuffer, n);
                 #endif
 	        }
         #endif
@@ -331,32 +365,16 @@ int main(int argc, char *argv[])
         #endif
 
         //Read ground systemstatus
-        //#ifndef RELAY
+        #ifndef RELAY
 	    delta = current_timestamp() - prev_cpu_time;
 	    if (delta > 1000)
         {
 		    prev_cpu_time = current_timestamp();
-            fprintf(stderr,"delta > 1000\n");
+            //fprintf(stderr,"delta > 1000\n");
 
-		    fp2 = fopen("/sys/class/thermal/thermal_zone0/temp","r");
-            uint32_t gnd_temp = 0;
-            fscanf(fp2,"%d",&gnd_temp);
-            td.status_sys_gnd.temp = gnd_temp/1000;
-		    fclose(fp2);
-            fprintf(stderr,"temp gnd:%d\n",td.status_sys_gnd.temp);
-            
-
-		    fp = fopen("/proc/stat","r");
-		    fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&a[0],&a[1],&a[2],&a[3]);
-		    fclose(fp);
-		    td.status_sys_gnd.cpuload = (((b[0]+b[1]+b[2]) - (a[0]+a[1]+a[2])) / ((b[0]+b[1]+b[2]+b[3]) - (a[0]+a[1]+a[2]+a[3]))) * 100;
-            fprintf(stderr,"cpuload gnd:%d\n",td.status_sys_gnd.cpuload);
-
-		    fp = fopen("/proc/stat","r");
-		    fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&b[0],&b[1],&b[2],&b[3]);
-		    fclose(fp);
+		    GetGroundPiSysStateLocal(&td);
 	    }
-        //#endif
+        #endif
 
         //long long took = current_timestamp() - prev_time;
         //fprintf(stderr,"while took %lldms\n", took);
