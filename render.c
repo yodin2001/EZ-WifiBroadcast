@@ -1076,23 +1076,25 @@ void draw_CELL_V(float voltage, int cells, float warn, float crit, float pos_x, 
     Text(getWidth(pos_x), getHeight(pos_y), "ɫ", osdicons, text_scale );//Volt
     Fill(0,140,240,1);
     Text(getWidth(pos_x), getHeight(pos_y), "ɰ", osdicons, text_scale);//Volt
-    if(cell_v<=warn && cell_v>=crit){
-    Fill(250,150,0,1);
-    sprintf(buffer, "%.1f", cell_v);
-    Text(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
+    #if CELL_V_CANTIV == true
+        sprintf(buffer, "%.2f", cell_v);
+    #else
+        sprintf(buffer, "%.2f", cell_v);
+    #endif
+    
+    if(cell_v<=warn && cell_v>=crit) 
+    {
+        Fill(250,150,0,1);
     }
-    else if(cell_v<=crit){
-    Fill(250,0,0,1);
-    sprintf(buffer, "%.1f", cell_v);
-    Text(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
+    else if(cell_v<=crit)
+    {
+        Fill(250,0,0,1);
     }
     else
     {
-    Fill(COLOR);
-    sprintf(buffer, "%.1f", cell_v);
-    Text(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
+        Fill(COLOR);
     }
-    
+    Text(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
     //Text(getWidth(pos_x+4), getHeight(pos_y), " V", myfont, text_scale*0.6);
     
  }
