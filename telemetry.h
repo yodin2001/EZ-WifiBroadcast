@@ -55,29 +55,29 @@ typedef struct {
 } wifibroadcast_rx_status_t_osd;
 
 typedef struct {
-        time_t last_update;
-        uint32_t received_block_cnt;
-        uint32_t damaged_block_cnt;
+    time_t last_update;
+    uint32_t received_block_cnt;
+    uint32_t damaged_block_cnt;
 	uint32_t lost_packet_cnt;
 	uint32_t received_packet_cnt;
 	uint32_t lost_per_block_cnt;
-        uint32_t tx_restart_cnt;
+    uint32_t tx_restart_cnt;
 	uint32_t kbitrate;
-        uint32_t wifi_adapter_cnt;
-        wifi_adapter_rx_status_t adapter[8];
+    uint32_t wifi_adapter_cnt;
+    wifi_adapter_rx_status_t adapter[8];
 } wifibroadcast_rx_status_t_rc;
 
 typedef struct {
-        time_t last_update;
-        uint32_t received_block_cnt;
-        uint32_t damaged_block_cnt;
+    time_t last_update;
+    uint32_t received_block_cnt;
+    uint32_t damaged_block_cnt;
 	uint32_t lost_packet_cnt;
 	uint32_t received_packet_cnt;
 	uint32_t lost_per_block_cnt;
-        uint32_t tx_restart_cnt;
+    uint32_t tx_restart_cnt;
 	uint32_t kbitrate;
-        uint32_t wifi_adapter_cnt;
-        wifi_adapter_rx_status_t adapter[8];
+    uint32_t wifi_adapter_cnt;
+    wifi_adapter_rx_status_t adapter[8];
 } wifibroadcast_rx_status_t_uplink;
 
 typedef struct {
@@ -93,6 +93,13 @@ typedef struct {
     uint8_t cts;
     uint8_t undervolt;
 } wifibroadcast_rx_status_t_sysair;
+
+//GroundPi system status
+typedef struct{
+	uint8_t cpuload;
+    uint8_t temp;
+	uint8_t undervolt;
+} status_t_sys_gnd;
 
 typedef struct {
     uint32_t received_packet_cnt;
@@ -238,6 +245,8 @@ typedef struct {
 	wifibroadcast_rx_status_t_rc *rx_status_rc;
 	wifibroadcast_rx_status_t_uplink *rx_status_uplink;
 	wifibroadcast_rx_status_t_sysair *rx_status_sysair;
+
+	status_t_sys_gnd status_sys_gnd;
 } telemetry_data_t;
 
 #ifndef RELAY
