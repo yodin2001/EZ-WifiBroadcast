@@ -76,7 +76,7 @@ void draw_airspeed(int airspeed, float pos_x, float pos_y, float scale);
 void draw_gpsspeed(int gpsspeed, float pos_x, float pos_y, float scale);
 void draw_compass(float heading, float home_heading, float len, float pos_x, float pos_y, float scale);
 //void draw_compass(float heading, float home_heading, float pos_x, float pos_y, float scale);
-void draw_alt_ladder(int alt, float pos_x, float pos_y, float scale, float warn, float caution, float vsi_time, float climb);
+void draw_alt_ladder(telemetry_data_t *td, float pos_x, float pos_y, float scale, float warn, float caution, float vsi_time, float climb);
 void draw_speed_ladder(telemetry_data_t *td, float pos_x, float pos_y, float scale, float trend_time, float low_limit);
 void draw_yaw_display(float vy, float pos_x, float pos_y, float scale, float trend_time);
 void draw_ahi(float roll, float pitch, float scale);

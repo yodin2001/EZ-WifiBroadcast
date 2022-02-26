@@ -322,11 +322,7 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
  #endif
 
 #ifdef ALTLADDER //by default in osdconfig uses mslalt = false (relative alt should be shown)
-        #if REVERSE_ALTITUDES == true
-        draw_alt_ladder((int)td->msl_altitude, ALTLADDER_POS_X, 50, ALTLADDER_SCALE * GLOBAL_SCALE, ALTLADDER_WARN, ALTLADDER_CAUTION, ALTLADDER_VSI_TIME, td->mav_climb);
-        #else
-        draw_alt_ladder((int)td->rel_altitude, ALTLADDER_POS_X, 50, ALTLADDER_SCALE * GLOBAL_SCALE, ALTLADDER_WARN, ALTLADDER_CAUTION, ALTLADDER_VSI_TIME, td->mav_climb);
-        #endif  
+        draw_alt_ladder(td, ALTLADDER_POS_X, 50, ALTLADDER_SCALE * GLOBAL_SCALE, ALTLADDER_WARN, ALTLADDER_CAUTION, ALTLADDER_VSI_TIME, td->mav_climb);
  #endif
 
 #ifdef MSLALT 
@@ -1103,6 +1099,14 @@ void draw_cog(int cog, float pos_x, float pos_y, float scale){
 
 
 void draw_climb(float climb, float pos_x, float pos_y, float scale){
+    static long long ts_prev;
+    float dt = (current_ts() - ts_prev) / 1000.0;
+    ts_prev = current_ts();
+
+    static float climb_prev;
+    //Filter climb rate
+    climb = climb_prev + (climb - climb_prev)*(1-exp(-dt/1.0));
+    climb_prev = climb;
 
     Fill(COLOR);
     Stroke(OUTLINECOLOR);
@@ -1703,7 +1707,14 @@ void draw_home_distance(int distance, bool home_fixed, float pos_x, float pos_y,
 
 
 
-void draw_alt_ladder(int alt, float pos_x, float pos_y, float scale, float warn, float caution, float vsi_time, float climb){
+void draw_alt_ladder(telemetry_data_t *td, float pos_x, float pos_y, float scale, float warn, float caution, float vsi_time, float climb){
+    
+    float alt;
+    #if REVERSE_ALTITUDES == true
+        alt = td->msl_altitude;
+    #else
+        alt = td->rel_altitude;
+    #endif  
 
     #if IMPERIAL == true
         alt=alt *TO_FEET;
@@ -1739,11 +1750,7 @@ void draw_alt_ladder(int alt, float pos_x, float pos_y, float scale, float warn,
         Stroke(OUTLINECOLOR);
     }
 
-    sprintf(buffer, "%d", alt); // large alt number
-
- //   Text(pxlabel+width_ladder_value+width_symbol, getHeight(pos_y)-offset_alt_value, buffer, myfont, text_scale*2);
- //   Text(pxlabel+width_ladder_value, getHeight(pos_y)-offset_symbol, "", osdicons, text_scale*2);
-
+    sprintf(buffer, "%.0f", alt); // large alt number
     Text(px+ width_element+20* scale, getHeight(pos_y)-offset_alt_value, buffer, myfont, text_scale*1.7);
     Text(px+ width_element+20* scale, getHeight(pos_y)-offset_symbol, "ᎆ", osdicons, text_scale*1.7);
 
@@ -1778,6 +1785,17 @@ void draw_alt_ladder(int alt, float pos_x, float pos_y, float scale, float warn,
     }
     
     //ALTITUDE TREND - VSI
+
+    
+    static long long ts_prev;
+    float dt = (current_ts() - ts_prev) / 1000.0;
+    ts_prev = current_ts();
+
+    static float climb_prev;
+    //Filter climb rate
+    climb = climb_prev + (climb - climb_prev)*(1-exp(-dt/1.0));
+    climb_prev = climb;
+
     if (climb<0){
     Stroke(COLOR_DECLUTTER); //make outline opaque
     Fill(245,222,20,getOpacity(COLOR));} //yellow for decent
