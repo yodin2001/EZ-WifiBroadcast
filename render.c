@@ -48,13 +48,13 @@ float rapo_total_dist=0;
 bool raport_flag1=true;
 bool raport_flag2=false;
 
+
 long long current_ts() {
     struct timeval te;
     gettimeofday(&te, NULL); // get current time
     long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // calculate milliseconds
     return milliseconds;
  }
-
 
 int getWidth(float pos_x_percent) {
     return (width * 0.01f * pos_x_percent);
@@ -341,19 +341,7 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
  //#endif
 
 #ifdef SPEEDLADDER
-    #if IMPERIAL == true
-    #if SPEEDLADDER_USEAIRSPEED == true
-    draw_speed_ladder((int)td->airspeed*TO_MPH, SPEEDLADDER_POS_X, 50, SPEEDLADDER_SCALE * GLOBAL_SCALE, SPEEDLADDER_TREND_TIME, SPEEDLADDER_LOW_LIMIT, td->vx);
-    #else
-    draw_speed_ladder((int)td->speed*TO_MPH, SPEEDLADDER_POS_X, 50, SPEEDLADDER_SCALE * GLOBAL_SCALE, SPEEDLADDER_TREND_TIME, SPEEDLADDER_LOW_LIMIT, td->vx);
-    #endif
-    #else
-    #if SPEEDLADDER_USEAIRSPEED == true
-    draw_speed_ladder((int)td->airspeed, SPEEDLADDER_POS_X, 50, SPEEDLADDER_SCALE * GLOBAL_SCALE, SPEEDLADDER_TREND_TIME, SPEEDLADDER_LOW_LIMIT, td->vx);
-    #else
-    draw_speed_ladder((int)td->speed, SPEEDLADDER_POS_X, 50, SPEEDLADDER_SCALE * GLOBAL_SCALE, SPEEDLADDER_TREND_TIME, SPEEDLADDER_LOW_LIMIT, td->vx);
-    #endif
-    #endif
+    draw_speed_ladder(td, SPEEDLADDER_POS_X, 50, SPEEDLADDER_SCALE * GLOBAL_SCALE, SPEEDLADDER_TREND_TIME, SPEEDLADDER_LOW_LIMIT);
  #endif
 
 #if defined(YAWDISPLAY) && defined(MAVLINK)
@@ -1870,7 +1858,39 @@ void draw_mslalt(float mslalt, float pos_x, float pos_y, float scale){
     
  }
 */
-void draw_speed_ladder(int speed, float pos_x, float pos_y, float scale, float trend_time, float low_limit, float vx){
+void draw_speed_ladder(telemetry_data_t *td, float pos_x, float pos_y, float scale, float trend_time, float low_limit)
+{
+    float speed;
+    static float speed_prev;
+    float speed_alt; //alternative to main speed source
+    #if IMPERIAL == true
+        #if SPEEDLADDER_USEAIRSPEED == true
+            speed = td->airspeed*TO_MPH;
+            speed_alt = td->speed*TO_MPH;
+        #else
+            speed = td->speed*TO_MPH;
+            speed_alt = td->airspeed*TO_MPH;
+        #endif
+    #else
+        #if SPEEDLADDER_USEAIRSPEED == true
+            speed = td->airspeed;
+            speed_alt = td->speed;
+        #else
+            speed = td->speed;
+            speed_alt = td->airspeed;
+        #endif
+    #endif
+
+    //Time passed since last render
+    static long long ts_prev;
+    float dt = (current_ts() - ts_prev) / 1000.0;
+    ts_prev = current_ts();
+
+    //PT1 filter for speed
+    speed = speed_prev + (speed - speed_prev)*(1-exp(-dt/0.5));
+    float dv = speed - speed_prev;
+    speed_prev = speed;
+    
 
     Fill(COLOR); //normal
     Stroke(OUTLINECOLOR);
@@ -1894,74 +1914,110 @@ void draw_speed_ladder(int speed, float pos_x, float pos_y, float scale, float t
     VGfloat width_symbol = TextWidth("", osdicons, text_scale*2);
     VGfloat width_ladder_value = TextWidth("0", myfont, text_scale);
 
-    sprintf(buffer, "%d", speed); // large speed number
-  //  TextEnd(pxlabel-width_ladder_value-width_symbol, getHeight(pos_y)-offset_speed_value, buffer, myfont, text_scale*2);
- //   TextEnd(pxlabel-width_ladder_value, getHeight(pos_y)-offset_symbol, "", osdicons, text_scale*2);
-
+    sprintf(buffer, "%.0f", speed); // large speed number
+    if(speed >= low_limit) 
+    {
+        Fill(COLOR); //normal
+    }
+    else
+    {
+        Fill(255,20,20,getOpacity(COLOR)); // red
+    }
     TextEnd(pxlabel-9*scale, getHeight(pos_y)-offset_speed_value, buffer, myfont, text_scale*1.7);
     TextEnd(pxlabel-9*scale, getHeight(pos_y)-offset_symbol, "ᎄ", osdicons, text_scale*1.7);
 
 
     int k;
-    for (k = (int) (speed - range_half); k <= speed + range_half; k++) {
-    int y = getHeight(pos_y) + (k - speed) * ratio_speed;
-    if (k % 5 == 0) { // wide element plus number label every 5 'ticks' on the scale
-        
-        if (k >= low_limit) {
-        Fill(COLOR); //normal
-        Stroke(OUTLINECOLOR);
-        Rect(px-width_element, y, width_element*2, height_element);
+    for (k = (int) (speed - range_half); k <= speed + range_half; k++)
+    {
+        int y = getHeight(pos_y) + (k - speed) * ratio_speed;
+        if (k % 5 == 0) // wide element plus number label every 5 'ticks' on the scale
+        { 
+            if(k >= low_limit) 
+            {
+                Fill(COLOR); //normal
+            }
+            else
+            {
+                Fill(255,20,20,getOpacity(COLOR)); // red
+            }
+            Stroke(OUTLINECOLOR);
+            Rect(px-width_element, y, width_element*2, height_element);
 		
-		//so the box around number is not overwritten
-		if (k>speed+3 || k<speed-3){
-        	sprintf(buffer, "%d", k);
-        	TextEnd(pxlabel, y-offset_text_ladder, buffer, myfont, text_scale);
-		}
-
+		    //so the box around number is not overwritten
+		    if (k>speed+3 || k<speed-3)
+            {
+        	    sprintf(buffer, "%d", k);
+        	    TextEnd(pxlabel, y-offset_text_ladder, buffer, myfont, text_scale);
+		    }
         }
-        if (k < low_limit) {
-        Fill(255,20,20,getOpacity(COLOR)); // red
-        Stroke(255,20,20,getOpacity(OUTLINECOLOR));
-        Rect(px-width_element, y+width_element*1.9, width_element*2, width_element*2);
-
+        else if (k % 1 == 0) // narrow element every single 'tick' on the scale 
+        { 
+            if(k >= low_limit)
+                {
+                    Fill(COLOR); //normal
+                }
+                else
+                {
+                    Fill(255,20,20,getOpacity(COLOR)); // red
+                }
+            Stroke(OUTLINECOLOR);
+            Rect(px, y, width_element, height_element);
         }
-    } else if ((k % 1 == 0) && (k > low_limit)){ // narrow element every single 'tick' on the scale 
-        Fill(COLOR); //normal
-        Stroke(OUTLINECOLOR);
-        Rect(px, y, width_element, height_element);}
     }
 
- // Speed Trend
+    #if SPEEDLADDER_SHOW_SECOND_SPEED == true
+        //alternatice speed arrow
+        float as_x[3] = {px + width_element + getWidth(1.5) * scale, px + width_element, px + width_element + getWidth(1.5) * scale};
+        float speed_alt_y = getHeight(pos_y) + (speed_alt - speed)*ratio_speed;
+        float as_y[3] = {speed_alt_y + getHeight(1) * scale, speed_alt_y, speed_alt_y - getHeight(1) * scale};
+        Stroke(COLOR);
+        Polyline(as_x, as_y, 3);
+        //alternative speed
+        sprintf(buffer, "%.0f", speed_alt);
+        Text(px + width_element + getWidth(1.8) * scale, speed_alt_y - offset_speed_value, buffer, myfont, text_scale*1.7);
+    #endif
 
-    if (vx<0){
-    Stroke(COLOR_DECLUTTER); //make outline opaque
-    Fill(245,222,20,getOpacity(COLOR));} //yellow for decent
-        else{
-            Stroke(COLOR_DECLUTTER); //make outline opaque
-            Fill(43,240,36,getOpacity(COLOR));} //green for climb
+    // Speed Trend
+    static float acc_prev;
+    float acc = dv / dt;
+    //Filter acceleration
+    acc = acc_prev + (acc - acc_prev)*(1-exp(-dt/1.0));
+    acc_prev = acc;
+    
+    trend_time = ratio_speed * trend_time;
+
+    if (acc<0)
+    {
+        Stroke(COLOR_DECLUTTER); //make outline opaque
+        Fill(245,222,20,getOpacity(COLOR)); //yellow velocity decrease
+    } 
+    else
+    {
+        Stroke(COLOR_DECLUTTER); //make outline opaque
+        Fill(43,240,36,getOpacity(COLOR));//green for velocity increase
+    } 
 
     VGfloat *LX,*LY;
-
- VGfloat Left_X[5] = {pxlabel+3, pxlabel+12, pxlabel+12, 
-    pxlabel+7.5, pxlabel+3};
-
- //VGfloat Left_Y[5];
- //REALLY DIRTY VAR SCOPE FIX
- //so arrow points up and or down with positive and negative climb
- if (vx>0){ 
-    VGfloat Left_Y[5] ={getHeight(pos_y), getHeight(pos_y), getHeight(pos_y)+vx*trend_time, getHeight(pos_y)+vx*trend_time+2.5,
-    getHeight(pos_y)+vx*trend_time};
- VGint npt = 5;
- LX = &Left_X[0];
- LY = &Left_Y[0];
- Polygon(LX,LY,npt);}
- else {
-        VGfloat Left_Y[5] ={getHeight(pos_y), getHeight(pos_y), getHeight(pos_y)+vx*trend_time, getHeight(pos_y)+vx*trend_time-2.5,
-    getHeight(pos_y)+vx*trend_time};
- VGint npt = 5;
- LX = &Left_X[0];
- LY = &Left_Y[0];
- Polygon(LX,LY,npt);}
+    VGfloat Left_X[5] = {pxlabel+3, pxlabel+12, pxlabel+12, pxlabel+7.5, pxlabel+3};
+    
+    if (acc>0)
+    { 
+        VGfloat Left_Y[5] ={getHeight(pos_y), getHeight(pos_y), getHeight(pos_y)+acc*trend_time, getHeight(pos_y)+acc*trend_time+2.5,
+        getHeight(pos_y)+acc*trend_time};
+        VGint npt = 5;
+        LX = &Left_X[0];
+        LY = &Left_Y[0];
+        Polygon(LX,LY,npt);
+    }
+    else
+    {
+        VGfloat Left_Y[5] ={getHeight(pos_y), getHeight(pos_y), getHeight(pos_y)+acc*trend_time, getHeight(pos_y)+acc*trend_time-2.5, getHeight(pos_y)+acc*trend_time};
+        VGint npt = 5;
+        LX = &Left_X[0];
+        LY = &Left_Y[0];
+        Polygon(LX,LY,npt);
+    }
 
 
 
