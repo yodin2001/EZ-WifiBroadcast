@@ -883,8 +883,10 @@ void draw_EFFIC(int armed, int gpsspeed, float current, float pos_x, float pos_y
     Text(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
     
  }
-void draw_RAPORT(int armed, int gpsspeed, float current, float voltage, float mslalt, float pos_x, float pos_y, float scale){
-    if(armed==1){
+void draw_RAPORT(int armed, int gpsspeed, float current, float voltage, float mslalt, float pos_x, float pos_y, float scale)
+{
+    if(armed==1)
+    {
         if (raport_flag2==false){start_point_alt=mslalt;raport_flag2=true;}
         if (current>rapo_max_amp){rapo_max_amp=current;}
         if (curr_c_alt>rapo_max_alt){rapo_max_alt=curr_c_alt;}
@@ -901,37 +903,23 @@ void draw_RAPORT(int armed, int gpsspeed, float current, float voltage, float ms
     Stroke(OUTLINECOLOR);
     draw_message(0,"RAPORT","  "," ",RAPORT_POS_X, RAPORT_POS_Y, GLOBAL_SCALE);
 
-    Text(getWidth(pos_x-10), getHeight(pos_y-3), "TOTAL DIST=", myfont, text_scale*0.7);
-    sprintf(buffer, "%05.1f", total_dist);
-    Text(getWidth(pos_x+2), getHeight(pos_y-3), buffer, myfont, text_scale*0.7);
-    Text(getWidth(pos_x+9), getHeight(pos_y-3), "km", myfont, text_scale*0.7);
-
-    Text(getWidth(pos_x-10), getHeight(pos_y-6), "MAX DIST  =", myfont, text_scale*0.7);
-    sprintf(buffer, "%05d", rapo_home_dist);
-    Text(getWidth(pos_x+2), getHeight(pos_y-6), buffer, myfont, text_scale*0.7);
-    Text(getWidth(pos_x+9), getHeight(pos_y-6), "m", myfont, text_scale*0.7);
-
-    Text(getWidth(pos_x-10), getHeight(pos_y-9), "MAX SPEED=", myfont, text_scale*0.7);
-    sprintf(buffer, "%04d", rapo_max_speed);
-    Text(getWidth(pos_x+2), getHeight(pos_y-9), buffer, myfont, text_scale*0.7);
-    Text(getWidth(pos_x+9), getHeight(pos_y-9), "km/h", myfont, text_scale*0.7);
-
-    Text(getWidth(pos_x-10), getHeight(pos_y-14), "FLY TIME   =", myfont, text_scale*0.7);
-    sprintf(buffer, "%3.0f:%02d", curr_fly_time, (int)(curr_fly_time*60) % 60);
-    TextEnd(getWidth(pos_x+7), getHeight(pos_y-14), buffer, myfont, text_scale*0.7);
-    Text(getWidth(pos_x+9), getHeight(pos_y-14), "", osdicons, text_scale*0.7);
-
-    Text(getWidth(pos_x-10), getHeight(pos_y-17), "MAX AMP    =", myfont, text_scale*0.7);
-    sprintf(buffer, "%04.1f", rapo_max_amp);
-    TextEnd(getWidth(pos_x+7), getHeight(pos_y-17), buffer, myfont, text_scale*0.7);
-    Text(getWidth(pos_x+9), getHeight(pos_y-17), "A", myfont, text_scale*0.7);
-
-    Text(getWidth(pos_x-10), getHeight(pos_y-20), "MAX ALT    =", myfont, text_scale*0.7);
-    sprintf(buffer, "%04.1f", (rapo_max_alt-start_point_alt));
-    TextEnd(getWidth(pos_x+7), getHeight(pos_y-20), buffer, myfont, text_scale*0.7);
-    Text(getWidth(pos_x+9), getHeight(pos_y-20), "m", myfont, text_scale*0.7);
-    //Вывод рапорта
-    }
+    //Raport output
+    sprintf(buffer, "TOTAL DIST=%05.1f km", total_dist);
+    Text(getWidth(pos_x-10), getHeight(pos_y-3), buffer, myfont, text_scale*0.7);
+    sprintf(buffer, "MAX DIST  =%05d m", rapo_home_dist);
+    Text(getWidth(pos_x-10), getHeight(pos_y-6), buffer, myfont, text_scale*0.7);
+    sprintf(buffer, "MAX SPEED =%04d km/h", rapo_max_speed);
+    Text(getWidth(pos_x-10), getHeight(pos_y-9), buffer, myfont, text_scale*0.7);
+    sprintf(buffer, "FLY TIME  =%03.0f:%02d", curr_fly_time, (int)(curr_fly_time*60) % 60);
+    Text(getWidth(pos_x-10), getHeight(pos_y-14), buffer, myfont, text_scale*0.7);
+    width_value = TextWidth(buffer, myfont, text_scale*0.7);
+    sprintf(buffer, " ");
+    Text(getWidth(pos_x-10)+width_value, getHeight(pos_y-14), buffer, osdicons, text_scale*0.7);
+    sprintf(buffer, "MAX AMP   =%04.1f A", rapo_max_amp);
+    Text(getWidth(pos_x-10), getHeight(pos_y-17), buffer, myfont, text_scale*0.7);
+    sprintf(buffer, "MAX ALT   =%04.1f m", (rapo_max_alt-start_point_alt));
+    Text(getWidth(pos_x-10), getHeight(pos_y-20), buffer, myfont, text_scale*0.7);
+}
     
 
  }
