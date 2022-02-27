@@ -485,28 +485,27 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
  #endif
 #ifdef AHI
     #if defined(FRSKY) || defined(SMARTPORT)
-    float x_val, y_val, z_val;
-    x_val = td->x;
-    y_val = td->y;
-    z_val = td->z;
-    #if AHI_SWAP_ROLL_AND_PITCH == true
-    draw_ahi(AHI_INVERT_ROLL * TO_DEG * (atan(y_val / sqrt((x_val*x_val) + (z_val*z_val)))), 
-    AHI_INVERT_PITCH * TO_DEG * (atan(x_val / sqrt((y_val*y_val)+(z_val*z_val)))), AHI_SCALE * GLOBAL_SCALE);
-    #else
-    draw_ahi(AHI_INVERT_ROLL * TO_DEG * (atan(x_val / sqrt((y_val*y_val) + (z_val*z_val)))), 
-    AHI_INVERT_PITCH * TO_DEG * (atan(y_val / sqrt((x_val*x_val)+(z_val*z_val)))), AHI_SCALE * GLOBAL_SCALE);
-    #endif // AHI_SWAP_ROLL_AND_PITCH
+        float x_val, y_val, z_val;
+        x_val = td->x;
+        y_val = td->y;
+        z_val = td->z;
+        #if AHI_SWAP_ROLL_AND_PITCH == true
+            draw_ahi(AHI_INVERT_ROLL * TO_DEG * (atan(y_val / sqrt((x_val*x_val) + (z_val*z_val)))), 
+            AHI_INVERT_PITCH * TO_DEG * (atan(x_val / sqrt((y_val*y_val)+(z_val*z_val)))), AHI_SCALE * GLOBAL_SCALE);
+        #else
+            draw_ahi(AHI_INVERT_ROLL * TO_DEG * (atan(x_val / sqrt((y_val*y_val) + (z_val*z_val)))), 
+            AHI_INVERT_PITCH * TO_DEG * (atan(y_val / sqrt((x_val*x_val)+(z_val*z_val)))), AHI_SCALE * GLOBAL_SCALE);
+        #endif // AHI_SWAP_ROLL_AND_PITCH
 
     #elif defined(LTM) || defined(VOT)
-    draw_ahi(AHI_INVERT_ROLL * td->roll, AHI_INVERT_PITCH * td->pitch, AHI_SCALE * GLOBAL_SCALE);
+        draw_ahi(AHI_INVERT_ROLL * td->roll, AHI_INVERT_PITCH * td->pitch, AHI_SCALE * GLOBAL_SCALE);
     #elif defined(MAVLINK)	
-	#if REVERSE_ALTITUDES == true
-        draw_ahi_mav(AHI_INVERT_ROLL * td->roll, AHI_INVERT_PITCH * td->pitch, td->mav_climb, td->vz, td->vx, td->vy, (int)td->speed, 
-    (int)td->msl_altitude, AHI_SCALE * GLOBAL_SCALE);
+	    #if REVERSE_ALTITUDES == true
+            draw_ahi_mav(td, AHI_INVERT_ROLL * td->roll, AHI_INVERT_PITCH * td->pitch, td->mav_climb, td->vz, td->vx, td->vy, (int)td->speed, (int)td->msl_altitude, AHI_SCALE * GLOBAL_SCALE);
         #else
-        draw_ahi_mav(AHI_INVERT_ROLL * td->roll, AHI_INVERT_PITCH * td->pitch, td->mav_climb, td->vz, td->vx, td->vy, (int)td->speed, (int)td->rel_altitude, AHI_SCALE * GLOBAL_SCALE);
+            draw_ahi_mav(td, AHI_INVERT_ROLL * td->roll, AHI_INVERT_PITCH * td->pitch, td->mav_climb, td->vz, td->vx, td->vy, (int)td->speed, (int)td->rel_altitude, AHI_SCALE * GLOBAL_SCALE);
         #endif  
- #endif //protocol
+    #endif //protocol
  #endif //AHI
 
 #ifdef ANGLE //bank angle indicator. Must follow AHI 
@@ -2401,22 +2400,20 @@ void draw_ahi(float roll, float pitch, float scale){
  }
 
 
-void draw_ahi_mav(float roll, float pitch, float climb, float vz, float vx, float vy, float gpsspeed, float alt, float scale){
+void draw_ahi_mav(telemetry_data_t *td, float roll, float pitch, float climb, float vz, float vx, float vy, float gpsspeed, float alt, float scale)
+{
     float text_scale = getHeight(1.2) * scale;
     float height_ladder = getWidth(15) * scale;
     float width_ladder = getWidth(30) * scale;
     float height_element = getWidth(0.25) * scale;
     float range = 100;
     float space_text = getWidth(0.2) * scale;
-    float ratio = height_ladder / range;
+    float ratio = sqrt(getWidth(100)*getWidth(100) + getHeight(100)*getHeight(100)) / AHI_FOV;
     float pos_x = getWidth(50);
     float pos_y = getHeight(50);
 
-
- //Limit draw area
- ClipRect(pos_x-width_ladder, pos_y-getHeight(30), width_ladder*2, getHeight(60));
-
-
+    //Limit draw area
+    ClipRect(pos_x-width_ladder, pos_y-getHeight(30), width_ladder*2, getHeight(60));
 
 
     VGfloat offset_text_ladder = (TextHeight(myfont, text_scale*0.85) / 2) - height_element/2;
@@ -2434,121 +2431,133 @@ void draw_ahi_mav(float roll, float pitch, float climb, float vz, float vx, floa
     Fill(COLOR);
 	
 
-  if (alt < ALTLADDER_CAUTION) {	
-	if (climb < -3.0f) {
-	  Stroke(COLOR_WARNING); //red
-          Fill(COLOR_WARNING);
-	}
-	else if ((climb >= -3.0f) && (climb < -1.5f)) {
-	  Stroke(COLOR_WARNING); //caution
-          Fill(COLOR_WARNING);
-	}
-	//else if ((climb >= -1.5f) && (climb < 0.0f)) {
-	//  Stroke(COLOR_GOOD); //good
-    	//  Fill(COLOR_GOOD);
-	//}
-	else {
-	  StrokeWidth(OUTLINEWIDTH);
-    	  Stroke(OUTLINECOLOR);
-          Fill(COLOR);
-	}
-  }
+    if (alt < ALTLADDER_CAUTION)
+    {	
+	    if (climb < -3.0f)
+        {
+	        Stroke(COLOR_WARNING); //red
+            Fill(COLOR_WARNING);
+	    }
+	    else if ((climb >= -3.0f) && (climb < -1.5f))
+        {
+	        Stroke(COLOR_WARNING); //caution
+            Fill(COLOR_WARNING);
+	    }
+	    //else if ((climb >= -1.5f) && (climb < 0.0f))
+        //{
+	        //Stroke(COLOR_GOOD); //good
+    	    //Fill(COLOR_GOOD);
+	    //}
+	    else
+        {
+	        StrokeWidth(OUTLINEWIDTH);
+    	    Stroke(OUTLINECOLOR);
+            Fill(COLOR);
+	    }
+    }
 
-  if (gpsspeed < SPEEDLADDER_LOW_LIMIT) {
-          Stroke(COLOR_WARNING); //red
-          Fill(COLOR_WARNING);
- }	
-    //Bore Sight
- //   TextEnd(getWidth(50), getHeight(50), "ᎅ", osdicons, text_scale*2.5); 
+    if (gpsspeed < SPEEDLADDER_LOW_LIMIT)
+    {
+        Stroke(COLOR_WARNING); //red
+        Fill(COLOR_WARNING);
+    }	
   
     Translate(pos_x, pos_y);
     Rotate(roll);
     Translate(-pos_x, -pos_y);
 
- //Flight Path Vector
+    
 
-	//get x y z axis
-
-	//FPV_Z calculate vector 
-	// x*x+z*z= resultant/resultant=resultant
-
-	//get angle
-	//tan(Theta) = (5/10) = 0.5      (x/y) tan-1 + 90
-	//Theta = tan-1 (0.5)
-	//Theta = 26.6 degrees
-	//Direction of R = 90 deg + 26.6 deg
-	//Direction of R = 116.6 deg
-
-	//FPV_Y
-        double fpv_y;
-	fpv_y=tan(vx/vy);
-	fpv_y=fpv_y+90;
-	//FPV_Z
-        double fpv_z;
-	fpv_z=tan(vx/vz) +90; 
+	
 
     int k = pitch - range;
     int max = pitch + range; //range and max not as important as clipping is implimented
-    while (k <= max){
-	float y = pos_y + (k - pitch) * ratio;
-	if (k % 5 == 0 && k!= 0) {
-	    #if AHI_LADDER == true    
-		  #if AHI_ROLLANGLE == true
-		     sprintf(buffer, "%.1f°", roll*AHI_ROLLANGLE_INVERT);
-	         Text(pos_x + width_ladder / 2 + space_text, y - width / height_ladder, buffer, myfont, text_scale*1.1); // right numbers
-		  #else
-			 sprintf(buffer, "%d", k);
-	         Text(pos_x + width_ladder / 2 + space_text, y - width / height_ladder, buffer, myfont, text_scale*1.1); // right numbers
-		  #endif
-		sprintf(buffer, "%d", k);
-		TextEnd(pos_x - width_ladder / 2 - space_text, y - width / height_ladder, buffer, myfont, text_scale*1.1); // left numbers
-	    #endif
-	}
-	if ((k > 0) && (k % 5 == 0)) { // upper ladders
-	    #if AHI_LADDER == true
-	    float px = pos_x - width_ladder / 2;
-	    Rect(px, y, width_ladder/3, height_element);
-	    Rect(px+width_ladder*2/3, y, width_ladder/3, height_element);
-	    #endif
-	} else if ((k < 0) && (k % 5 == 0)) { // lower ladders
-	    #if AHI_LADDER == true
-	    Rect( px_l, y, width_ladder/12, height_element);
-	    Rect(px3_l, y, width_ladder/12, height_element);
-	    Rect(px5_l, y, width_ladder/12, height_element);
-	    Rect( px_r, y, width_ladder/12, height_element);
-	    Rect(px3_r, y, width_ladder/12, height_element);
-	    Rect(px5_r, y, width_ladder/12, height_element);
-	    #endif
-	} else if (k == 0) { // center line
-	    #if AHI_LADDER == true
-	    sprintf(buffer, "%d", k);
-	    TextEnd(pos_x - width_ladder / 1.25f - space_text, y - width / height_ladder, buffer, myfont, text_scale*1.1); // left number
-		  #if AHI_ROLLANGLE == true
-		    sprintf(buffer, "%.1f°", roll*AHI_ROLLANGLE_INVERT);
-	        Text(pos_x + width_ladder / 1.25f + space_text, y - width / height_ladder, buffer, myfont, text_scale*1.1); // right number
-		  #else
-			sprintf(buffer, "%d", k);
-	        Text(pos_x + width_ladder / 1.25f + space_text, y - width / height_ladder, buffer, myfont, text_scale*1.1); // right number  
-		  #endif	  
-	    #endif
- //DRAW MAIN HORIZON BAR
-	    Rect(pos_x - width_ladder / 1.25f, y, 2*(width_ladder /1.25f)/5*2, height_element*1.5);
-	    Rect(pos_x - width_ladder / 1.25f + 2*(width_ladder /1.25f)/5*3, y, 2*(width_ladder /1.25f)/5*2,
-                 height_element*1.5);
+    while (k <= max)
+    {
+	    float y = pos_y + (k - pitch) * ratio;
+	    if (k % 5 == 0 && k!= 0)
+        {
+	        #if AHI_LADDER == true    
+		    #if AHI_ROLLANGLE == true
+		        sprintf(buffer, "%.1f°", roll*AHI_ROLLANGLE_INVERT);
+	            Text(pos_x + width_ladder / 2 + space_text, y - width / height_ladder, buffer, myfont, text_scale*1.1); // right numbers
+		    #else
+			    sprintf(buffer, "%d", k);
+	            Text(pos_x + width_ladder / 2 + space_text, y - width / height_ladder, buffer, myfont, text_scale*1.1); // right numbers
+		    #endif
+		    sprintf(buffer, "%d", k);
+		    TextEnd(pos_x - width_ladder / 2 - space_text, y - width / height_ladder, buffer, myfont, text_scale*1.1); // left numbers
+	        #endif
+	    }
+        // upper ladders
+	    if ((k > 0) && (k % 5 == 0)) 
+        { 
+	        #if AHI_LADDER == true
+	            float px = pos_x - width_ladder / 2;
+	            Rect(px, y, width_ladder/3, height_element);
+	            Rect(px+width_ladder*2/3, y, width_ladder/3, height_element);
+	        #endif
+	    }
+        // lower ladders
+        else if ((k < 0) && (k % 5 == 0)) 
+        { 
+	        #if AHI_LADDER == true
+	            Rect( px_l, y, width_ladder/12, height_element);
+	            Rect(px3_l, y, width_ladder/12, height_element);
+	            Rect(px5_l, y, width_ladder/12, height_element);
+	            Rect( px_r, y, width_ladder/12, height_element);
+	            Rect(px3_r, y, width_ladder/12, height_element);
+	            Rect(px5_r, y, width_ladder/12, height_element);
+	        #endif
+	    }
+        // center line
+        else if (k == 0)
+        { 
+	        #if AHI_LADDER == true
+	            sprintf(buffer, "%d", k);
+	            TextEnd(pos_x - width_ladder / 1.25f - space_text, y - width / height_ladder, buffer, myfont, text_scale*1.1); // left number
+		        #if AHI_ROLLANGLE == true
+		            sprintf(buffer, "%.1f°", roll*AHI_ROLLANGLE_INVERT);
+	                Text(pos_x + width_ladder / 1.25f + space_text, y - width / height_ladder, buffer, myfont, text_scale*1.1); // right number
+		        #else
+			        sprintf(buffer, "%d", k);
+	                Text(pos_x + width_ladder / 1.25f + space_text, y - width / height_ladder, buffer, myfont, text_scale*1.1); // right number  
+		        #endif	  
+	        #endif
 
- //Bore Sight
-    TextEnd(pos_x+vy*30, y-vz*30, "ᎅ", osdicons, text_scale*2.5);
+            //DRAW MAIN HORIZON BAR
+	        Rect(pos_x - width_ladder / 1.25f, y, 2*(width_ladder /1.25f)/5*2, height_element*1.5);
+	        Rect(pos_x - width_ladder / 1.25f + 2*(width_ladder /1.25f)/5*3, y, 2*(width_ladder /1.25f)/5*2, height_element*1.5);
 
-		  #if AHI_ROLLANGLE == true
-		    sprintf(buffer, "%.1f°", roll*AHI_ROLLANGLE_INVERT);
-	        Text(pos_x + width_ladder / 1.25f + space_text, y - width / height_ladder, buffer, myfont, text_scale*1.1); // right number
-		  #endif	  
-	}
-	k++;
+            //Bore Sight
+            double fpv_y;
+	        fpv_y=atan(vy/vx);
+            if(vx < 0) fpv_y = fpv_y + M_PI;
+            else if (vy < 0) fpv_y = fpv_y + 2*M_PI;
+            //Rad to degrees
+            fpv_y = 180/M_PI*fpv_y;
+            //aircraft local velocity direction
+            fpv_y = fpv_y - td->heading;
+            if(fpv_y > 180.0) fpv_y = fpv_y -360;
+            else if (fpv_y < -180) fpv_y = fpv_y + 360;
+    
+	        //FPV_Z
+            double fpv_z;
+	        fpv_z=atan(-vz/sqrt(vx*vx + vy*vy))*180/M_PI; 
+
+            TextEnd(pos_x + fpv_y * ratio, y + fpv_z * ratio, "ᎅ", osdicons, text_scale*2.5);
+
+            //Rollangle on main line
+	        #if AHI_ROLLANGLE == true
+	            sprintf(buffer, "%.1f°", roll*AHI_ROLLANGLE_INVERT);
+	            Text(pos_x + width_ladder / 1.25f + space_text, y - width / height_ladder, buffer, myfont, text_scale*1.1); // right number
+	        #endif	  
+	    }
+	    k++;
     }
 
- //TODO
- ClipEnd();
+    //TODO
+    ClipEnd();
 
     StrokeWidth(OUTLINEWIDTH);
     Stroke(OUTLINECOLOR);

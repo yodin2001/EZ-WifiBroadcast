@@ -80,7 +80,7 @@ void draw_alt_ladder(telemetry_data_t *td, float pos_x, float pos_y, float scale
 void draw_speed_ladder(telemetry_data_t *td, float pos_x, float pos_y, float scale, float trend_time, float low_limit);
 void draw_yaw_display(float vy, float pos_x, float pos_y, float scale, float trend_time);
 void draw_ahi(float roll, float pitch, float scale);
-void draw_ahi_mav(float roll, float pitch, float mav_climb, float vz, float vx, float vy, float gpsspeed, float gpsalt, float scale);
+void draw_ahi_mav(telemetry_data_t *td, float roll, float pitch, float mav_climb, float vz, float vx, float vy, float gpsspeed, float gpsalt, float scale);
 void draw_home_arrow(float abs_heading, float craft_heading, float pos_x, float pos_y, float scale);
 
 void draw_osdinfos(int osdfos, float pos_x, float pos_y, float scale);
