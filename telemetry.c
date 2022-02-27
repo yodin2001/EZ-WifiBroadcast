@@ -37,6 +37,9 @@ void telemetry_init(telemetry_data_t *td) {
 	td->vy=0;
 	td->vz=0;
 
+	td->home_lat=0;
+	td->home_lon=0;
+
 #ifdef FRSKY
 	td->x = 0;
 	td->y = 0;

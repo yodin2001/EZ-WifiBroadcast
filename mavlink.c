@@ -276,6 +276,10 @@ int mavlink_read(telemetry_data_t *td, uint8_t *buf, int buflen)
 					fprintf(stdout, "CURRENT_CONSUMED: %d", td->total_amps);
                     break;
 
+				case MAVLINK_MSG_ID_HOME_POSITION:
+					td->home_lat = mavlink_msg_home_position_get_latitude(&msg)/10000000.0f;
+					td->home_lon = mavlink_msg_home_position_get_longitude(&msg)/10000000.0f;	
+					break;
 
                 default:
                     fprintf(stdout, "OTHER MESSAGE ID:%d ",msg.msgid);

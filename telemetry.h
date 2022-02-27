@@ -164,6 +164,8 @@ typedef struct {
 	double vx;
 	double vy;
 	double vz;
+	float home_lat;
+	float home_lon;
 
 //#if defined(FRSKY)
 	int16_t x, y, z; // also needed for smartport

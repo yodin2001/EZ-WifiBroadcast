@@ -18,8 +18,6 @@ int width, height;
 float scale_factor_font;
 bool setting_home;
 bool home_set;
-float home_lat;
-float home_lon;
 int home_counter;
 char buffer[40];
 Fontinfo myfont,osdicons;
@@ -143,101 +141,174 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
     if (td->rx_status_sysair->undervolt == 1) draw_message(0,"Undervoltage on TX","  ","Bitrate limited to 1 Mbit",WARNING_POS_X, WARNING_POS_Y, GLOBAL_SCALE);
 #endif
     if (undervolt == 1) draw_message(0,"Undervoltage on RX","  "," ",WARNING_POS_X, WARNING_POS_Y, GLOBAL_SCALE);
-#if defined(FRSKY)
-    //we assume that we have a fix if we get the NS and EW values from frsky protocol
-    if (((td->ew == 'E' || td->ew == 'W') && (td->ns == 'N' || td->ns == 'S')) && !home_set){
-    setting_home = true;
-    } else { //no fix
-    setting_home = false;
-    home_counter = 0;
-    }
-    if (setting_home && !home_set){
-    //if 20 packages after each other have a fix set home
-    if (++home_counter == 20){
-        home_set = true;
-        home_lat = (td->ns == 'N'? 1:-1) * td->latitude;
-        home_lon = (td->ew == 'E'? 1:-1) * td->longitude;
-    }
-    }
-    #endif
 
-    #if defined(MAVLINK) || defined(SMARTPORT)
-    // if atleast 2D satfix is reported by flightcontrol
-    if (td->fix > 2 && !home_set){
-    setting_home = true;
-    } else { //no fix
-    setting_home = false;
-    home_counter = 0;
-    }
 
-    if (setting_home && !home_set){
-    //if 20 packages after each other have a fix set home
-    if (++home_counter == 20){
-        home_set = true;
-        home_lat = td->latitude;
-        home_lon = td->longitude;
-        
-        //Save GPS home
-        float lonlat[2];
-            lonlat[0] = 0.0;
-            lonlat[1] = 0.0;
-
-        //read
-            fptr = fopen("/dev/shm/homepos","rb");
-            if(fptr == NULL)
+    //HOME POSITION
+    #if defined(FRSKY)
+        // we assume that we have a fix if we get the NS and EW values from frsky protocol
+        if (((td->ew == 'E' || td->ew == 'W') && (td->ns == 'N' || td->ns == 'S')) && !home_set)
+        {
+            setting_home = true;
+        }
+        else
+        { // no fix
+            setting_home = false;
+            home_counter = 0;
+        }
+        if (setting_home && !home_set)
+        {
+            // if 20 packages after each other have a fix set home
+            if (++home_counter == 20)
             {
-                    printf("No GPS home file found. Load home from Pixhawk\n" );
+                home_set = true;
+                td->home_lat = (td->ns == 'N' ? 1 : -1) * td->latitude;
+                td->home_lon = (td->ew == 'E' ? 1 : -1) * td->longitude;
+            }
+        }
 
-            home_lat = td->latitude;
-                    home_lon = td->longitude;
+    #elif defined(SMARTPORT)
+        // if atleast 2D satfix is reported by flightcontrol
+        if (td->fix > 2 && !home_set)
+        {
+            setting_home = true;
+        }
+        else
+        { // no fix
+            setting_home = false;
+            home_counter = 0;
+        }
 
-                    lonlat[0] = home_lon;
-                    lonlat[1] = home_lat;
-                    //Save data for future
-                    //write
-                    fptr = fopen("/dev/shm/homepos","wb");
-                    if(fptr == NULL)
+        if (setting_home && !home_set)
+        {
+            // if 20 packages after each other have a fix set home
+            if (++home_counter == 20)
+            {
+                home_set = true;
+                td->home_lat = td->latitude;
+                td->home_lon = td->longitude;
+
+                // Save GPS home
+                float lonlat[2];
+                lonlat[0] = 0.0;
+                lonlat[1] = 0.0;
+
+                // read
+                fptr = fopen("/dev/shm/homepos", "rb");
+                if (fptr == NULL)
+                {
+                    printf("No GPS home file found. Load home from Pixhawk\n");
+
+                    td->home_lat = td->latitude;
+                    td->home_lon = td->longitude;
+
+                    lonlat[0] = td->home_lon;
+                    lonlat[1] = td->home_lat;
+                    // Save data for future
+                    // write
+                    fptr = fopen("/dev/shm/homepos", "wb");
+                    if (fptr == NULL)
                     {
-                            printf("Cannot create a file to store GPS home position \n" );
-//                            return 1;
+                        printf("Cannot create a file to store GPS home position \n");
+                        //                            return 1;
                     }
                     else
                     {
-                            printf("Saving GPS home position... \n");
-                            fwrite(&lonlat, sizeof(lonlat), 1, fptr);
-                            fclose(fptr);
+                        printf("Saving GPS home position... \n");
+                        fwrite(&lonlat, sizeof(lonlat), 1, fptr);
+                        fclose(fptr);
                     }
-
-            }
-            else
-            {
+                }
+                else
+                {
                     printf("GPS home file exist. Load Home position from it \n");
                     fread(&lonlat, sizeof(lonlat), 1, fptr);
                     fclose(fptr);
 
-                    home_lat = lonlat[1];
-                    home_lon = lonlat[0];
+                    td->home_lat = lonlat[1];
+                    td->home_lon = lonlat[0];
 
-                    printf("Lat:%f \n",  home_lat);
-                    printf("Lon:%f \n",  home_lon);
+                    printf("Lat:%f \n", td->home_lat);
+                    printf("Lon:%f \n", td->home_lon);
+                }
+                // mod end
             }
-    //mod end       
-        
-    }
-    }
+        }
+
+    #elif defined(LTM)
+        // LTM makes it easy: If LTM O-frame reports home fix,
+        // set home position and use home lat/long from LTM O-frame
+        if (td->home_fix == 1)
+        {
+            home_set = true;
+            td->home_lat = td->ltm_home_latitude;
+            td->home_lon = td->ltm_home_longitude;
+        }
+    #elif defined(MAVLINK)
+        //got home position from telemetry
+        if(!home_set && (td->home_lat != 0 || td->home_lon != 0) )
+        {
+            home_set = true;
+
+            float lonlat[2];
+            lonlat[0] = td->home_lon;
+            lonlat[1] = td->home_lat;
+            // Save data for future
+            fptr = fopen("/dev/shm/homepos", "wb");
+            if (fptr == NULL)
+            {
+                printf("Cannot create a file to store GPS home position \n");
+            }
+            else
+            {
+                printf("Saving GPS home position (%.7f, %.7f) \n", td->home_lon, td->home_lat);
+                fwrite(&lonlat, sizeof(lonlat), 1, fptr);
+                fclose(fptr);
+            }
+        }
+
+        //started during flight try to load home pos from file otherwise take current point as home (fallback)
+        if (!home_set && td->armed == 1)
+        {
+            float lonlat[2];
+            // read file
+            fptr = fopen("/dev/shm/homepos", "rb");
+            if (fptr == NULL) //file does not exist
+            {
+                // if atleast 2D satfix is reported by flightcontrol
+                if (td->fix > 2 && !home_set)
+                {
+                    home_counter++;
+                }
+                else
+                { // no fix
+                    home_counter = 0;
+                }
+
+                if (home_counter == 20)
+                {
+                    home_set = true;
+                    td->home_lat = td->latitude;
+                    td->home_lon = td->longitude;
+                }
+            }
+            else
+            {
+                printf("GPS home file exist. Load Home position from it \n");
+                fread(&lonlat, sizeof(lonlat), 1, fptr);
+                fclose(fptr);
+
+                td->home_lat = lonlat[1];
+                td->home_lon = lonlat[0];
+
+                printf("Lat:%f \n", td->home_lat);
+                printf("Lon:%f \n", td->home_lon);
+
+                home_set = true;
+            }
+        }
     #endif
 
-    #if defined(LTM)
-    //LTM makes it easy: If LTM O-frame reports home fix,
-    //set home position and use home lat/long from LTM O-frame
-    if (td->home_fix == 1){
-    home_set = true;
-    home_lat = td->ltm_home_latitude;
-    home_lon = td->ltm_home_longitude;
-    }
-    #endif
-
-    #ifdef FPS
+#ifdef FPS
         draw_osdinfos(osdfps, FPS_POS_X, FPS_POS_Y, FPS_SCALE);
     #endif
 
@@ -349,9 +420,9 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
  //  draw_home_arrow((int)course_to((td->ns == 'N'? 1:-1) *td->latitude, (td->ns == 'E'? 1:-1) *td->longitude, home_lat, home_lon), HOME_ARROW_POS_X, HOME_ARROW_POS_Y, HOME_ARROW_SCALE * GLOBAL_SCALE);
     #else
     #if HOME_ARROW_USECOG == true
-    draw_home_arrow(course_to(home_lat, home_lon, td->latitude, td->longitude), td->cog, HOME_ARROW_POS_X, HOME_ARROW_POS_Y, HOME_ARROW_SCALE * GLOBAL_SCALE);
+    draw_home_arrow(course_to(td->home_lat, td->home_lon, td->latitude, td->longitude), td->cog, HOME_ARROW_POS_X, HOME_ARROW_POS_Y, HOME_ARROW_SCALE * GLOBAL_SCALE);
     #else
-    draw_home_arrow(course_to(home_lat, home_lon, td->latitude, td->longitude), td->heading, HOME_ARROW_POS_X, HOME_ARROW_POS_Y, HOME_ARROW_SCALE * GLOBAL_SCALE);
+    draw_home_arrow(course_to(td->home_lat, td->home_lon, td->latitude, td->longitude), td->heading, HOME_ARROW_POS_X, HOME_ARROW_POS_Y, HOME_ARROW_SCALE * GLOBAL_SCALE);
     #endif
     if(td->heading>=360) td->heading=td->heading-360; // ?
     #endif
@@ -359,9 +430,9 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 
 #ifdef COMPASS
     #if COMPASS_USECOG == true
-    draw_compass(td->cog, course_to(home_lat, home_lon, td->latitude, td->longitude), COMPASS_LEN, 50, COMPASS_POS_Y, COMPASS_SCALE * GLOBAL_SCALE);
+    draw_compass(td->cog, course_to(td->latitude, td->longitude, td->home_lat, td->home_lon), COMPASS_LEN, 50, COMPASS_POS_Y, COMPASS_SCALE * GLOBAL_SCALE);
     #else
-    draw_compass(td->heading, course_to(home_lat, home_lon, td->latitude, td->longitude), COMPASS_LEN, 50, COMPASS_POS_Y, COMPASS_SCALE * GLOBAL_SCALE);
+    draw_compass(td->heading, course_to(td->latitude, td->longitude, td->home_lat, td->home_lon), COMPASS_LEN, 50, COMPASS_POS_Y, COMPASS_SCALE * GLOBAL_SCALE);
     #endif
  #endif
 
@@ -391,9 +462,9 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 
 #ifdef DISTANCE
     #ifdef FRSKY
-    draw_home_distance((int)distance_between(home_lat, home_lon, (td->ns == 'N'? 1:-1) *td->latitude, (td->ns == 'E'? 1:-1) *td->longitude), home_set, DISTANCE_POS_X, DISTANCE_POS_Y, DISTANCE_SCALE * GLOBAL_SCALE);
+    draw_home_distance((int)distance_between(td->home_lat, td->home_lon, (td->ns == 'N'? 1:-1) *td->latitude, (td->ns == 'E'? 1:-1) *td->longitude), home_set, DISTANCE_POS_X, DISTANCE_POS_Y, DISTANCE_SCALE * GLOBAL_SCALE);
     #elif defined(LTM) || defined(MAVLINK) || defined(SMARTPORT)
-        draw_home_distance((int)distance_between(home_lat, home_lon, td->latitude, td->longitude), home_set, DISTANCE_POS_X, DISTANCE_POS_Y, DISTANCE_SCALE * GLOBAL_SCALE);
+        draw_home_distance((int)distance_between(td->home_lat, td->home_lon, td->latitude, td->longitude), home_set, DISTANCE_POS_X, DISTANCE_POS_Y, DISTANCE_SCALE * GLOBAL_SCALE);
     #elif defined(VOT)
         draw_home_distance((int)td->distance, home_set, DISTANCE_POS_X, DISTANCE_POS_Y, DISTANCE_SCALE * GLOBAL_SCALE);
     #endif
@@ -450,9 +521,9 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 
 #ifdef HOME_RADAR 
     #if HOME_RADAR_USECOG == true
-    draw_home_radar(course_to(home_lat, home_lon, td->latitude, td->longitude), td->cog, (int)distance_between(home_lat, home_lon, td->latitude, td->longitude), HOME_RADAR_POS_X, HOME_RADAR_POS_Y, HOME_RADAR_SCALE * GLOBAL_SCALE);
+    draw_home_radar(course_to(td->home_lat, td->home_lon, td->latitude, td->longitude), td->cog, (int)distance_between(td->home_lat, td->home_lon, td->latitude, td->longitude), HOME_RADAR_POS_X, HOME_RADAR_POS_Y, HOME_RADAR_SCALE * GLOBAL_SCALE);
     #else
-    draw_home_radar(course_to(home_lat, home_lon, td->latitude, td->longitude), td->heading, (int)distance_between(home_lat, home_lon, td->latitude, td->longitude), HOME_RADAR_POS_X, HOME_RADAR_POS_Y, HOME_RADAR_SCALE * GLOBAL_SCALE);  
+    draw_home_radar(course_to(td->home_lat, td->home_lon, td->latitude, td->longitude), td->heading, (int)distance_between(td->home_lat, td->home_lon, td->latitude, td->longitude), HOME_RADAR_POS_X, HOME_RADAR_POS_Y, HOME_RADAR_SCALE * GLOBAL_SCALE);  
     #endif
  #endif
 
@@ -1451,15 +1522,26 @@ void draw_home_arrow(float abs_heading, float craft_heading, float pos_x, float 
     if (rel_heading >= 360) rel_heading -=360;
     pos_x = getWidth(pos_x);
     pos_y = getHeight(pos_y);
-    //offset for arrow, so middle of the arrow is at given position
-    pos_x -= getWidth(1.25) * scale;
-    pos_y -= getWidth(1.25) * scale;
 
-    float x[8] = {getWidth(0.5)*scale+pos_x, getWidth(0.5)*scale+pos_x, pos_x, getWidth(1.25)*scale+pos_x, getWidth(2.5)*scale+pos_x, getWidth(2)*scale+pos_x, getWidth(2)*scale+pos_x, getWidth(0.5)*scale+pos_x};
-    float y[8] = {pos_y, getWidth(1.5)*scale+pos_y, getWidth(1.5)*scale+pos_y, getWidth(2.5)*scale+pos_y, getWidth(1.5)*scale+pos_y, getWidth(1.5)*scale+pos_y, pos_y, pos_y};
-    rotatePoints(x, y, rel_heading, 8, pos_x+getWidth(1.25)*scale,pos_y+getWidth(1.25)*scale);
+    float arrow_height = getWidth(2.5) * scale;
+    float arrow_width  = getWidth(1.7) * scale;
+    float arrow_lwidth = getWidth(1.0) * scale;
+    float arrow_lheight = getWidth(1.5) * scale;
+    //offset for arrow, so middle of the arrow is at given position
+
+    float x[8] = {pos_x - arrow_lwidth/2, pos_x - arrow_lwidth/2, pos_x - arrow_width/2, pos_x, pos_x + arrow_width/2, pos_x + arrow_lwidth/2, pos_x + arrow_lwidth/2, pos_x - arrow_lwidth/2};
+    float y[8] = {pos_y, pos_y + arrow_lheight, pos_y + arrow_lheight, pos_y + arrow_height, pos_y + arrow_lheight, pos_y + arrow_lheight, pos_y, pos_y};
+    rotatePoints(x, y, rel_heading, 8, pos_x,pos_y+arrow_height/2);
     Polygon(x, y, 8);
     Polyline(x, y, 8);
+
+    #if HOME_ARROW_SHOW_VALUE == true
+        if (rel_heading < -180) rel_heading += 360;
+        if (rel_heading >= 180) rel_heading -=360;
+        sprintf(buffer, "%.0f°", rel_heading);
+        float fontHeight = getHeight(2) * scale;
+        Text(pos_x + arrow_width, pos_y + arrow_height/2 - fontHeight/2, buffer, myfont, fontHeight);
+    #endif
  }
 
 
@@ -1665,43 +1747,53 @@ void draw_home_distance(int distance, bool home_fixed, float pos_x, float pos_y,
     float text_scale = getWidth(2) * scale;
     VGfloat width_value = TextWidth("00000", myfont, text_scale);
 
-    if (!home_fixed){
-        Fill(255,20,20,getOpacity(COLOR)); // red
-    Stroke(255,20,20,getOpacity(OUTLINECOLOR));
-    }else{
-        Fill(COLOR);
-    Stroke(OUTLINECOLOR);
-    }
-    TextEnd(getWidth(pos_x)-width_value-getWidth(0.2), getHeight(pos_y), "", osdicons, text_scale * 0.6);
-
-    Fill(COLOR);
-    Stroke(OUTLINECOLOR);
-
-    #if IMPERIAL == true
-    Text(getWidth(pos_x)+getWidth(0.4), getHeight(pos_y), "ft", myfont, text_scale*0.6);
-    sprintf(buffer, "%05d", (int)(distance*TO_FEET));
-    #else
-    if(distance < 1000)
+    if (!home_fixed)
     {
-        Text(getWidth(pos_x)+getWidth(0.4), getHeight(pos_y), "m", myfont, text_scale*0.6);
-        sprintf(buffer, "%05d", distance);
+        Fill(255, 20, 20, getOpacity(COLOR)); // red
+        Stroke(255, 20, 20, getOpacity(OUTLINECOLOR));
     }
     else
     {
-        Text(getWidth(pos_x)+getWidth(0.4), getHeight(pos_y), "km", myfont, text_scale*0.6);
-        if(distance < 100000)
-        {
-            sprintf(buffer, "%02.2f", (float)distance/1000);
-        }
-        else
-        {
-            sprintf(buffer, "%03.1f", (float)distance/1000);
-        }
+        Fill(COLOR);
+        Stroke(OUTLINECOLOR);
     }
+    TextEnd(getWidth(pos_x) - width_value - getWidth(0.2), getHeight(pos_y), "", osdicons, text_scale * 0.6);
+
     
-    curr_home_dist=distance;//to raport
-    #endif
-    TextEnd(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
+    if(!home_fixed)
+    {
+        TextEnd(getWidth(pos_x), getHeight(pos_y), "--", myfont, text_scale);
+    }
+    else
+    {
+        Fill(COLOR);
+        Stroke(OUTLINECOLOR);
+        #if IMPERIAL == true
+            Text(getWidth(pos_x) + getWidth(0.4), getHeight(pos_y), "ft", myfont, text_scale * 0.6);
+            sprintf(buffer, "%05d", (int)(distance * TO_FEET));
+        #else
+            if (distance < 1000)
+            {
+                Text(getWidth(pos_x) + getWidth(0.4), getHeight(pos_y), "m", myfont, text_scale * 0.6);
+                sprintf(buffer, "%05d", distance);
+            }
+            else
+            {
+                Text(getWidth(pos_x) + getWidth(0.4), getHeight(pos_y), "km", myfont, text_scale * 0.6);
+                if (distance < 100000)
+                {
+                    sprintf(buffer, "%02.2f", (float)distance / 1000);
+                }
+                else
+                {
+                    sprintf(buffer, "%03.1f", (float)distance / 1000);
+                }
+            }
+
+            curr_home_dist = distance; // to raport
+        #endif
+        TextEnd(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
+    }
  }
 
 

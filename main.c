@@ -385,8 +385,8 @@ int main(int argc, char *argv[])
 		    fpscount_ts_last = current_timestamp();
 		    fps = (fpscount - fpscount_last) / 2;
 		    fpscount_last = fpscount;
-            system("clear");
-		    fprintf(stderr,"OSD FPS: %d\n", fps);
+            //system("clear");
+		    //fprintf(stderr,"OSD FPS: %d\n", fps);
 		}
     }
     return 0;
