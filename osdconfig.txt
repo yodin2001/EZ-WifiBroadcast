@@ -197,7 +197,7 @@
 #define YAWDISPLAY_TREND_TIME 20 //(sensitivity)number of seconds speed trend predicts future yaw
 
 #define AHI
-#define AHI_SCALE 0.8
+#define AHI_SCALE 0.75
 #define AHI_LADDER false // set to true to draw ladders above and below the center horizon line
 #define AHI_INVERT_ROLL 1 // default -1, set to 1 if roll moves in the wrong direction
 #define AHI_INVERT_PITCH 1 // default -1, set to 1 if pitch moves in the wrong direction
