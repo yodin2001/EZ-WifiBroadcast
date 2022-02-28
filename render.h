@@ -95,7 +95,7 @@ void draw_amp_status(float current, float pos_x, float pos_y, float scale);
 void draw_osdinfos(int osdfps, float pos_x, float pos_y, float scale);
 void draw_sat(int sats, int fixtype, int hdop, int armed, float pos_x, float pos_y, float scale, float hdop_warn, float hdop_caution, float declutter);
 //void draw_Hdop(float hdop, float pos_x, float pos_y, float scale);
-void draw_Mission(int Seq,float pos_x, float pos_y, float scale);
+void draw_Mission(telemetry_data_t *td, float pos_x, float pos_y, float scale);
 void draw_Angle(float pos_x, float pos_y, float scale);
 void draw_Angle2(float pos_x, float pos_y, float scale);
 void draw_Alarm(int SenorsPresent, int SenorsEnabled, int SenorsHealth, float pos_x, float pos_y, float scale);

@@ -208,6 +208,7 @@ typedef struct {
 //	uint16_t hdop;
 	uint16_t servo1;
 	uint16_t mission_current_seq;
+	uint16_t wp_dist;
 	uint32_t SP;
 	uint32_t SE;
 	uint32_t SH;

@@ -310,7 +310,7 @@ int main(int argc, char *argv[])
             get_wbc_telemetry(&td, 10);
 
             //read mavlink
-            do_render = get_mavlink_udp_telemetry(telemetry_fd, &td, 50);
+            do_render = get_mavlink_udp_telemetry(telemetry_fd, &td, 25);
         #else
 	        FD_ZERO(&set);
 	        FD_SET(telemetry_fd, &set);

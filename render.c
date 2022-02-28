@@ -3,6 +3,7 @@
 #include "render.h"
 #include "telemetry.h"
 #include "osdconfig.h"
+#include "mavlink.h"
 #define TO_FEET 3.28084
 #define TO_MPH 0.621371
 #define CELL_WARNING_PCT1 (CELL_WARNING1-CELL_MIN)/(CELL_MAX-CELL_MIN)*100
@@ -536,7 +537,7 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
  #endif
 
 #if defined(MISSION) && defined(MAVLINK) 
-  draw_Mission(td->mission_current_seq , MISSION_POS_X, MISSION_POS_Y, MISSION_SCALE * GLOBAL_SCALE);
+  draw_Mission(td, MISSION_POS_X, MISSION_POS_Y, MISSION_SCALE * GLOBAL_SCALE);
  #endif
 
 #ifdef ANGLE2
@@ -2833,19 +2834,17 @@ void draw_RPA(float roll, float pitch, float pos_x, float pos_y, float scale){
     }
  }
 
-void draw_Mission(int Seq,float pos_x, float pos_y, float scale){
-    
+void draw_Mission(telemetry_data_t *td, float pos_x, float pos_y, float scale)
+{
     float text_scale = getWidth(2) * scale;
-    VGfloat width_value = TextWidth("00", myfont, text_scale);
     VGfloat height_text = TextHeight(myfont, text_scale)+getHeight(0.3)*scale;
     #if CHINESE == true
-    TextEnd(getWidth(pos_x)-width_value, getHeight(pos_y)+getHeight(0.3)*scale, "航 点:", myfont, text_scale*0.9);
+    TextEnd(getWidth(pos_x), getHeight(pos_y)+getHeight(0.3)*scale, "航 点:", myfont, text_scale*0.9);
     #else
-    TextEnd(getWidth(pos_x)-width_value, getHeight(pos_y)+getHeight(0.3)*scale, "Mission:", myfont, text_scale*0.9);
+    TextEnd(getWidth(pos_x), getHeight(pos_y)+getHeight(0.3)*scale, "Mission:", myfont, text_scale*0.9);
     #endif
-    sprintf(buffer, "%d", Seq);
-    TextEnd(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
-
+    sprintf(buffer, "%dm>%d", td->wp_dist, td->mission_current_seq);
+    Text(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
  }
 
 void draw_Angle(float pos_x, float pos_y, float scale){

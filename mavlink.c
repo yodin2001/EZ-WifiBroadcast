@@ -295,6 +295,11 @@ int mavlink_read(telemetry_data_t *td, uint8_t *buf, int buflen)
 					td->rangefinder.max_range = mavlink_msg_distance_sensor_get_max_distance(&msg)/100.0f;
 					break;
 
+				
+				case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:
+					td->wp_dist = mavlink_msg_nav_controller_output_get_wp_dist(&msg);
+					break;
+
                 default:
                     fprintf(stdout, "OTHER MESSAGE ID:%d ",msg.msgid);
                     break;
