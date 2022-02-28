@@ -2048,7 +2048,7 @@ void draw_speed_ladder(telemetry_data_t *td, float pos_x, float pos_y, float sca
 
 
     int k;
-    for (k = (int) (speed - range_half); k <= speed + range_half; k++)
+    for (k = (int) (roundf(speed) - range_half); k <= roundf(speed) + range_half; k++)
     {
         int y = getHeight(pos_y) + (k - speed) * ratio_speed;
         if (k % 5 == 0) // wide element plus number label every 5 'ticks' on the scale
@@ -2088,13 +2088,23 @@ void draw_speed_ladder(telemetry_data_t *td, float pos_x, float pos_y, float sca
 
     #if SPEEDLADDER_SHOW_SECOND_SPEED == true
         //alternatice speed arrow
-        float as_x[3] = {px + width_element + getWidth(1.5) * scale, px + width_element, px + width_element + getWidth(1.5) * scale};
-        float speed_alt_y = getHeight(pos_y) + (speed_alt - speed)*ratio_speed;
-        float as_y[3] = {speed_alt_y + getHeight(1) * scale, speed_alt_y, speed_alt_y - getHeight(1) * scale};
-        Stroke(COLOR);
-        Polyline(as_x, as_y, 3);
+        float spd_diff = speed_alt - speed;
+        if(spd_diff > range_half) spd_diff = range_half;
+        if(spd_diff < -range_half) spd_diff = -range_half;
+
+        float speed_alt_y = getHeight(pos_y) + spd_diff*ratio_speed;
+        float as_x[3] = {px + width_element + getWidth(1.5) * scale, px + width_element + getWidth(0.2), px + width_element + getWidth(1.5) * scale};
+        float as_y[3] = {speed_alt_y + getHeight(0.8) * scale, speed_alt_y, speed_alt_y - getHeight(0.8) * scale};
+        if(fabs(spd_diff) == range_half)
+        {
+            //Blink yellow
+            Fill(255,128,0, (((long)(current_ts()/250)) % 2) == 0 ? 0 : getOpacity(COLOR));
+        }
+        Stroke(OUTLINECOLOR);
+        Polygon(as_x, as_y, 3);
         //alternative speed
         sprintf(buffer, "%.0f", speed_alt);
+        if(fabs(spd_diff) == range_half) Fill(255,128,0, getOpacity(COLOR)); //Yellow
         Text(px + width_element + getWidth(1.8) * scale, speed_alt_y - offset_speed_value, buffer, myfont, text_scale*1.7);
     #endif
 
