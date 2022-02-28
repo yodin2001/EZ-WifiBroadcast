@@ -904,30 +904,40 @@ Fill(255,255,255,getOpacity(COLOR));
  }
  #endif
 
+ void draw_rssi(int rssi, int armed, float pos_x, float pos_y, float scale, float warn, float caution, float declutter)
+ {
+     float text_scale = getWidth(2) * scale;
+     VGfloat width_value = TextWidth("00", myfont, text_scale);
 
-void draw_rssi(int rssi, int armed, float pos_x, float pos_y, float scale, float warn, float caution, float declutter){
-    float text_scale = getWidth(2) * scale;
-    VGfloat width_value = TextWidth("00", myfont, text_scale);   
+     if (rssi < warn)
+     {
+         Stroke(COLOR_WARNING); // red
+         Fill(COLOR_WARNING);
+     }
+     else if (rssi < caution)
+     {
+         Stroke(COLOR_CAUTION); // yellow
+         Fill(COLOR_CAUTION);
+     }
+     else
+     {
+         Fill(COLOR); // normal
+         Stroke(OUTLINECOLOR);
+         if ((armed == 1) && (declutter == 1))
+         {
+             Stroke(COLOR_DECLUTTER); // opaque
+             Fill(COLOR_DECLUTTER);
+         }
+     }
+    float x = getWidth(pos_x);
 
-    if (rssi > warn) {
-        Stroke(COLOR_WARNING); //red
-    Fill(COLOR_WARNING); 
-    } else if (rssi > caution) {
-        Stroke(COLOR_CAUTION); //yellow
-    Fill(COLOR_CAUTION); 
-    } else {    
-        Fill(COLOR); //normal
-        Stroke(OUTLINECOLOR);
-        if ((armed==1)&&(declutter==1)){
-        Stroke(COLOR_DECLUTTER); //opaque
-        Fill(COLOR_DECLUTTER);}
-    } 
+    Text(x, getHeight(pos_y), "", osdicons, text_scale * 0.6);
+    x += TextWidth("", osdicons, text_scale * 0.6);
 
-    TextEnd(getWidth(pos_x)-width_value, getHeight(pos_y), "", osdicons, text_scale * 0.6);
     sprintf(buffer, "%02d", rssi);
-    TextEnd(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
-
-    Text(getWidth(pos_x), getHeight(pos_y), "%", myfont, text_scale*0.6);
+    Text(x, getHeight(pos_y), buffer, myfont, text_scale);
+    x += TextWidth(buffer, myfont, text_scale);
+    Text(x, getHeight(pos_y), "%", myfont, text_scale * 0.6);
  }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------nwo

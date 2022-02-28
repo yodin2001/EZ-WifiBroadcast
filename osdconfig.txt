@@ -99,11 +99,11 @@
 
 //-------------------------------------------------------------------------------------------------------------------nwo
 #define RSSI//.............RC_RSSI
-#define RSSI_POS_X 10
+#define RSSI_POS_X 4
 #define RSSI_POS_Y 75
 #define RSSI_SCALE 1
-#define RSSI_WARN -40 // negative number
-#define RSSI_CAUTION -25
+#define RSSI_WARN 50 // negative number
+#define RSSI_CAUTION 75
 #define RSSI_DECLUTTER 0 //1 for yes, 0 for no
 
 #define DOWNLINK_RSSI
