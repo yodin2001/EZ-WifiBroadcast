@@ -429,11 +429,7 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
  #endif
 
 #ifdef COMPASS
-    #if COMPASS_USECOG == true
-    draw_compass(td->cog, course_to(td->latitude, td->longitude, td->home_lat, td->home_lon), COMPASS_LEN, 50, COMPASS_POS_Y, COMPASS_SCALE * GLOBAL_SCALE);
-    #else
-    draw_compass(td->heading, course_to(td->latitude, td->longitude, td->home_lat, td->home_lon), COMPASS_LEN, 50, COMPASS_POS_Y, COMPASS_SCALE * GLOBAL_SCALE);
-    #endif
+    draw_compass(td, COMPASS_LEN, 50, COMPASS_POS_Y, COMPASS_SCALE * GLOBAL_SCALE);
  #endif
 
 
@@ -1555,111 +1551,157 @@ void draw_home_arrow(float abs_heading, float craft_heading, float pos_x, float 
     #endif
  }
 
+ void draw_compass(telemetry_data_t *td, float len, float pos_x, float pos_y, float scale)
+ {
+    float home_heading = course_to(td->latitude, td->longitude, td->home_lat, td->home_lon);
 
-
-void draw_compass(float heading, float home_heading, float len, float pos_x, float pos_y, float scale){
     float text_scale = getHeight(1.5) * scale;
     float width_ladder = getHeight(len) * scale;
     float width_element = getWidth(0.25) * scale;
     float height_element = getWidth(0.50) * scale;
     float ratio = width_ladder / 180;
 
-    VGfloat height_text = TextHeight(myfont, text_scale*1.5)+getHeight(0.1)*scale;
-    sprintf(buffer, "%.0f°", heading);
-    TextMid(getWidth(pos_x)-width_ladder/2, getHeight(pos_y) - height_element - height_text - 5, buffer, myfont, text_scale*1.8);
-    
-	#if COMPASS_BEARING == true
-	  sprintf(buffer, "%.0f°", home_heading);
-      TextMid(getWidth(pos_x)+width_ladder/2, getHeight(pos_y) - height_element - height_text - 5, buffer, myfont, text_scale*1.8);
-    #endif
-	
-    int i = heading - 90;
-    char* c;
-    bool draw = false;
-	
-	#if COMPASS_COMPLEX == true
-    while (i <= heading + 90) {  //find all values from heading - 90 to heading + 90 that are % 15 == 0
-	float x = getWidth(pos_x) + (i - heading) * ratio;
-	if (i % 45 == 0) {
-	    Rect(x-width_element/2, getHeight(pos_y)-5, width_element, height_element*2);
-	}else if (i % 15 == 0) {
-	    Rect(x-width_element/2, getHeight(pos_y)-5, width_element, height_element*1.3);	
-    }else if (i % 5 == 0) {
-	    Rect(x-width_element/2, getHeight(pos_y)-5, width_element, height_element*0.6);
-	}else{
-	    i++;
-	    continue;
-	}
-	#else
-	while (i <= heading + 90) {  //find all values from heading - 90 to heading + 90 that are % 15 == 0
-	float x = getWidth(pos_x) + (i - heading) * ratio;
-	if (i % 30 == 0) {
-	    Rect(x-width_element/2, getHeight(pos_y), width_element, height_element*2);
-	}else if (i % 15 == 0) {
-	    Rect(x-width_element/2, getHeight(pos_y), width_element, height_element);
-	}else{
-	    i++;
-	    continue;
-	}
-    #endif
+    VGfloat height_text = TextHeight(myfont, text_scale * 1.5) + getHeight(0.1) * scale;
+    sprintf(buffer, "%.0f°", td->heading);
+    TextMid(getWidth(pos_x) - width_ladder / 2, getHeight(pos_y) - height_element - height_text - 5, buffer, myfont, text_scale * 1.8);
 
-    int j = i;
-    if (j < 0) j += 360;
-    if (j >= 360) j -= 360;
+    //home course
+#if COMPASS_BEARING == true
+     sprintf(buffer, "%.0f°", home_heading);
+     TextEnd(getWidth(pos_x) + width_ladder / 2 - TextWidth(buffer, myfont, text_scale * 1.8)/2, getHeight(pos_y) - height_element - height_text - 5, "ﵱ", osdicons, text_scale * 1.8);
+     TextMid(getWidth(pos_x) + width_ladder / 2, getHeight(pos_y) - height_element - height_text - 5, buffer, myfont, text_scale * 1.8);
+#endif
 
-    switch (j) {
-        case 0:
-            draw = true;
-            #if CHINESE == true
-            c = "北";
-            #else
-            c = "N";
-	    #endif
-            break;
-        case 90:
-            draw = true;
-            #if CHINESE == true
-            c = "东";
-            #else
-            c = "E";
-            #endif
-            break;
-        case 180:
-            draw = true;
-            #if CHINESE == true
-            c = "南";
-            #else
-            c = "S";
-            #endif
-            break;
-        case 270:
-            draw = true;
-            #if CHINESE == true
-            c = "西";
-            #else
-            c = "W";
-            #endif
-            break;
-    }
-    if (draw == true) {
-        TextMid(x, getHeight(pos_y) + height_element*3.5, c, myfont, text_scale*1.5);
-        draw = false;
-    }
-    if (j == home_heading) {
-         TextMid(x, getHeight(pos_y) + height_element, "", osdicons, text_scale*1.3);
+     int i = td->heading - 90;
+     char *c;
+     bool draw = false;
+
+#if COMPASS_COMPLEX == true
+     while (i <= td->heading + 90)
+     { // find all values from heading - 90 to heading + 90 that are % 15 == 0
+         float x = getWidth(pos_x) + (i - td->heading) * ratio;
+         if (i % 45 == 0)
+         {
+             Rect(x - width_element / 2, getHeight(pos_y) - 5, width_element, height_element * 2);
+         }
+         else if (i % 15 == 0)
+         {
+             Rect(x - width_element / 2, getHeight(pos_y) - 5, width_element, height_element * 1.3);
+         }
+         else if (i % 5 == 0)
+         {
+             Rect(x - width_element / 2, getHeight(pos_y) - 5, width_element, height_element * 0.6);
+         }
+         else
+         {
+             i++;
+             continue;
+         }
+#else
+     while (i <= td->heading + 90)
+     { // find all values from heading - 90 to heading + 90 that are % 15 == 0
+         float x = getWidth(pos_x) + (i - td->heading) * ratio;
+         if (i % 30 == 0)
+         {
+             Rect(x - width_element / 2, getHeight(pos_y), width_element, height_element * 2);
+         }
+         else if (i % 15 == 0)
+         {
+             Rect(x - width_element / 2, getHeight(pos_y), width_element, height_element);
+         }
+         else
+         {
+             i++;
+             continue;
+         }
+#endif
+
+         int j = i;
+         if (j < 0)
+             j += 360;
+         if (j >= 360)
+             j -= 360;
+
+         switch (j)
+         {
+            case 0:
+                draw = true;
+                #if CHINESE == true
+                    c = "北";
+                #else
+                c = "N";
+                #endif
+                break;
+            case 90:
+                draw = true;
+                #if CHINESE == true
+                    c = "东";
+                #else
+                    c = "E";
+                #endif
+                break;
+            case 180:
+                draw = true;
+                #if CHINESE == true
+                    c = "南";
+                #else
+                    c = "S";
+                #endif
+                break;
+            case 270:
+                draw = true;
+                #if CHINESE == true
+                    c = "西";
+                #else
+                    c = "W";
+                #endif
+                break;
+         }
+         if (draw == true)
+         {
+             TextMid(x, getHeight(pos_y) + height_element * 3.5, c, myfont, text_scale * 1.5);
+             draw = false;
+         }
+         i++;
      }
-    i++;
+
+     float rel_home = home_heading - td->heading;
+     if (rel_home < 0)
+         rel_home += 360;
+     if ((rel_home > 90) && (rel_home <= 180))
+     {
+         TextMid(getWidth(pos_x) + width_ladder / 2 * 1.2, getHeight(pos_y), "", osdicons, text_scale * 0.8);
+     }
+     else if ((rel_home > 180) && (rel_home < 270))
+     {
+         TextMid(getWidth(pos_x) - width_ladder / 2 * 1.2, getHeight(pos_y), "", osdicons, text_scale * 0.8);
+     }
+     else
+    {
+        //home mark
+        if (rel_home >  180) rel_home -= 360;
+        float home_x = getWidth(pos_x) + rel_home * ratio;
+        TextMid(home_x, getHeight(pos_y) + height_element, "ﵱ", osdicons, text_scale * 1.3);
     }
+     
 
-    float rel_home = home_heading-heading;
-    if (rel_home<0) rel_home+= 360;
-    if ((rel_home > 90) && (rel_home <= 180)) { TextMid(getWidth(pos_x)+width_ladder/2 * 1.2, getHeight(pos_y), "", osdicons, text_scale * 0.8); }
-    else if ((rel_home > 180) && (rel_home < 270)) { TextMid(getWidth(pos_x)-width_ladder/2 * 1.2, getHeight(pos_y), "", osdicons, text_scale * 0.8); }
+    //center mark
+    TextMid(getWidth(pos_x), getHeight(pos_y) - height_element - height_text - 8, "", osdicons, text_scale * 2);
 
-    TextMid(getWidth(pos_x), getHeight(pos_y) + height_element*2.5+height_text, "", osdicons, text_scale*2);
+    //COG mark
+    #if COMPASS_SHOW_COG == true
+        float rel_cog = td->cog - td->heading;
+        if (rel_cog < -180) rel_cog += 360;
+        if (rel_cog >  180) rel_cog -= 360;
+
+        if(fabs(rel_cog) <= 90)
+        {
+            float cog_x = getWidth(pos_x) + rel_cog * ratio;
+            Fill(255, 255, 0, getOpacity( COLOR));
+            TextMid(cog_x, getHeight(pos_y) - height_element - height_text - 8, "", osdicons, text_scale * 2);
+        }
+    #endif
  }
-
-
 
 void draw_batt_status(float voltage, float current, float pos_x, float pos_y, float scale){
     Stroke(OUTLINECOLOR);
