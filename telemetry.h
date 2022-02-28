@@ -135,6 +135,13 @@ typedef struct {
     wifi_adapter_rx_status_forward_t adapter[6]; // same struct as in wifibroadcast lib.h
 } __attribute__((packed)) wifibroadcast_rx_status_forward_t;
 
+typedef struct 
+{
+	long long ts; //recieve timestemp
+	uint8_t severity;
+	char *message;
+} uav_message;
+
 
 typedef struct {
 	uint32_t validmsgsrx;
@@ -167,6 +174,8 @@ typedef struct {
 	float home_lat;
 	float home_lon;
 
+	uav_message msg;
+	
 //#if defined(FRSKY)
 	int16_t x, y, z; // also needed for smartport
 	int16_t ew, ns;

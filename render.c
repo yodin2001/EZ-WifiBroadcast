@@ -554,6 +554,14 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 #ifdef RPA  //roll and pitch angle
     draw_RPA(RPA_INVERT_ROLL * td->roll, RPA_INVERT_PITCH * td->pitch, RPA_POS_X, RPA_POS_Y, RPA_SCALE * GLOBAL_SCALE);
  #endif
+
+#ifdef UAV_MESSAGE
+    if(  (long)(time_ts - td->msg.ts) < UAV_MESSAGE_TIMEOUT)
+    {
+        draw_message(td->msg.severity, td->msg.message, " "," ", UAV_MESSAGE_POS_X, UAV_MESSAGE_POS_Y, UAV_MESSAGE_SCALE * GLOBAL_SCALE);
+    }
+#endif
+
 #ifdef AHI
     #if defined(FRSKY) || defined(SMARTPORT)
         float x_val, y_val, z_val;
@@ -582,6 +590,9 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 #ifdef ANGLE //bank angle indicator. Must follow AHI 
   draw_Angle(ANGLE_POS_X, ANGLE_POS_Y, ANGLE_SCALE * GLOBAL_SCALE);
  #endif
+
+    
+
     End(); // Render end (causes everything to be drawn on next vsync)
  }
 

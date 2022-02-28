@@ -11,6 +11,7 @@ mavlink_message_t msg;
 	#define fprintf(...) (0)
 #endif
 
+
 int mavlink_read(telemetry_data_t *td, uint8_t *buf, int buflen)
 {
 	
@@ -279,6 +280,13 @@ int mavlink_read(telemetry_data_t *td, uint8_t *buf, int buflen)
 				case MAVLINK_MSG_ID_HOME_POSITION:
 					td->home_lat = mavlink_msg_home_position_get_latitude(&msg)/10000000.0f;
 					td->home_lon = mavlink_msg_home_position_get_longitude(&msg)/10000000.0f;	
+					break;
+
+
+				case MAVLINK_MSG_ID_STATUSTEXT:
+					td->msg.ts = current_ts();
+					mavlink_msg_statustext_get_text(&msg, td->msg.message);
+					td->msg.severity = mavlink_msg_statustext_get_severity(&msg);
 					break;
 
                 default:
