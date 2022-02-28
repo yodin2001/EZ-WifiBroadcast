@@ -289,6 +289,12 @@ int mavlink_read(telemetry_data_t *td, uint8_t *buf, int buflen)
 					td->msg.severity = mavlink_msg_statustext_get_severity(&msg);
 					break;
 
+
+				case MAVLINK_MSG_ID_DISTANCE_SENSOR:
+					td->rangefinder.current_range = mavlink_msg_distance_sensor_get_current_distance(&msg)/100.0f;
+					td->rangefinder.max_range = mavlink_msg_distance_sensor_get_max_distance(&msg)/100.0f;
+					break;
+
                 default:
                     fprintf(stdout, "OTHER MESSAGE ID:%d ",msg.msgid);
                     break;

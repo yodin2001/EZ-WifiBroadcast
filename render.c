@@ -587,6 +587,7 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
   draw_Angle(ANGLE_POS_X, ANGLE_POS_Y, ANGLE_SCALE * GLOBAL_SCALE);
  #endif
 
+    draw_rangefinder(td, RANGEFINDER_POS_X, RANGEFINDER_POS_Y, RANGEFINDER_POS_H);
     
 
     End(); // Render end (causes everything to be drawn on next vsync)
@@ -3342,3 +3343,30 @@ void draw_throttle_V2(uint16_t throttle, float pos_x, float pos_y, float scale){
     #endif
     
  }
+
+void draw_rangefinder(telemetry_data_t *td, float pos_x, float pos_y, float height)
+{
+    if(td->rangefinder.max_range == 0) return;
+    if(td->rangefinder.current_range >= td->rangefinder.max_range) return;
+    float rel_alt = td->rangefinder.current_range / td->rangefinder.max_range;
+
+    float text_scale = getWidth(2) * 1.0;
+    float symb_height = TextHeight(osdicons, text_scale) * 0.4;
+
+    Fill(COLOR);
+    Stroke(OUTLINECOLOR);
+
+    Rect(getWidth(pos_x-2), getHeight(pos_y), getWidth(4), getHeight(0.3));
+    sprintf(buffer, "%.2fm", td->rangefinder.current_range);
+    TextMid(getWidth(pos_x), getHeight(pos_y + height * rel_alt), buffer, myfont, text_scale);
+
+    int numIcons = getHeight(height * rel_alt) / symb_height - 0.4;
+    int i = 0;
+    for(i = 0; i < numIcons; i++)
+    {
+       TextMid(getWidth(pos_x), getHeight(pos_y) + symb_height * (float)(i - 0.4), "", osdicons, text_scale);
+    }
+    
+
+    
+}

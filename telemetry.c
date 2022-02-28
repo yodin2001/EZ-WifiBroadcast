@@ -41,6 +41,9 @@ void telemetry_init(telemetry_data_t *td) {
 	td->home_lon=0;
 	td->msg.ts = 0;
 	td->msg.message = malloc(51);
+
+	td->rangefinder.current_range = 0;
+	td->rangefinder.max_range = 0;
 #ifdef FRSKY
 	td->x = 0;
 	td->y = 0;

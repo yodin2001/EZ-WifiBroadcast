@@ -99,5 +99,6 @@ void draw_Mission(int Seq,float pos_x, float pos_y, float scale);
 void draw_Angle(float pos_x, float pos_y, float scale);
 void draw_Angle2(float pos_x, float pos_y, float scale);
 void draw_Alarm(int SenorsPresent, int SenorsEnabled, int SenorsHealth, float pos_x, float pos_y, float scale);
+void draw_rangefinder(telemetry_data_t *td, float pos_x, float pos_y, float height);
 int width,height;
 

@@ -140,7 +140,13 @@ typedef struct
 	long long ts; //recieve timestemp
 	uint8_t severity;
 	char *message;
-} uav_message;
+} uav_message_t;
+
+typedef struct
+{
+	float current_range;
+	float max_range;
+} rangefinder_t;
 
 
 typedef struct {
@@ -174,7 +180,8 @@ typedef struct {
 	float home_lat;
 	float home_lon;
 
-	uav_message msg;
+	uav_message_t msg;
+	rangefinder_t rangefinder;
 	
 //#if defined(FRSKY)
 	int16_t x, y, z; // also needed for smartport
