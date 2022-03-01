@@ -355,9 +355,6 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 #if defined(EFFIC)
  draw_EFFIC(td->armed,(int)td->speed,td->ampere, EFFIC_POS_X, EFFIC_POS_Y, EFFIC_SCALE * GLOBAL_SCALE);
  #endif
-#if defined(RAPORT)
- draw_RAPORT(td->armed,(int)td->speed,td->ampere, td->voltage, td->msl_altitude, RAPORT_POS_X, RAPORT_POS_Y, RAPORT_SCALE * GLOBAL_SCALE);
- #endif
 #if defined(BT_AMPER)
  draw_BT_AMPER(td->ampere, BT_AMPER_POS_X, BT_AMPER_POS_Y, BT_AMPER_SCALE * GLOBAL_SCALE);
  #endif
@@ -587,9 +584,13 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 #ifdef ANGLE //bank angle indicator. Must follow AHI 
   draw_Angle(ANGLE_POS_X, ANGLE_POS_Y, ANGLE_SCALE * GLOBAL_SCALE);
  #endif
-
-    draw_rangefinder(td, RANGEFINDER_POS_X, RANGEFINDER_POS_Y, RANGEFINDER_POS_H);
+    #ifdef RANGEFINDER
+        draw_rangefinder(td, RANGEFINDER_POS_X, RANGEFINDER_POS_Y, RANGEFINDER_POS_H);
+    #endif
     
+    #if defined(RAPORT)
+        draw_RAPORT(td->armed,(int)td->speed,td->ampere, td->voltage, td->msl_altitude, RAPORT_POS_X, RAPORT_POS_Y, RAPORT_SCALE * GLOBAL_SCALE);
+    #endif
 
     End(); // Render end (causes everything to be drawn on next vsync)
  }
@@ -969,45 +970,65 @@ void draw_EFFIC(int armed, int gpsspeed, float current, float pos_x, float pos_y
     Text(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
     
  }
-void draw_RAPORT(int armed, int gpsspeed, float current, float voltage, float mslalt, float pos_x, float pos_y, float scale)
-{
-    if(armed==1)
-    {
-        if (raport_flag2==false){start_point_alt=mslalt;raport_flag2=true;}
-        if (current>rapo_max_amp){rapo_max_amp=current;}
-        if (curr_c_alt>rapo_max_alt){rapo_max_alt=curr_c_alt;}
-        if (curr_home_dist>rapo_home_dist){rapo_home_dist=curr_home_dist;}
-        if (gpsspeed>rapo_max_speed){rapo_max_speed=gpsspeed;}
+ void draw_RAPORT(int armed, int gpsspeed, float current, float voltage, float mslalt, float pos_x, float pos_y, float scale)
+ {
+     if (armed == 1)
+     {
+         if (raport_flag2 == false)
+         {
+             start_point_alt = mslalt;
+             raport_flag2 = true;
+         }
+         if (current > rapo_max_amp)
+         {
+             rapo_max_amp = current;
+         }
+         if (curr_c_alt > rapo_max_alt)
+         {
+             rapo_max_alt = curr_c_alt;
+         }
+         if (curr_home_dist > rapo_home_dist)
+         {
+             rapo_home_dist = curr_home_dist;
+         }
+         if (gpsspeed > rapo_max_speed)
+         {
+             rapo_max_speed = gpsspeed;
+         }
+
+         //Арминг в полете, сбор значений
+     }
+     if (armed == 0 && raport_flag2 == true)
+     {
+        // if (raport_flag2==true){raport_flag2=false;}
+        float text_scale = getWidth(2) * scale;
+        VGfloat width_value = TextWidth("000", myfont, text_scale);
+
+        Fill(0,0,0,255);
+        Rect(getWidth(pos_x - 12), getHeight(pos_y+3), getWidth(24), -getHeight(24));
+
+        Fill(COLOR); // normal
+        Stroke(OUTLINECOLOR);
+        draw_message(0, "RAPORT", "  ", " ", RAPORT_POS_X, RAPORT_POS_Y, GLOBAL_SCALE);
+
         
-        //Арминг в полете, сбор значений
-    }
-    if(armed==0&&raport_flag2==true){
-        //if (raport_flag2==true){raport_flag2=false;}
-    float text_scale = getWidth(2) * scale;
-    VGfloat width_value = TextWidth("000", myfont, text_scale);
-    Fill(COLOR); //normal
-    Stroke(OUTLINECOLOR);
-    draw_message(0,"RAPORT","  "," ",RAPORT_POS_X, RAPORT_POS_Y, GLOBAL_SCALE);
-
-    //Raport output
-    sprintf(buffer, "TOTAL DIST=%05.1f km", total_dist);
-    Text(getWidth(pos_x-10), getHeight(pos_y-3), buffer, myfont, text_scale*0.7);
-    sprintf(buffer, "MAX DIST  =%05d m", rapo_home_dist);
-    Text(getWidth(pos_x-10), getHeight(pos_y-6), buffer, myfont, text_scale*0.7);
-    sprintf(buffer, "MAX SPEED =%04d km/h", rapo_max_speed);
-    Text(getWidth(pos_x-10), getHeight(pos_y-9), buffer, myfont, text_scale*0.7);
-    sprintf(buffer, "FLY TIME  =%03.0f:%02d", curr_fly_time, (int)(curr_fly_time*60) % 60);
-    Text(getWidth(pos_x-10), getHeight(pos_y-14), buffer, myfont, text_scale*0.7);
-    width_value = TextWidth(buffer, myfont, text_scale*0.7);
-    sprintf(buffer, " ");
-    Text(getWidth(pos_x-10)+width_value, getHeight(pos_y-14), buffer, osdicons, text_scale*0.7);
-    sprintf(buffer, "MAX AMP   =%04.1f A", rapo_max_amp);
-    Text(getWidth(pos_x-10), getHeight(pos_y-17), buffer, myfont, text_scale*0.7);
-    sprintf(buffer, "MAX ALT   =%04.1f m", (rapo_max_alt-start_point_alt));
-    Text(getWidth(pos_x-10), getHeight(pos_y-20), buffer, myfont, text_scale*0.7);
-}
-    
-
+         // Raport output
+         sprintf(buffer, "TOTAL DIST=%05.1f km", total_dist);
+         Text(getWidth(pos_x - 10), getHeight(pos_y - 3), buffer, myfont, text_scale * 0.7);
+         sprintf(buffer, "MAX DIST  =%05d m", rapo_home_dist);
+         Text(getWidth(pos_x - 10), getHeight(pos_y - 6), buffer, myfont, text_scale * 0.7);
+         sprintf(buffer, "MAX SPEED =%04d km/h", rapo_max_speed);
+         Text(getWidth(pos_x - 10), getHeight(pos_y - 9), buffer, myfont, text_scale * 0.7);
+         sprintf(buffer, "FLY TIME  =%03.0f:%02d", curr_fly_time, (int)(curr_fly_time * 60) % 60);
+         Text(getWidth(pos_x - 10), getHeight(pos_y - 14), buffer, myfont, text_scale * 0.7);
+         width_value = TextWidth(buffer, myfont, text_scale * 0.7);
+         sprintf(buffer, " ");
+         Text(getWidth(pos_x - 10) + width_value, getHeight(pos_y - 14), buffer, osdicons, text_scale * 0.7);
+         sprintf(buffer, "MAX AMP   =%04.1f A", rapo_max_amp);
+         Text(getWidth(pos_x - 10), getHeight(pos_y - 17), buffer, myfont, text_scale * 0.7);
+         sprintf(buffer, "MAX ALT   =%04.1f m", (rapo_max_alt - start_point_alt));
+         Text(getWidth(pos_x - 10), getHeight(pos_y - 20), buffer, myfont, text_scale * 0.7);
+     }
  }
 void draw_BT_AMPER(float current, float pos_x, float pos_y, float scale){
     float text_scale = getWidth(2) * scale;
