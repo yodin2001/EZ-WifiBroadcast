@@ -587,7 +587,7 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
     #ifdef RANGEFINDER
         draw_rangefinder(td, RANGEFINDER_POS_X, RANGEFINDER_POS_Y, RANGEFINDER_POS_H);
     #endif
-    
+
     #if defined(RAPORT)
         draw_RAPORT(td->armed,(int)td->speed,td->ampere, td->voltage, td->msl_altitude, RAPORT_POS_X, RAPORT_POS_Y, RAPORT_SCALE * GLOBAL_SCALE);
     #endif
@@ -1608,14 +1608,39 @@ void draw_home_arrow(float abs_heading, float craft_heading, float pos_x, float 
     float ratio = width_ladder / 180;
 
     VGfloat height_text = TextHeight(myfont, text_scale * 1.5) + getHeight(0.1) * scale;
-    sprintf(buffer, "%.0f°", td->heading);
-    TextMid(getWidth(pos_x) - width_ladder / 2, getHeight(pos_y) - height_element - height_text - 5, buffer, myfont, text_scale * 1.8);
+    sprintf(buffer, " %.0f°", td->heading);
+    float labelwidth = TextWidth("0000°", myfont, text_scale * 1.8);
+    Text(getWidth(pos_x) - width_ladder / 2 - 0.7*labelwidth, getHeight(pos_y) - height_element - height_text - 5, "", osdicons, text_scale * 1.5);
+    TextEnd(getWidth(pos_x) - width_ladder / 2 + labelwidth/2, getHeight(pos_y) - height_element - height_text - 5, buffer, myfont, text_scale * 1.8);
 
     //home course
 #if COMPASS_BEARING == true
-     sprintf(buffer, "%.0f°", home_heading);
-     TextEnd(getWidth(pos_x) + width_ladder / 2 - TextWidth(buffer, myfont, text_scale * 1.8)/2, getHeight(pos_y) - height_element - height_text - 5, "ﵱ", osdicons, text_scale * 1.8);
-     TextMid(getWidth(pos_x) + width_ladder / 2, getHeight(pos_y) - height_element - height_text - 5, buffer, myfont, text_scale * 1.8);
+    Fill(255, 128, 0, getOpacity(COLOR));
+    //Stroke(255, 128, 0, getOpacity(OUTLINECOLOR));
+    sprintf(buffer, "%.0f°", home_heading);
+    Text(getWidth(pos_x) + width_ladder / 2 - 0.7*labelwidth, getHeight(pos_y) - height_element - height_text - 5, "ﵱ", osdicons, text_scale * 1.5);
+    TextEnd(getWidth(pos_x) + width_ladder / 2 + labelwidth/2, getHeight(pos_y) - height_element - height_text - 5, buffer, myfont, text_scale * 1.8);
+
+    float rel_home = home_heading - td->heading;
+    if (rel_home < 0)
+        rel_home += 360;
+    if ((rel_home > 90) && (rel_home <= 180))
+    {
+        TextMid(getWidth(pos_x) + width_ladder / 2 * 1.1, getHeight(pos_y), "", osdicons, 1.5*text_scale);
+    }
+    else if ((rel_home > 180) && (rel_home < 270))
+    {
+        TextMid(getWidth(pos_x) - width_ladder / 2 * 1.1, getHeight(pos_y), "", osdicons, 1.5*text_scale);
+    }
+    else
+    {
+        //home mark
+        if (rel_home >  180) rel_home -= 360;
+        float home_x = getWidth(pos_x) + rel_home * ratio;
+        TextMid(home_x, getHeight(pos_y) + height_element, "ﵱ", osdicons, text_scale * 1.3);
+    }
+    Fill(COLOR);
+    //Stroke(OUTLINECOLOR);
 #endif
 
      int i = td->heading - 90;
@@ -1711,24 +1736,7 @@ void draw_home_arrow(float abs_heading, float craft_heading, float pos_x, float 
          i++;
      }
 
-     float rel_home = home_heading - td->heading;
-     if (rel_home < 0)
-         rel_home += 360;
-     if ((rel_home > 90) && (rel_home <= 180))
-     {
-         TextMid(getWidth(pos_x) + width_ladder / 2 * 1.2, getHeight(pos_y), "", osdicons, text_scale * 0.8);
-     }
-     else if ((rel_home > 180) && (rel_home < 270))
-     {
-         TextMid(getWidth(pos_x) - width_ladder / 2 * 1.2, getHeight(pos_y), "", osdicons, text_scale * 0.8);
-     }
-     else
-    {
-        //home mark
-        if (rel_home >  180) rel_home -= 360;
-        float home_x = getWidth(pos_x) + rel_home * ratio;
-        TextMid(home_x, getHeight(pos_y) + height_element, "ﵱ", osdicons, text_scale * 1.3);
-    }
+     
      
 
     //center mark
@@ -1736,6 +1744,7 @@ void draw_home_arrow(float abs_heading, float craft_heading, float pos_x, float 
 
     //COG mark
     #if COMPASS_SHOW_COG == true
+        Fill(255, 255, 0, getOpacity( COLOR));
         float rel_cog = td->cog - td->heading;
         if (rel_cog < -180) rel_cog += 360;
         if (rel_cog >  180) rel_cog -= 360;
@@ -1743,9 +1752,11 @@ void draw_home_arrow(float abs_heading, float craft_heading, float pos_x, float 
         if(fabs(rel_cog) <= 90)
         {
             float cog_x = getWidth(pos_x) + rel_cog * ratio;
-            Fill(255, 255, 0, getOpacity( COLOR));
             TextMid(cog_x, getHeight(pos_y) - height_element - height_text - 8, "", osdicons, text_scale * 2);
         }
+        sprintf(buffer, " %.0f°", td->cog);
+        Text(getWidth(pos_x) - width_ladder / 2 - 0.7*labelwidth, getHeight(pos_y) - height_element - 2.5*height_text - 5, "ﵵ", osdicons, text_scale * 1.5);
+        TextEnd(getWidth(pos_x) - width_ladder / 2 + labelwidth/2, getHeight(pos_y) - height_element - 2.5*height_text - 5, buffer, myfont, text_scale * 1.8);
     #endif
  }
 
