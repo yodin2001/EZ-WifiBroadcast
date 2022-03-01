@@ -3402,26 +3402,62 @@ void draw_throttle_V2(uint16_t throttle, float pos_x, float pos_y, float scale){
 
 void draw_rangefinder(telemetry_data_t *td, float pos_x, float pos_y, float height)
 {
+    //Time passed since last render
+    static long long ts_prev;
+    float dt = (current_ts() - ts_prev) / 1000.0;
+    ts_prev = current_ts();
+
+    //Calc vertical speed
+    static float h_prev;
+    float dh = td->rangefinder.current_range - h_prev;
+    h_prev = td->rangefinder.current_range;
+
+    float vspd = dh / dt;
+    float static vspd_prev;
+    //Filter vspd
+    vspd = vspd_prev + (vspd - vspd_prev)*(1-exp(-dt/0.5));
+    vspd_prev = vspd;
+
     if(td->rangefinder.max_range == 0) return;
     if(td->rangefinder.current_range >= td->rangefinder.max_range) return;
     float rel_alt = td->rangefinder.current_range / td->rangefinder.max_range;
 
     float text_scale = getWidth(2) * 1.0;
-    float symb_height = TextHeight(osdicons, text_scale) * 0.4;
-
+    
     Fill(COLOR);
     Stroke(OUTLINECOLOR);
 
-    Rect(getWidth(pos_x-2), getHeight(pos_y), getWidth(4), getHeight(0.3));
-    sprintf(buffer, "%.2fm", td->rangefinder.current_range);
-    TextMid(getWidth(pos_x), getHeight(pos_y + height * rel_alt), buffer, myfont, text_scale);
-
-    int numIcons = getHeight(height * rel_alt) / symb_height - 0.4;
+    float symb_height = getHeight(height/10.5);
+    int numIcons = getHeight(height * rel_alt) / symb_height;
+    symb_height = getHeight(height * rel_alt) / (numIcons + 0.5);
     int i = 0;
     for(i = 0; i < numIcons; i++)
     {
-       TextMid(getWidth(pos_x), getHeight(pos_y) + symb_height * (float)(i - 0.4), "", osdicons, text_scale);
+        float symb_width = getWidth(2);
+        if(fabs(vspd) < 0.5)
+        {
+            Circle(getWidth(pos_x), getHeight(pos_y) + symb_height*(0.75+i), getWidth(0.4));
+        }
+        else
+        {
+            if(vspd < 0)
+            {
+                if(td->rangefinder.current_range / fabs(vspd) < 2.0) Fill(COLOR_WARNING); //red
+                else if(td->rangefinder.current_range / fabs(vspd) < 5.0) Fill(COLOR_CAUTION);
+            }
+            float vspd_ratio = vspd/3.0; //maximum range of vspd
+            if(vspd_ratio > 1) vspd_ratio = 1;
+            if(vspd_ratio < -1) vspd_ratio = -1;
+            float x[3] = {getWidth(pos_x) - vspd_ratio*symb_width/2, getWidth(pos_x) + vspd_ratio*symb_width/2, getWidth(pos_x)};
+            float y[3] = {getHeight(pos_y) + symb_height*(0.75-vspd_ratio/2+i), getHeight(pos_y) + symb_height*(0.75-vspd_ratio/2+i), getHeight(pos_y) + symb_height*(0.75 + vspd_ratio/2 + i) };
+            Polygon(x, y, 3);
+        }
     }
+    Rect(getWidth(pos_x-2), getHeight(pos_y), getWidth(4), getHeight(0.3)); //ground level
+    sprintf(buffer, "%.2fm", td->rangefinder.current_range);
+    float msgWidth = TextWidth(buffer, myfont, text_scale);
+    TextMid(getWidth(pos_x), getHeight(pos_y + height * rel_alt + 0.6), buffer, myfont, text_scale);
+    Rect(getWidth(pos_x)-msgWidth/2, getHeight(pos_y + height * rel_alt), msgWidth, getHeight(0.3)); //current level
     
 
     
