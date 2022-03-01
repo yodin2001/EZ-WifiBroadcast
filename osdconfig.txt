@@ -65,6 +65,7 @@
 #define BT_AMPER_POS_X 6
 #define BT_AMPER_POS_Y 11
 #define BT_AMPER_SCALE 0.8
+#define BT_AMPER_FILTER 0.5
 
 //#define EFFIC
 #define EFFIC_POS_X 4

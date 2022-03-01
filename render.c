@@ -1038,6 +1038,19 @@ void draw_BT_AMPER(float current, float pos_x, float pos_y, float scale){
     Fill(COLOR); //normal
     Stroke(OUTLINECOLOR);
 
+    #ifdef BT_AMPER_FILTER
+        //Time passed since last render
+        static long long ts_prev;
+        float dt = (current_ts() - ts_prev) / 1000.0;
+        ts_prev = current_ts();
+
+        //PT1 filter for speed
+        static float current_prev;
+        current = current_prev + (current - current_prev)*(1-exp(-dt/0.5));
+        float dv = current - current_prev;
+        current_prev = current;
+    #endif
+
     Text(getWidth(pos_x), getHeight(pos_y), "ɫ", osdicons, text_scale);//base frame
     sprintf(buffer, "%04.1f", current);
     Text(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
