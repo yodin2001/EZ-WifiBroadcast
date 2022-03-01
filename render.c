@@ -254,6 +254,7 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
             lonlat[0] = td->home_lon;
             lonlat[1] = td->home_lat;
             // Save data for future
+            /*
             fptr = fopen("/dev/shm/homepos", "wb");
             if (fptr == NULL)
             {
@@ -265,6 +266,7 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
                 fwrite(&lonlat, sizeof(lonlat), 1, fptr);
                 fclose(fptr);
             }
+            */
         }
 
         //started during flight try to load home pos from file otherwise take current point as home (fallback)

@@ -299,6 +299,18 @@ int mavlink_read(telemetry_data_t *td, uint8_t *buf, int buflen)
 					td->wp_dist = mavlink_msg_nav_controller_output_get_wp_dist(&msg);
 					break;
 
+				case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
+					//when osd started during flight calculate home position from current pos and home NED offsets
+					if( (td->armed == 1) && (td->home_lat == 0) && (td->home_lon == 0) && (td->latitude != 0) && (td->longitude != 0) )
+					{
+						double north = mavlink_msg_local_position_ned_get_x(&msg);
+						double east = mavlink_msg_local_position_ned_get_y(&msg);
+						double down = mavlink_msg_local_position_ned_get_z(&msg);
+						td->home_lat = ( (td->latitude/57.29577951) - north/6372795)*57.29577951;
+						td->home_lon = ( (td->longitude/57.29577951) - east/(6372795*cos(td->latitude/57.29577951)) )*57.29577951;;
+					}
+					break;
+
                 default:
 					render_data = 0; //unknown packet, no need to render
                     fprintf(stdout, "OTHER MESSAGE ID:%d ",msg.msgid);

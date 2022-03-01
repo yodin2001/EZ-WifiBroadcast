@@ -186,7 +186,7 @@
 #define SPEEDLADDER_POS_X 18
 #define SPEEDLADDER_SCALE 1.1
 #define SPEEDLADDER_USEAIRSPEED true //set to true to use airspeed instead of GPS speed
-#define SPEEDLADDER_TREND_TIME 5 //(sensitivity)number of seconds speed trend predicts future speed
+#define SPEEDLADDER_TREND_TIME 2 //(sensitivity)number of seconds speed trend predicts future speed
 #define SPEEDLADDER_LOW_LIMIT 40 // where the low speed que begins
 #define SPEEDLADDER_SHOW_SECOND_SPEED true //show slider and value for secondary speed (ground or air)
 
