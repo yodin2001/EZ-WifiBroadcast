@@ -154,7 +154,7 @@ int get_mavlink_udp_telemetry(int fd, telemetry_data_t *td, int timeout)
         ssize_t rsize;
         while((rsize = recv(fd, buff, sizeof(buff), 0)) >= 0)
         {
-	        do_render = mavlink_read(td, buff, rsize);
+	        do_render |= mavlink_read(td, buff, rsize);
         }
         if (rsize < 0 && errno != EWOULDBLOCK)
         {

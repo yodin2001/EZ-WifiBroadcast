@@ -26,6 +26,7 @@ int mavlink_read(telemetry_data_t *td, uint8_t *buf, int buflen)
 		if (mavlink_parse_char(0, c, &msg, &status))
 		{
             td->validmsgsrx++;
+			render_data = 1; //valid packet recieved, need to render
 			fprintf(stdout, "Msg seq:%d sysid:%d, compid:%d  ", msg.seq, msg.sysid, msg.compid);
 
             switch (msg.msgid)
@@ -102,8 +103,6 @@ int mavlink_read(telemetry_data_t *td, uint8_t *buf, int buflen)
 					td->pitch = mavlink_msg_attitude_get_pitch(&msg)*57.2958;
 					fprintf(stdout, "roll:%.2f  ", td->roll);
 					fprintf(stdout, "pitch:%.2f  ", td->pitch);
-					render_data = 1; // render when we got attitude data (the data that needs to be most up-to-date)
-
 					break;
 
 
@@ -301,6 +300,7 @@ int mavlink_read(telemetry_data_t *td, uint8_t *buf, int buflen)
 					break;
 
                 default:
+					render_data = 0; //unknown packet, no need to render
                     fprintf(stdout, "OTHER MESSAGE ID:%d ",msg.msgid);
                     break;
 			}
