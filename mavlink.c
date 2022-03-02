@@ -318,6 +318,10 @@ int mavlink_read(telemetry_data_t *td, uint8_t *buf, int buflen)
 					td->terrain_data.terrain_height = mavlink_msg_terrain_report_get_terrain_height(&msg);
 					break;
 
+				case MAVLINK_MSG_ID_SYSTEM_TIME:
+					td->uav_system_time.time_boot = mavlink_msg_system_time_get_time_boot_ms(&msg);
+					td->uav_system_time.time_unix_usec = mavlink_msg_system_time_get_time_unix_usec(&msg);
+
                 default:
 					render_data = 0; //unknown packet, no need to render
                     fprintf(stdout, "OTHER MESSAGE ID:%d ",msg.msgid);

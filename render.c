@@ -31,6 +31,8 @@ int fecs_skipped_last;
 int injection_failed_last;
 int tx_restart_count_last;
 
+uint8_t batt_cells = 0;
+
 FILE *fptr;
 long time_diff=0;
 //RAPORT VARs
@@ -78,6 +80,25 @@ void setfillstroke() {
  }
 
 
+ void CalcBattCells(telemetry_data_t *td)
+ {
+     static uint32_t uav_time_boot_ms_prev = 0;
+     if((td->uav_system_time.time_boot > 5000) && (td->voltage > 0)) //give time to init FC
+     {
+         if( (batt_cells == 0) ||   //no cell info yet
+         (td->uav_system_time.time_boot < uav_time_boot_ms_prev)) //or uav was reboot
+         {
+            float max_cell_v = 4.2;
+            #ifdef CELL_MAX
+                max_cell_v = CELL_MAX;
+            #endif
+            batt_cells = ceilf(td->voltage / max_cell_v);
+         }
+     }
+     uav_time_boot_ms_prev = td->uav_system_time.time_boot;
+ }
+
+
 void render_init() {
     char filename[100] = "/boot/osdfonts/";
     InitShapes(&width, &height);
@@ -101,35 +122,32 @@ void render_init() {
     amps_ts = dist_ts = time_ts = current_ts(); //wowi
  }
 
-void loopUpdate(telemetry_data_t *td) {
-    // Update fly time. Get time passed since last update
-    long time_diff = current_ts() - time_ts;
-    time_ts = current_ts();//return milliseconds
+ void loopUpdate(telemetry_data_t *td)
+ {
+     // Update fly time. Get time passed since last update
+     long time_diff = current_ts() - time_ts;
+     time_ts = current_ts(); // return milliseconds
 
-    
+#if COPTER == true
+     if ((td->armed == 1) && (td->ampere > 3))
+         total_time += (float)time_diff / 60000;
+#else
+     if (td->armed == 1)
+         total_time += (float)time_diff / 60000;
+     time_diff = current_ts() - dist_ts; // 2
+     dist_ts = current_ts();
+     total_dist = total_dist + ((int)td->speed * ((float)time_diff / 3600000)); // 3600000
+#endif
 
- #if COPTER == true
- if ( (td->armed == 1) && (td->ampere > 3) )
-    total_time += (float)time_diff/60000;
- #else
- if (td->armed == 1)
-   total_time += (float)time_diff/60000;
-    time_diff = current_ts() - dist_ts;//2
-    dist_ts = current_ts();
-    total_dist = total_dist + ((int)td->speed*((float)time_diff/3600000));//3600000
- #endif
-
-
-    // Update total amps used. Get time passed since last rendering
-    time_diff = current_ts() - amps_ts;
-    amps_ts = current_ts();
-    #ifdef MAVLINK
-        total_amps = (float)td->total_amps;
-    #else
-        total_amps = total_amps + td->ampere*(float)time_diff/3600;
-    #endif
-    // get time passed since last rendering
-    
+     // Update total amps used. Get time passed since last rendering
+     time_diff = current_ts() - amps_ts;
+     amps_ts = current_ts();
+#ifdef MAVLINK
+     total_amps = (float)td->total_amps;
+#else
+     total_amps = total_amps + td->ampere * (float)time_diff / 3600;
+#endif
+     // get time passed since last rendering
  }
 
 void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t undervolt, int osdfps) {
@@ -143,6 +161,10 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 #endif
     if (undervolt == 1) draw_message(0,"Undervoltage on RX","  "," ",WARNING_POS_X, WARNING_POS_Y, GLOBAL_SCALE);
 
+    //Battery cells
+    #ifdef MAVLINK
+        CalcBattCells(td);
+    #endif
 
     //HOME POSITION
     #if defined(FRSKY)
@@ -373,7 +395,14 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
   draw_SIDE_THR(td->throttle, SIDE_THR_POS_X, SIDE_THR_POS_Y, SIDE_THR_SCALE * GLOBAL_SCALE);
   #endif
 #if defined(CELL_V)
- draw_CELL_V(td->voltage, CELL_V_cells, CELL_V_warn, CELL_V_crit, CELL_V_POS_X, CELL_V_POS_Y, CELL_V_SCALE * GLOBAL_SCALE);
+    #ifdef CELL_V_cells
+        draw_CELL_V(td->voltage, CELL_V_cells, CELL_V_warn, CELL_V_crit, CELL_V_POS_X, CELL_V_POS_Y, CELL_V_SCALE * GLOBAL_SCALE);
+    #else
+        if(batt_cells > 0)
+        {
+            draw_CELL_V(td->voltage, batt_cells, CELL_V_warn, CELL_V_crit, CELL_V_POS_X, CELL_V_POS_Y, CELL_V_SCALE * GLOBAL_SCALE);
+        }
+    #endif
  #endif
 //-------------------------------------------------------------------------------------------------------------------------------------------nwo
 #if defined(CLIMB) && defined(MAVLINK)
@@ -512,7 +541,14 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
 
 
 #ifdef BATT_GAUGE
-    draw_batt_gauge(((td->voltage/CELLS)-CELL_MIN)/(CELL_MAX-CELL_MIN)*100, BATT_GAUGE_POS_X, BATT_GAUGE_POS_Y, BATT_GAUGE_SCALE * GLOBAL_SCALE);
+    #ifdef CELLS
+        draw_batt_gauge(((td->voltage/CELLS)-CELL_MIN)/(CELL_MAX-CELL_MIN)*100, BATT_GAUGE_POS_X, BATT_GAUGE_POS_Y, BATT_GAUGE_SCALE * GLOBAL_SCALE);
+    #else
+        if(batt_cells > 0)
+        {
+            draw_batt_gauge(((td->voltage/batt_cells)-CELL_MIN)/(CELL_MAX-CELL_MIN)*100, BATT_GAUGE_POS_X, BATT_GAUGE_POS_Y, BATT_GAUGE_SCALE * GLOBAL_SCALE);
+        }
+    #endif
  #endif
 
 #ifdef HOME_RADAR 

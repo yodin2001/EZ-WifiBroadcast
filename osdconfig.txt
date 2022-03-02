@@ -54,7 +54,7 @@
 #define BT_VOLT_SCALE 0.8
 
 #define CELL_V
-#define CELL_V_cells 4
+//#define CELL_V_cells 4
 #define CELL_V_warn 3.4
 #define CELL_V_crit 3.1
 #define CELL_V_POS_X 6
@@ -160,7 +160,7 @@
 #define BATT_GAUGE_POS_X 5
 #define BATT_GAUGE_POS_Y 5
 #define BATT_GAUGE_SCALE 1
-#define CELLS 4 // set to number of cells used
+//#define CELLS 4 // set to number of cells used
 #define CELL_MAX 4.20 // maximum cell voltage
 #define CELL_MIN 3.20 // minimum cell voltage
 #define CELL_WARNING1 3.50 // warning level 1 -> orange, low

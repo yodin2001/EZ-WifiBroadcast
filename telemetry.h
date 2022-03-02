@@ -156,6 +156,12 @@ typedef struct
 	float terrain_height;
 } terrain_data_t;
 
+typedef struct
+{
+	uint32_t time_boot;
+	uint64_t time_unix_usec;
+} uav_system_time_t;
+
 
 typedef struct {
 	uint32_t validmsgsrx;
@@ -222,6 +228,7 @@ typedef struct {
 	uint32_t SH;
 	int32_t total_amps;
 	terrain_data_t terrain_data;
+	uav_system_time_t uav_system_time;
 #endif
 
 #if defined(LTM)
