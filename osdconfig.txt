@@ -108,7 +108,7 @@
 #define RSSI_DECLUTTER 0 //1 for yes, 0 for no
 
 #define DOWNLINK_RSSI
-#define DOWNLINK_RSSI_POS_X 12
+#define DOWNLINK_RSSI_POS_X 11
 #define DOWNLINK_RSSI_POS_Y 94
 #define DOWNLINK_RSSI_SCALE 1
 #define DOWNLINK_RSSI_FEC_BAR true // set to true to draw FEC bar display
@@ -181,6 +181,7 @@
 #define ALTLADDER_WARN 5 // height above launch to warn (only for relative alt)
 #define ALTLADDER_CAUTION 10 // height above launch to caution (only for relative alt)
 #define ALTLADDER_VSI_TIME 20 //(sensitivity)number of seconds vsi predicts future alt
+#define ALTLADDER_SHOW_TERRAIN true
 
 
 #define SPEEDLADDER

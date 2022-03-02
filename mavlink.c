@@ -311,6 +311,13 @@ int mavlink_read(telemetry_data_t *td, uint8_t *buf, int buflen)
 					}
 					break;
 
+				case MAVLINK_MSG_ID_TERRAIN_REPORT:
+					td->terrain_data.current_height = mavlink_msg_terrain_report_get_current_height(&msg);
+					td->terrain_data.loaded = mavlink_msg_terrain_report_get_loaded(&msg);
+					td->terrain_data.spacing = mavlink_msg_terrain_report_get_spacing(&msg);
+					td->terrain_data.terrain_height = mavlink_msg_terrain_report_get_terrain_height(&msg);
+					break;
+
                 default:
 					render_data = 0; //unknown packet, no need to render
                     fprintf(stdout, "OTHER MESSAGE ID:%d ",msg.msgid);
