@@ -148,6 +148,14 @@ typedef struct
 	float max_range;
 } rangefinder_t;
 
+typedef struct
+{
+	float current_height;
+	float loaded;
+	uint16_t spacing;
+	float terrain_height;
+} terrain_data_t;
+
 
 typedef struct {
 	uint32_t validmsgsrx;
@@ -213,6 +221,7 @@ typedef struct {
 	uint32_t SE;
 	uint32_t SH;
 	int32_t total_amps;
+	terrain_data_t terrain_data;
 #endif
 
 #if defined(LTM)
@@ -264,7 +273,6 @@ typedef struct {
 	wifibroadcast_rx_status_t_rc *rx_status_rc;
 	wifibroadcast_rx_status_t_uplink *rx_status_uplink;
 	wifibroadcast_rx_status_t_sysair *rx_status_sysair;
-
 	status_t_sys_gnd status_sys_gnd;
 } telemetry_data_t;
 
@@ -275,4 +283,3 @@ wifibroadcast_rx_status_t_osd *telemetry_wbc_status_memory_open_osd(void);
 wifibroadcast_rx_status_t_rc *telemetry_wbc_status_memory_open_rc(void);
 wifibroadcast_rx_status_t_uplink *telemetry_wbc_status_memory_open_uplink(void);
 wifibroadcast_rx_status_t_sysair *telemetry_wbc_status_memory_open_sysair(void);
-

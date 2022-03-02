@@ -98,9 +98,9 @@ int open_udp_socket(int port, struct pollfd *pollfd_struct)
     printf("UDP port %d opened\n", port);
     return fd;
 }
-int udp_poll(struct pollfd (*pfd)[1], int timeout)
+int udp_poll(struct pollfd *pfd, int timeout)
 {
-    int rc = poll(*pfd, 1, timeout);
+    int rc = poll(pfd, 1, timeout);
     if (rc < 0)
     {
         if (errno == EINTR || errno == EAGAIN) return -1;
@@ -108,7 +108,7 @@ int udp_poll(struct pollfd (*pfd)[1], int timeout)
         exit(1);
     }
 
-    if (pfd[0]->revents & (POLLERR | POLLNVAL))
+    if (pfd->revents & (POLLERR | POLLNVAL))
     {
         fprintf(stderr, "socket error!");
         exit(1);
@@ -117,18 +117,17 @@ int udp_poll(struct pollfd (*pfd)[1], int timeout)
 }
 
 
-uint8_t wbc_buf[255];
-struct pollfd fds_wbc[1];
-int fd_wbc;
+uint8_t wbc_buf[sizeof(wifibroadcast_rx_status_forward_t)];
+struct pollfd fds_wbc;
 
 void get_wbc_telemetry(telemetry_data_t *td, int timeout)
 {
     if (udp_poll(&fds_wbc, timeout) < 0) return;
 
-    if (fds_wbc[0].revents & POLLIN)
+    if (fds_wbc.revents & POLLIN)
     {
         ssize_t rsize;
-        while((rsize = recv(fd_wbc, wbc_buf, sizeof(wbc_buf), 0)) >= 0)
+        while((rsize = recv(fds_wbc.fd, wbc_buf, sizeof(wbc_buf), 0)) >= 0)
         {
             td->rx_status = (wifibroadcast_rx_status_forward_t *)&wbc_buf;
         }
@@ -140,19 +139,16 @@ void get_wbc_telemetry(telemetry_data_t *td, int timeout)
 }
 
 
-int get_mavlink_udp_telemetry(int fd, telemetry_data_t *td, int timeout)
+int get_mavlink_udp_telemetry(struct pollfd *poll_fd, telemetry_data_t *td, int timeout)
 {
-    struct pollfd poll_fd[1];
     int do_render = 0;
     uint8_t buff[263];
 
-    poll_fd[0].fd = fd;
-
-    if ( udp_poll(&poll_fd, timeout) < 0) return 0;
-    if (poll_fd[0].revents & (POLLIN | POLLRDNORM))
+    if ( udp_poll(poll_fd, timeout) < 0) return 0;
+    if (poll_fd->revents & (POLLIN | POLLRDNORM))
     {
         ssize_t rsize;
-        while((rsize = recv(fd, buff, sizeof(buff), 0)) >= 0)
+        while((rsize = recv(poll_fd->fd, buff, sizeof(buff), 0)) >= 0)
         {
 	        do_render |= mavlink_read(td, buff, rsize);
         }
@@ -241,7 +237,6 @@ int main(int argc, char *argv[])
     int do_render = 0;
     int counter = 0;
 
-    int telemetry_fd = 0; //telemetry file descriptor
     telemetry_data_t td;
     
 
@@ -251,15 +246,15 @@ int main(int argc, char *argv[])
 
     #if defined RELAY
         //open wbc socket
-        fd_wbc = open_udp_socket(5003, (struct pollfd *) &fds_wbc);
+        fds_wbc.fd = open_udp_socket(5003, &fds_wbc);
         memset(&wbc_buf, 0, sizeof(wbc_buf));
         td.rx_status = (wifibroadcast_rx_status_forward_t *)&wbc_buf;
 
         //open mavlink socket
-        struct pollfd fds_mavlink[1];
+        struct pollfd fds_mavlink;
         char *osd_port = getenv("OSD_PORT");
-        memset(fds_mavlink, '\0', sizeof(fds_mavlink));
-        telemetry_fd = open_udp_socket(osd_port == NULL ? 14550 : atoi(osd_port), (struct pollfd *) &fds_mavlink);
+        //memset(fds_mavlink, '\0', sizeof(fds_mavlink));
+        fds_mavlink.fd = open_udp_socket(osd_port == NULL ? 14550 : atoi(osd_port), &fds_mavlink);
     #else
 
         struct stat fdstatus;
@@ -267,7 +262,7 @@ int main(int argc, char *argv[])
         char fifonam[100];
         sprintf(fifonam, "/root/telemetryfifo1");
 
-        telemetry_fd = open(fifonam, O_RDONLY | O_NONBLOCK);
+        int telemetry_fd = open(fifonam, O_RDONLY | O_NONBLOCK);
         if(-1==telemetry_fd) {
             perror("ERROR: Could not open /root/telemetryfifo1");
             exit(EXIT_FAILURE);
@@ -310,7 +305,7 @@ int main(int argc, char *argv[])
             get_wbc_telemetry(&td, 10);
 
             //read mavlink
-            do_render = get_mavlink_udp_telemetry(telemetry_fd, &td, 25);
+            do_render = get_mavlink_udp_telemetry(&fds_mavlink, &td, 25);
         #else
 	        FD_ZERO(&set);
 	        FD_SET(telemetry_fd, &set);

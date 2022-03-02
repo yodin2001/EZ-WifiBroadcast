@@ -2904,6 +2904,7 @@ void draw_RPA(float roll, float pitch, float pos_x, float pos_y, float scale){
     }
  }
 
+#if defined(MISSION) && defined(MAVLINK) 
 void draw_Mission(telemetry_data_t *td, float pos_x, float pos_y, float scale)
 {
     float text_scale = getWidth(2) * scale;
@@ -2916,6 +2917,7 @@ void draw_Mission(telemetry_data_t *td, float pos_x, float pos_y, float scale)
     sprintf(buffer, "%dm>%d", td->wp_dist, td->mission_current_seq);
     Text(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
  }
+ #endif
 
 void draw_Angle(float pos_x, float pos_y, float scale){
     
