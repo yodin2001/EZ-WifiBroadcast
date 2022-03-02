@@ -2809,8 +2809,8 @@ void draw_ahi_mav(telemetry_data_t *td, float roll, float pitch, float climb, fl
 	        #endif
 
             //DRAW MAIN HORIZON BAR
-	        Rect(pos_x - width_ladder / 1.25f, y, 2*(width_ladder /1.25f)/5*2, height_element*1.5);
-	        Rect(pos_x - width_ladder / 1.25f + 2*(width_ladder /1.25f)/5*3, y, 2*(width_ladder /1.25f)/5*2, height_element*1.5);
+	        Rect(pos_x - width_ladder / 1.25f, y - (height_element*1.5)/2, 2*(width_ladder /1.25f)/5*2, height_element*1.5);
+	        Rect(pos_x - width_ladder / 1.25f + 2*(width_ladder /1.25f)/5*3, y - (height_element*1.5)/2, 2*(width_ladder /1.25f)/5*2, height_element*1.5);
 
             //Bore Sight
             double fpv_y;
@@ -2823,12 +2823,23 @@ void draw_ahi_mav(telemetry_data_t *td, float roll, float pitch, float climb, fl
             fpv_y = fpv_y - td->heading;
             if(fpv_y > 180.0) fpv_y = fpv_y -360;
             else if (fpv_y < -180) fpv_y = fpv_y + 360;
-    
 	        //FPV_Z
             double fpv_z;
 	        fpv_z=atan(-vz/sqrt(vx*vx + vy*vy))*180/M_PI; 
 
-            TextEnd(pos_x + fpv_y * ratio, y + fpv_z * ratio, "ᎅ", osdicons, text_scale*2.5);
+            Text(pos_x + fpv_y * ratio, y + fpv_z * ratio, "ᎅ", osdicons, text_scale*2.5);
+            //HOME ICON
+            #if AHI_SHOW_HOME == true
+                Fill(255, 128, 0, getOpacity(COLOR));
+                float home_heading = course_to(td->latitude, td->longitude, td->home_lat, td->home_lon);
+                float home_deviation = home_heading - td->heading;
+                if(home_deviation > 180) home_deviation -= 360;
+                if(home_deviation < -180) home_deviation += 360;
+                float home_z_ang = atan(-td->rel_altitude / distance_between(td->home_lat, td->home_lon, td->latitude, td->longitude))*180/M_PI; 
+
+                TextMid(pos_x + home_deviation * ratio, y + home_z_ang * ratio - getHeight(0.25)*text_scale, "ﵱ", osdicons, text_scale*2.5);
+                Fill(COLOR);
+            #endif
 
             //Rollangle on main line
 	        #if AHI_ROLLANGLE == true

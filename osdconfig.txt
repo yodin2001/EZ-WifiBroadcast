@@ -207,6 +207,7 @@
 #define AHI_ROLLANGLE true //display bank angle
 #define AHI_ROLLANGLE_INVERT -1 //reverse bank angle display with 1 or -1
 #define AHI_FOV 160 //Field of camera view (diagonal)
+#define AHI_SHOW_HOME true
 
 #define POSITION      //GPS经纬度
 #define POSITION_POS_X 98
