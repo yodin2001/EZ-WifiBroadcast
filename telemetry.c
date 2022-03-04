@@ -69,6 +69,12 @@ void telemetry_init(telemetry_data_t *td) {
 	td->SH = 0;
 	td->total_amps = 0;
 	td->wp_dist = 0;
+	td->terrain_data.current_height = 0;
+	td->terrain_data.loaded = 0;
+	td->terrain_data.spacing = 0;
+	td->terrain_data.terrain_height = 0;
+	td->uav_system_time.time_boot = 0;
+	td->uav_system_time.time_unix_usec = 0;
 #endif
 
 #ifdef LTM
