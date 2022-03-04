@@ -2036,25 +2036,28 @@ void draw_alt_ladder(telemetry_data_t *td, float pos_x, float pos_y, float scale
         }
     }
 #if ALTLADDER_SHOW_TERRAIN == true
-    //terrain altitude arrow
-    float alt_diff = td->terrain_data.current_height - alt;
-    if(alt_diff > range_half) alt_diff = range_half;
-    if(alt_diff < -range_half) alt_diff = -range_half;
-
-    float terr_alt_y = getHeight(pos_y) + alt_diff*ratio_alt;
-    float as_x[3] = {px - width_element - getWidth(1.0) * scale, px - width_element - getWidth(0.2), px - width_element - getWidth(1.0) * scale};
-    float as_y[3] = {terr_alt_y + getHeight(0.8) * scale, terr_alt_y, terr_alt_y - getHeight(0.8) * scale};
-    if(fabs(alt_diff) == range_half)
+    if(td->terrain_data.spacing != 0) //no terrain data avalible
     {
-        //Blink yellow
-        Fill(255,128,0, (((long)(current_ts()/250)) % 2) == 0 ? 0 : getOpacity(COLOR));
+        //terrain altitude arrow
+        float alt_diff = td->terrain_data.current_height - alt;
+        if(alt_diff > range_half) alt_diff = range_half;
+        if(alt_diff < -range_half) alt_diff = -range_half;
+
+        float terr_alt_y = getHeight(pos_y) + alt_diff*ratio_alt;
+        float as_x[3] = {px - width_element - getWidth(1.0) * scale, px - width_element - getWidth(0.2), px - width_element - getWidth(1.0) * scale};
+        float as_y[3] = {terr_alt_y + getHeight(0.8) * scale, terr_alt_y, terr_alt_y - getHeight(0.8) * scale};
+        if(fabs(alt_diff) == range_half)
+        {
+            //Blink yellow
+            Fill(255,128,0, (((long)(current_ts()/250)) % 2) == 0 ? 0 : getOpacity(COLOR));
+        }
+        Stroke(OUTLINECOLOR);
+        Polygon(as_x, as_y, 3);
+        //terrain altitude
+        sprintf(buffer, "%.0f", td->terrain_data.current_height);
+        if(fabs(alt_diff) == range_half) Fill(255,128,0, getOpacity(COLOR)); //Yellow
+        TextEnd(px - width_element - getWidth(1.3) * scale, terr_alt_y - offset_alt_value, buffer, myfont, text_scale*1.7);
     }
-    Stroke(OUTLINECOLOR);
-    Polygon(as_x, as_y, 3);
-    //terrain altitude
-    sprintf(buffer, "%.0f", td->terrain_data.current_height);
-    if(fabs(alt_diff) == range_half) Fill(255,128,0, getOpacity(COLOR)); //Yellow
-    TextEnd(px - width_element - getWidth(1.3) * scale, terr_alt_y - offset_alt_value, buffer, myfont, text_scale*1.7);
 #endif
 
     
