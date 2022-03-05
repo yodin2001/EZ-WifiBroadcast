@@ -25,7 +25,7 @@
 /* DISPLAY */
 /* --------*/
 #define COLOR 0,200,0,1.0 // Fill color. First three numbers RGB color, last number opacity. 1.0 = fully visible, 0.0 = fully opaque
-#define OUTLINECOLOR 0,0,0,0.5 // Outline color. First three numbers RGB color, last number opacity. 1.0 = fully visible, 0.0 = fully opaque
+#define OUTLINECOLOR 0,0,0,1.0 // Outline color. First three numbers RGB color, last number opacity. 1.0 = fully visible, 0.0 = fully opaque
 #define OUTLINEWIDTH 1.2 // Outline width, default is 1, useable range from 1-3. Set to 0 to disable outline
 #define FONT "UbuntuMono-Bold.ttf" // Font to use, case-sensitive!
 //#define FONT "Aldrich-Regular.ttf" // Font to use, case-sensitive!
