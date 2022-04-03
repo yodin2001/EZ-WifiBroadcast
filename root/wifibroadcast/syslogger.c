@@ -79,6 +79,10 @@ int main(int argc, char *argv[]) {
 		printf("setup WiringPi failed");
 		return 1;
 	}
+	int buzzer = 25;
+	pinMode(buzzer, OUTPUT);
+	uint8_t buzz_status = 0;
+
 	int fan = 12;// FAN BCM gpio12 pin32
 	pinMode (fan, PWM_OUTPUT) ;
 	pwmSetMode(PWM_MODE_MS);
@@ -94,7 +98,6 @@ int main(int argc, char *argv[]) {
 	int cpuload_gnd = 0;
 	int temp_gnd = 0;
 	float gnd_voltage = 0;
-	long double a[4], b[4];
 
 	for(;;) {
 		// .csv format is:
@@ -114,8 +117,14 @@ int main(int argc, char *argv[]) {
 		} else if (temp_gnd < 50) {
 			pwmWrite (fan, 0) ;
 		}
-
 		printf("%d,%d",cpuload_gnd,temp_gnd);
+
+		if (gnd_voltage < 12.0 && gnd_voltage > 0) {
+			buzz_status ^= 1 << 1;
+			digitalWrite (buzzer, buzz_status);
+		} else {
+			digitalWrite (buzzer, LOW);
+		}
 
 		printf("%lli,",t->injection_time_block);
 
