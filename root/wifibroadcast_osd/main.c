@@ -133,7 +133,7 @@ void get_wbc_telemetry(telemetry_data_t *td, int timeout)
             td->status_sys_gnd->cpuload = td->rx_status->cpuload_gnd;
             td->status_sys_gnd->temp = td->rx_status->temp_gnd;
 	        //td->status_sys_gnd->undervolt = td->rx_status->;
-	        //td->status_sys_gnd->voltage = td->rx_status->;
+	        td->status_sys_gnd->voltage = td->rx_status->voltage_gnd;
         }
         if (rsize < 0 && errno != EWOULDBLOCK){
             perror("Error receiving packet");

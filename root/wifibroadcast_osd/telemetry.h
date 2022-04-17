@@ -134,6 +134,7 @@ typedef struct {
     uint8_t temp_air; // CPU temperature Air Pi
     uint32_t wifi_adapter_cnt; // number of wifi adapters
     wifi_adapter_rx_status_forward_t adapter[6]; // same struct as in wifibroadcast lib.h
+	float   voltage_gnd;
 } __attribute__((packed)) wifibroadcast_rx_status_forward_t;
 
 typedef struct 
