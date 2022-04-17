@@ -47,6 +47,7 @@ typedef struct {
     uint8_t temp_air; // CPU temperature Air Pi
     uint32_t wifi_adapter_cnt; // number of wifi adapters
     wifi_adapter_rx_status_forward_t adapter[6]; // same struct as in wifibroadcast lib.h
+	float   voltage_gnd;
 } __attribute__((packed)) wifibroadcast_rx_status_forward_t;
 
 
@@ -107,6 +108,16 @@ wifibroadcast_rx_status_t_rc *status_memory_open_rc() {
 	return (wifibroadcast_rx_status_t_rc*)retval;
 }
 
+status_t_sys_gnd *status_memory_open_sysgnd() {
+	int fd;
+	fd = shm_open("/wifibroadcast_rx_status_sys_gnd", O_RDWR, S_IRUSR | S_IWUSR);
+	if(fd < 0) { fprintf(stderr,"ERROR: Could not open wifibroadcast_rx_status_sys_gnd"); exit(1); }
+	//if (ftruncate(fd, sizeof(wifibroadcast_rx_status_sys_gnd)) == -1) { perror("ftruncate"); exit(1); }
+	void *retval = mmap(NULL, sizeof(status_t_sys_gnd), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (retval == MAP_FAILED) { perror("mmap"); exit(1); }
+	return (status_t_sys_gnd*)retval;
+}
+
 
 long long current_timestamp() {
     struct timeval te;
@@ -117,25 +128,10 @@ long long current_timestamp() {
 
 int main(int argc, char *argv[]) {
 	
-	uint32_t uintSize = 100;
-	uint8_t  uint8 = 100;
-	int8_t int8 = 100;
-
-    long long prev_time = current_timestamp();
-    long long prev_time2 = current_timestamp();
-
     long long prev_cpu_time = current_timestamp();
     long long delta = 0;
 
-    int cpuload_gnd = 0;
-    int temp_gnd = 0;
-    int undervolt_gnd = 0;
-    FILE *fp;
-    FILE *fp2;
-    FILE *fp3;
     FILE *fptr;
-    long double a[4], b[4];
-
 
 	int16_t port = atoi(argv[2]);
 	int j = 0;
@@ -154,6 +150,7 @@ int main(int argc, char *argv[]) {
 	wifibroadcast_rx_status_t *t_tdown = status_memory_open_tdown();
 	wifibroadcast_rx_status_t_sysair *t_sysair = status_memory_open_sysair();
 	wifibroadcast_rx_status_t_rc *t_rc = status_memory_open_rc();
+	status_t_sys_gnd *t_sysgnd = status_memory_open_sysgnd();
 
 	wifibroadcast_rx_status_t * t_uplink = telemetry_wbc_status_memory_open_uplink();
 
@@ -184,6 +181,7 @@ int main(int argc, char *argv[]) {
 	wbcdata.cpuload_air = 0;
 	wbcdata.temp_air = 0;
 	wbcdata.wifi_adapter_cnt = 0;
+	wbcdata.voltage_gnd = 0;
 
 	for(j=0; j<6; ++j) {
 	    wbcdata.adapter[j].current_signal_dbm = -100;
@@ -211,9 +209,13 @@ int main(int argc, char *argv[]) {
 	    wbcdata.current_signal_telemetry_uplink = t_uplink->adapter[0].current_signal_dbm;
 
 	    wbcdata.joystick_connected = 0;
+		wbcdata.cpuload_gnd = t_sysgnd->cpuload;
+		wbcdata.temp_gnd = t_sysgnd->temp;
+		wbcdata.voltage_gnd = t_sysgnd->voltage;
 
-	delta = current_timestamp() - prev_cpu_time;
-	    if (delta > 1000) {
+		delta = current_timestamp() - prev_cpu_time;
+	    if (delta > 1000)
+		{
 		prev_cpu_time = current_timestamp();
 
             if(wbcdata.HomeLon == 0 && wbcdata.HomeLat == 0)
@@ -231,30 +233,12 @@ int main(int argc, char *argv[]) {
 
                         wbcdata.HomeLat = lonlat[1];
                         wbcdata.HomeLon = lonlat[0];
-
                 }
             }
-
-		fp2 = fopen("/sys/class/thermal/thermal_zone0/temp","r");
-		fscanf(fp2,"%d",&temp_gnd);
-		fclose(fp2);
-
-		fp = fopen("/proc/stat","r");
-		fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&a[0],&a[1],&a[2],&a[3]);
-		fclose(fp);
-
-		cpuload_gnd = (((b[0]+b[1]+b[2]) - (a[0]+a[1]+a[2])) / ((b[0]+b[1]+b[2]+b[3]) - (a[0]+a[1]+a[2]+a[3]))) * 100;
-
-		fp = fopen("/proc/stat","r");
-		fscanf(fp,"%*s %Lf %Lf %Lf %Lf",&b[0],&b[1],&b[2],&b[3]);
-		fclose(fp);
-	}
+		}
 
 
-	    wbcdata.cpuload_gnd = cpuload_gnd;
-	    wbcdata.temp_gnd = temp_gnd/1000;
 	    wbcdata.cpuload_air = t_sysair->cpuload;
-
 	    wbcdata.temp_air = t_sysair->temp;
 	    wbcdata.wifi_adapter_cnt = t->wifi_adapter_cnt;
 
