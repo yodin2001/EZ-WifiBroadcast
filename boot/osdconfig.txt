@@ -25,7 +25,7 @@
 /* DISPLAY */
 /* --------*/
 #define COLOR 0,200,0,1.0 // Fill color. First three numbers RGB color, last number opacity. 1.0 = fully visible, 0.0 = fully opaque
-#define OUTLINECOLOR 0,0,0,0.5 // Outline color. First three numbers RGB color, last number opacity. 1.0 = fully visible, 0.0 = fully opaque
+#define OUTLINECOLOR 0,0,0,1.0 // Outline color. First three numbers RGB color, last number opacity. 1.0 = fully visible, 0.0 = fully opaque
 #define OUTLINEWIDTH 1.2 // Outline width, default is 1, useable range from 1-3. Set to 0 to disable outline
 #define FONT "UbuntuMono-Bold.ttf" // Font to use, case-sensitive!
 //#define FONT "Aldrich-Regular.ttf" // Font to use, case-sensitive!
@@ -54,7 +54,7 @@
 #define BT_VOLT_SCALE 0.8
 
 #define CELL_V
-#define CELL_V_cells 4
+//#define CELL_V_cells 4
 #define CELL_V_warn 3.4
 #define CELL_V_crit 3.1
 #define CELL_V_POS_X 6
@@ -65,6 +65,7 @@
 #define BT_AMPER_POS_X 6
 #define BT_AMPER_POS_Y 11
 #define BT_AMPER_SCALE 0.8
+#define BT_AMPER_FILTER 0.5
 
 //#define EFFIC
 #define EFFIC_POS_X 4
@@ -99,21 +100,21 @@
 
 //-------------------------------------------------------------------------------------------------------------------nwo
 #define RSSI//.............RC_RSSI
-#define RSSI_POS_X 10
+#define RSSI_POS_X 4
 #define RSSI_POS_Y 75
 #define RSSI_SCALE 1
-#define RSSI_WARN -40 // negative number
-#define RSSI_CAUTION -25
+#define RSSI_WARN 50 // negative number
+#define RSSI_CAUTION 75
 #define RSSI_DECLUTTER 0 //1 for yes, 0 for no
 
 #define DOWNLINK_RSSI
-#define DOWNLINK_RSSI_POS_X 12
+#define DOWNLINK_RSSI_POS_X 11
 #define DOWNLINK_RSSI_POS_Y 94
 #define DOWNLINK_RSSI_SCALE 1
 #define DOWNLINK_RSSI_FEC_BAR true // set to true to draw FEC bar display
 
 #define DOWNLINK_RSSI_DETAILED
-#define DOWNLINK_RSSI_DETAILED_POS_X 12
+#define DOWNLINK_RSSI_DETAILED_POS_X 11
 #define DOWNLINK_RSSI_DETAILED_POS_Y 85
 #define DOWNLINK_RSSI_DETAILED_SCALE 0.75
 
@@ -141,6 +142,12 @@
 #define CPU_TEMP_CAUTION 60
 #define SYS_DECLUTTER 0 //1 for yes, 0 for no
 
+#define GND_VOLT
+#define GND_VOLT_CRIT 12.0
+#define GND_VOLT_POS_X 92
+#define GND_VOLT_POS_Y 61
+#define GND_VOLT_SCALE 0.7
+
 #define HOME_ARROW
 #define HOME_ARROW_POS_X 50
 #define HOME_ARROW_POS_Y 10
@@ -159,7 +166,7 @@
 #define BATT_GAUGE_POS_X 5
 #define BATT_GAUGE_POS_Y 5
 #define BATT_GAUGE_SCALE 1
-#define CELLS 4 // set to number of cells used
+//#define CELLS 4 // set to number of cells used
 #define CELL_MAX 4.20 // maximum cell voltage
 #define CELL_MIN 3.20 // minimum cell voltage
 #define CELL_WARNING1 3.50 // warning level 1 -> orange, low
@@ -180,13 +187,14 @@
 #define ALTLADDER_WARN 5 // height above launch to warn (only for relative alt)
 #define ALTLADDER_CAUTION 10 // height above launch to caution (only for relative alt)
 #define ALTLADDER_VSI_TIME 20 //(sensitivity)number of seconds vsi predicts future alt
+#define ALTLADDER_SHOW_TERRAIN true
 
 
 #define SPEEDLADDER
 #define SPEEDLADDER_POS_X 18
 #define SPEEDLADDER_SCALE 1.1
 #define SPEEDLADDER_USEAIRSPEED true //set to true to use airspeed instead of GPS speed
-#define SPEEDLADDER_TREND_TIME 5 //(sensitivity)number of seconds speed trend predicts future speed
+#define SPEEDLADDER_TREND_TIME 2 //(sensitivity)number of seconds speed trend predicts future speed
 #define SPEEDLADDER_LOW_LIMIT 40 // where the low speed que begins
 #define SPEEDLADDER_SHOW_SECOND_SPEED true //show slider and value for secondary speed (ground or air)
 
@@ -197,7 +205,7 @@
 #define YAWDISPLAY_TREND_TIME 20 //(sensitivity)number of seconds speed trend predicts future yaw
 
 #define AHI
-#define AHI_SCALE 0.8
+#define AHI_SCALE 0.75
 #define AHI_LADDER false // set to true to draw ladders above and below the center horizon line
 #define AHI_INVERT_ROLL 1 // default -1, set to 1 if roll moves in the wrong direction
 #define AHI_INVERT_PITCH 1 // default -1, set to 1 if pitch moves in the wrong direction
@@ -205,6 +213,7 @@
 #define AHI_ROLLANGLE true //display bank angle
 #define AHI_ROLLANGLE_INVERT -1 //reverse bank angle display with 1 or -1
 #define AHI_FOV 160 //Field of camera view (diagonal)
+#define AHI_SHOW_HOME true
 
 #define POSITION      //GPS经纬度
 #define POSITION_POS_X 98
@@ -299,7 +308,7 @@
 #define THROTTLE_TARGET 20 //set to position tick and trigger green needle
 
 #define THROTTLE_V2               //this is ziprays throttle £¨ÐÂÔöÏîÄ¿£©ÓÍÃÅ
-#define THROTTLE_V2_POS_X 13.5
+#define THROTTLE_V2_POS_X 13
 #define THROTTLE_V2_POS_Y 35
 #define THROTTLE_V2_SCALE 0.8
 #define THROTTLE_V2_COMPLEX false //false for simple small throttle display
@@ -310,7 +319,7 @@
 //#define HDOP_SCALE 0.6
 
 #define MISSION                    //WAYPOINT COUNTER £¨ÐÂÔöÏîÄ¿£©º½µãÈÎÎñ
-#define MISSION_POS_X 75
+#define MISSION_POS_X 71
 #define MISSION_POS_Y 3
 #define MISSION_SCALE 0.6
 
