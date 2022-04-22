@@ -293,3 +293,5 @@ wifibroadcast_rx_status_t_rc *telemetry_wbc_status_memory_open_rc(void);
 wifibroadcast_rx_status_t_uplink *telemetry_wbc_status_memory_open_uplink(void);
 wifibroadcast_rx_status_t_sysair *telemetry_wbc_status_memory_open_sysair(void);
 status_t_sys_gnd *status_memory_open_sys_gnd(void);
+
+void telemetry_init(telemetry_data_t *td);

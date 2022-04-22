@@ -1,6 +1,7 @@
 #include "mavlink.h"
 #include <stdio.h>
 #include <unistd.h>
+#include "render.h"
 
 #ifdef MAVLINK
 mavlink_status_t status;
