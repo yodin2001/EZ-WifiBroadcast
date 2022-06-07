@@ -3554,6 +3554,7 @@ void draw_rangefinder(telemetry_data_t *td, float pos_x, float pos_y, float heig
     vspd_prev = vspd;
 
     if(td->rangefinder.max_range == 0) return;
+    if(td->rangefinder.current_range == 0) return;
     if(td->rangefinder.current_range >= td->rangefinder.max_range) return;
     float rel_alt = td->rangefinder.current_range / td->rangefinder.max_range;
 
