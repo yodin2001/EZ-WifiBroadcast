@@ -30,6 +30,7 @@
 void render_init();
 void setfillstroke();
 void render(telemetry_data_t *td, int fps);
+long long current_ts();
 
 void rotatePoints(float *x, float *y, float angle, int points, int center_x, int center_y); //rotate a polyline/polygon
 float distance_between(float lat1, float long1, float lat2, float long2);

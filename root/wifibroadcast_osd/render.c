@@ -1,9 +1,11 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <sys/time.h>
 #include "render.h"
 #include "telemetry.h"
 #include "osdconfig.h"
 #include "mavlink.h"
+
 #define TO_FEET 3.28084
 #define TO_MPH 0.621371
 #define CELL_WARNING_PCT1 (CELL_WARNING1-CELL_MIN)/(CELL_MAX-CELL_MIN)*100
